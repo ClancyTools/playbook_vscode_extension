@@ -40,7 +40,163 @@ interface ComponentMetadata {
 }
 
 /**
- * Extract global props list from pb_forms_global_props_helper.rb
+ * Extract global props from globalProps.ts in utilities directory
+ */
+function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, any> {
+  // Go up from .../playbook/app/pb_kits/playbook to .../playbook/playbook
+  const playbookRoot = path.dirname(path.dirname(path.dirname(playbookPath)))
+  const globalPropsPath = path.join(playbookRoot, "app/pb_kits/playbook/utilities/globalProps.ts")
+
+  if (!fs.existsSync(globalPropsPath)) {
+    console.warn(`Could not find globalProps.ts at ${globalPropsPath}`)
+    return {}
+  }
+
+  const content = fs.readFileSync(globalPropsPath, "utf-8")
+  const globalProps: Record<string, any> = {}
+
+  // Parse type definitions: type TypeName = { propName?: "value1" | "value2" | ... }
+  // We need to extract each propName from the object definition and convert to snake_case
+  const typeDefRegex = /type\s+\w+\s*=\s*\{([^}]+)\}/g
+  let typeMatch
+
+  while ((typeMatch = typeDefRegex.exec(content)) !== null) {
+    const typeBody = typeMatch[1]
+
+    // Extract individual property definitions from the type body
+    // Pattern: propName?: type
+    const propRegex = /(\w+)\?:\s*([^,\n]+)/g
+    let propMatch
+
+    while ((propMatch = propRegex.exec(typeBody)) !== null) {
+      const propNameCamelCase = propMatch[1]
+      const valuesDef = propMatch[2].trim()
+
+      // Skip reserved words and utility props
+      if (
+        propNameCamelCase === "break" ||
+        propNameCamelCase === "default" ||
+        propNameCamelCase.length <= 1
+      ) {
+        continue
+      }
+
+      // Convert camelCase to snake_case for Rails
+      const propName = propNameCamelCase.replace(/([A-Z])/g, "_$1").toLowerCase()
+
+      // Skip if we've already processed this prop
+      if (globalProps[propName]) {
+        continue
+      }
+
+      // Extract enum values from the type definition
+      const enumValues: string[] = []
+
+      // Match quoted strings like "value1" | "value2"
+      const quotedValuesRegex = /"([^"]+)"/g
+      let valueMatch
+      while ((valueMatch = quotedValuesRegex.exec(valuesDef)) !== null) {
+        enumValues.push(valueMatch[1])
+      }
+
+      // Determine type
+      let propType = "string"
+      if (valuesDef.includes("boolean")) {
+        propType = "boolean"
+      } else if (
+        valuesDef.includes("Binary") ||
+        valuesDef.match(/\b[0-9]\s*\|/) ||
+        valuesDef.match(/^\d/)
+      ) {
+        propType = "number"
+      }
+
+      // Store the prop
+      globalProps[propName] = {
+        type: propType,
+        ...(enumValues.length > 0 && { values: enumValues })
+      }
+    }
+  }
+
+  // Add spacing props manually as they have complex definitions
+  const spacingValues = ["none", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
+  const spacingProps = [
+    "padding",
+    "padding_top",
+    "padding_bottom",
+    "padding_left",
+    "padding_right",
+    "padding_x",
+    "padding_y",
+    "margin",
+    "margin_top",
+    "margin_bottom",
+    "margin_left",
+    "margin_right",
+    "margin_x",
+    "margin_y"
+  ]
+
+  spacingProps.forEach((prop) => {
+    if (!globalProps[prop]) {
+      globalProps[prop] = { type: "string", values: spacingValues }
+    }
+  })
+
+  // Add other commonly used global props from the PROP_CATEGORIES object
+  if (!globalProps.dark) globalProps.dark = { type: "boolean" }
+  if (!globalProps.shadow)
+    globalProps.shadow = { type: "string", values: ["none", "deep", "deeper", "deepest"] }
+  if (!globalProps.position)
+    globalProps.position = {
+      type: "string",
+      values: ["relative", "absolute", "fixed", "sticky", "static"]
+    }
+  if (!globalProps.z_index)
+    globalProps.z_index = {
+      type: "number",
+      values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    }
+  if (!globalProps.display)
+    globalProps.display = {
+      type: "string",
+      values: ["block", "inline_block", "inline", "flex", "inline_flex", "none"]
+    }
+  if (!globalProps.group_hover) globalProps.group_hover = { type: "boolean" }
+  if (!globalProps.truncate)
+    globalProps.truncate = { type: "string", values: ["none", "1", "2", "3", "4", "5"] }
+  if (!globalProps.width) globalProps.width = { type: "string" }
+  if (!globalProps.min_width) globalProps.min_width = { type: "string" }
+  if (!globalProps.max_width) globalProps.max_width = { type: "string" }
+  if (!globalProps.height) globalProps.height = { type: "string" }
+  if (!globalProps.min_height) globalProps.min_height = { type: "string" }
+  if (!globalProps.max_height) globalProps.max_height = { type: "string" }
+  if (!globalProps.gap)
+    globalProps.gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
+  if (!globalProps.column_gap)
+    globalProps.column_gap = {
+      type: "string",
+      values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"]
+    }
+  if (!globalProps.row_gap)
+    globalProps.row_gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
+  if (!globalProps.order)
+    globalProps.order = {
+      type: "string",
+      values: ["none", "first", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    }
+  if (!globalProps.top) globalProps.top = { type: "string" }
+  if (!globalProps.right) globalProps.right = { type: "string" }
+  if (!globalProps.bottom) globalProps.bottom = { type: "string" }
+  if (!globalProps.left) globalProps.left = { type: "string" }
+  if (!globalProps.hover) globalProps.hover = { type: "string" }
+
+  return globalProps
+}
+
+/**
+ * Extract global props list from pb_forms_global_props_helper.rb (legacy/fallback)
  */
 function extractGlobalPropsList(playbookPath: string): string[] {
   // Go up from .../playbook/app/pb_kits/playbook to .../playbook/playbook
@@ -478,75 +634,12 @@ function generateSnippets(components: ComponentMetadata[]): void {
  * Generate metadata file
  */
 function generateMetadata(components: ComponentMetadata[]): void {
-  // Extract global props dynamically from Playbook source
-  const globalPropsList = extractGlobalPropsList(PLAYBOOK_REPO_PATH)
-  const globalProps: Record<string, any> = {}
+  // Extract global props dynamically from Playbook TypeScript source
+  const globalProps = extractGlobalPropsFromTypeScript(PLAYBOOK_REPO_PATH)
 
-  // Define standard values for spacing props
-  const spacingValues = ["none", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
-  const positionValues = ["relative", "absolute", "fixed", "sticky", "static"]
-  const shadowValues = ["none", "deep", "deeper", "deepest"]
-  const displayValues = ["block", "inline_block", "inline", "flex", "inline_flex", "none"]
-  const textAlignValues = ["left", "center", "right", "justify"]
-  const overflowValues = ["visible", "hidden", "scroll", "auto"]
-
-  // Build global props object
-  for (const propName of globalPropsList) {
-    // Try to extract values from lib/playbook files
-    const extractedValues = extractGlobalPropValues(propName, PLAYBOOK_REPO_PATH)
-
-    if (extractedValues) {
-      globalProps[propName] = {
-        type: "string",
-        values: extractedValues
-      }
-    } else if (propName.startsWith("padding") || propName.startsWith("margin")) {
-      globalProps[propName] = {
-        type: "string",
-        values: spacingValues
-      }
-    } else if (propName === "position") {
-      globalProps[propName] = {
-        type: "string",
-        values: positionValues
-      }
-    } else if (propName === "shadow") {
-      globalProps[propName] = {
-        type: "string",
-        values: shadowValues
-      }
-    } else if (propName === "display") {
-      globalProps[propName] = {
-        type: "string",
-        values: displayValues
-      }
-    } else if (propName === "text_align") {
-      globalProps[propName] = {
-        type: "string",
-        values: textAlignValues
-      }
-    } else if (propName === "overflow" || propName === "overflow_x" || propName === "overflow_y") {
-      globalProps[propName] = {
-        type: "string",
-        values: overflowValues
-      }
-    } else if (propName === "z_index") {
-      globalProps[propName] = {
-        type: "number",
-        values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-      }
-    } else if (propName === "group_hover" || propName === "truncate") {
-      globalProps[propName] = {
-        type: "boolean"
-      }
-    } else {
-      // Generic string prop
-      globalProps[propName] = {
-        type: "string"
-      }
-    }
-  }
-
+  console.log(
+    `✅ Extracted ${Object.keys(globalProps).length} global props from TypeScript definitions`
+  )
   const metadata: any = {
     $schema: "./playbook-schema.json",
     generatedAt: new Date().toISOString(),

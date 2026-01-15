@@ -1,317 +1,25 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-01-15T15:15:38.917Z",
+  "generatedAt": "2026-01-15T15:55:18.206Z",
   "globalProps": {
-    "padding": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_top": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_bottom": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_left": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_right": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_x": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "padding_y": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_top": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_bottom": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_left": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_right": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_x": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "margin_y": {
-      "type": "string",
-      "values": [
-        "none",
-        "xxs",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "auto",
-        "initial",
-        "inherit"
-      ]
-    },
-    "shadow": {
-      "type": "string",
-      "values": [
-        "none",
-        "deep",
-        "deeper",
-        "deepest"
-      ]
-    },
-    "width": {
+    "align_content": {
       "type": "string"
     },
-    "min_width": {
-      "type": "string"
+    "align_items": {
+      "type": "string",
+      "values": [
+        "flexStart",
+        "flexEnd",
+        "stretch",
+        "baseline"
+      ]
     },
-    "max_width": {
-      "type": "string"
-    },
-    "height": {
+    "align_self": {
       "type": "string",
       "values": [
         "auto",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "xxl",
-        "xxxl"
-      ]
-    },
-    "min_height": {
-      "type": "string",
-      "values": [
-        "auto",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "xxl",
-        "xxxl"
-      ]
-    },
-    "max_height": {
-      "type": "string",
-      "values": [
-        "auto",
-        "xs",
-        "sm",
-        "md",
-        "lg",
-        "xl",
-        "xxl",
-        "xxxl"
-      ]
-    },
-    "position": {
-      "type": "string",
-      "values": [
-        "relative",
-        "absolute",
-        "fixed",
-        "sticky"
-      ]
-    },
-    "vertical_alignment": {
-      "type": "string"
-    },
-    "z_index": {
-      "type": "string",
-      "values": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ]
-    },
-    "line_height": {
-      "type": "string",
-      "values": [
-        "tightest",
-        "tighter",
-        "tight",
-        "normal",
-        "loose",
-        "looser",
-        "loosest"
-      ]
-    },
-    "number_spacing": {
-      "type": "string",
-      "values": [
-        "tabular"
+        "stretch",
+        "baseline"
       ]
     },
     "border_radius": {
@@ -326,24 +34,6 @@
         "rounded"
       ]
     },
-    "text_size": {
-      "type": "string"
-    },
-    "letter_spacing": {
-      "type": "string"
-    },
-    "display": {
-      "type": "string",
-      "values": [
-        "block",
-        "inline_block",
-        "inline",
-        "flex",
-        "inline_flex",
-        "none",
-        "grid"
-      ]
-    },
     "cursor": {
       "type": "string",
       "values": [
@@ -355,38 +45,183 @@
         "pointer",
         "progress",
         "wait",
-        "cell",
-        "crosshair",
-        "text",
-        "verticalText",
-        "alias",
-        "copy",
-        "move",
-        "noDrop",
-        "notAllowed",
-        "grab",
-        "grabbing",
-        "eResize",
-        "nResize",
-        "neResize",
-        "nwResize",
-        "sResize",
-        "seResize",
-        "swResize",
-        "wResize",
-        "ewResize",
-        "nsResize",
-        "neswResize",
-        "nwseResize",
-        "colResize",
-        "rowResize",
-        "allScroll",
-        "zoomIn",
-        "zoomOut"
+        "cell"
       ]
     },
-    "hover": {
+    "dark": {
+      "type": "boolean"
+    },
+    "flex": {
+      "type": "string",
+      "values": [
+        "auto",
+        "initial",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "none"
+      ]
+    },
+    "flex_direction": {
+      "type": "string",
+      "values": [
+        "row",
+        "column",
+        "rowReverse",
+        "columnReverse"
+      ]
+    },
+    "flex_grow": {
+      "type": "number"
+    },
+    "flex_shrink": {
+      "type": "number"
+    },
+    "flex_wrap": {
+      "type": "string",
+      "values": [
+        "wrap",
+        "nowrap",
+        "wrapReverse"
+      ]
+    },
+    "group_hover": {
+      "type": "boolean"
+    },
+    "justify_content": {
       "type": "string"
+    },
+    "justify_self": {
+      "type": "string",
+      "values": [
+        "auto",
+        "stretch"
+      ]
+    },
+    "line_height": {
+      "type": "string",
+      "values": [
+        "loosest",
+        "looser",
+        "loose",
+        "normal",
+        "tight",
+        "tighter",
+        "tightest"
+      ]
+    },
+    "margin_right": {
+      "type": "string"
+    },
+    "margin_left": {
+      "type": "string"
+    },
+    "margin_top": {
+      "type": "string"
+    },
+    "margin_bottom": {
+      "type": "string"
+    },
+    "margin_x": {
+      "type": "string"
+    },
+    "margin_y": {
+      "type": "string"
+    },
+    "margin": {
+      "type": "string"
+    },
+    "width": {
+      "type": "string"
+    },
+    "max_width": {
+      "type": "string"
+    },
+    "min_width": {
+      "type": "string"
+    },
+    "gap": {
+      "type": "string"
+    },
+    "column_gap": {
+      "type": "string"
+    },
+    "row_gap": {
+      "type": "string"
+    },
+    "number_spacing": {
+      "type": "string",
+      "values": [
+        "tabular"
+      ]
+    },
+    "order": {
+      "type": "number",
+      "values": [
+        "first"
+      ]
+    },
+    "padding_right": {
+      "type": "string"
+    },
+    "padding_left": {
+      "type": "string"
+    },
+    "padding_top": {
+      "type": "string"
+    },
+    "padding_bottom": {
+      "type": "string"
+    },
+    "padding_x": {
+      "type": "string"
+    },
+    "padding_y": {
+      "type": "string"
+    },
+    "padding": {
+      "type": "string"
+    },
+    "position": {
+      "type": "string",
+      "values": [
+        "relative",
+        "absolute",
+        "fixed",
+        "sticky",
+        "static"
+      ]
+    },
+    "top": {
+      "type": "string"
+    },
+    "right": {
+      "type": "string"
+    },
+    "bottom": {
+      "type": "string"
+    },
+    "left": {
+      "type": "string"
+    },
+    "shadow": {
+      "type": "string",
+      "values": [
+        "none",
+        "deep",
+        "deeper",
+        "deepest"
+      ]
     },
     "text_align": {
       "type": "string",
@@ -397,49 +232,60 @@
         "right",
         "center",
         "justify",
-        "justify-all",
-        "match-parent"
-      ]
-    },
-    "overflow": {
-      "type": "string",
-      "values": [
-        "visible",
-        "hidden",
-        "scroll",
-        "auto"
+        "justifyAll",
+        "matchParent"
       ]
     },
     "overflow_x": {
-      "type": "string",
-      "values": [
-        "visible",
-        "hidden",
-        "scroll",
-        "auto"
-      ]
+      "type": "string"
     },
     "overflow_y": {
-      "type": "string",
-      "values": [
-        "visible",
-        "hidden",
-        "scroll",
-        "auto"
-      ]
+      "type": "string"
+    },
+    "overflow": {
+      "type": "string"
     },
     "truncate": {
+      "type": "string"
+    },
+    "vertical_align": {
       "type": "string",
       "values": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5"
+        "baseline",
+        "super",
+        "top",
+        "middle",
+        "bottom",
+        "sub",
+        "text-top",
+        "text-bottom"
       ]
     },
-    "group_hover": {
-      "type": "boolean"
+    "z_index": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "max_height": {
+      "type": "string"
+    },
+    "min_height": {
+      "type": "string"
+    },
+    "display": {
+      "type": "string",
+      "values": [
+        "block",
+        "inline_block",
+        "inline",
+        "flex",
+        "inline_flex",
+        "none"
+      ]
+    },
+    "hover": {
+      "type": "string"
     }
   },
   "components": {

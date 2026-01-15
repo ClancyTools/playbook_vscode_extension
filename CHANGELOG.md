@@ -5,6 +5,26 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-01-15
+
+### Fixed
+
+- **Snippets Not Appearing** 🎯
+  - Fixed snippets not showing in autocomplete for `.html.erb` files
+  - Added snippet support for `html.erb` and `html` language IDs
+  - Snippets now work regardless of how VS Code identifies ERB files
+  - Rails snippets (e.g., `pb_body`, `pb_badge`) now autocomplete properly
+
+### Changed
+
+- **Dynamic Global Props Extraction** 🔄
+  - Global props are now dynamically extracted from Playbook TypeScript definitions
+  - Reads from `app/pb_kits/playbook/utilities/globalProps.ts` to get complete list
+  - Ensures all global props are always in sync with Playbook
+  - Now extracts 55+ global props including all flexbox and alignment properties
+  - Fixed: `vertical_align`, `text_align`, and all other alignment props now properly recognized
+  - Converts TypeScript camelCase props (e.g., `verticalAlign`) to Rails snake_case (`vertical_align`)
+
 ## [1.0.6] - 2026-01-15
 
 ### Fixed
@@ -20,15 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Diagnostics now only validate quoted string literals
   - Variables, method calls, and Ruby expressions are no longer flagged as invalid
   - Example: `variant: current_variant` no longer shows a warning
-
-### Changed
-
-- **Dynamic Global Props Extraction** 🔄
-  - Global props are now dynamically extracted from Playbook source code
-  - Reads from `lib/playbook/pb_forms_global_props_helper.rb` to get complete list
-  - Ensures all global props are always in sync with Playbook
-  - Added support for all missing global props: `vertical_alignment`, `text_size`, `letter_spacing`, `text_align`, `overflow`, `overflow_x`, `overflow_y`, `truncate`, `group_hover`
-  - Total of 38 global props now available
 
 ## [1.0.5] - 2026-01-15
 
