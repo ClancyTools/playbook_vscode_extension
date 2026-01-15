@@ -153,7 +153,7 @@ suite("Definition Provider Test Suite", () => {
 
       if (definitions && !Array.isArray(definitions)) {
         const uri = definitions.uri.toString();
-        assert.ok(uri.startsWith("https:
+        assert.ok(uri.startsWith("https://playbook.powerhrg.com"), "Should use correct base URL");
       }
     });
 
