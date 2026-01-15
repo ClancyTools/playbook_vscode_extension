@@ -1,6 +1,6 @@
 {
   "name": "playbook-vscode",
-  "displayName": "Playbook UI",
+  "displayName": "Playbook UI Helper",
   "description": "Developer experience enhancements for Playbook UI design system - snippets, autocomplete, and hover documentation for Rails and React",
   "version": "1.0.0",
   "publisher": "ClancyTools",
