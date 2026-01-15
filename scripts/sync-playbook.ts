@@ -135,15 +135,22 @@ function parseRubyComponent(filePath: string, componentName: string): ComponentM
       componentName.match(/card|flex|layout|section|collapsible/i) !== null
 
     // Convert pb_button to Button, or flex/flex_item to FlexItem
-    const reactName = componentName
-      .split("/")
-      .map((part) =>
-        part
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join("")
-      )
-      .join("")
+    // For subcomponents (with /), use only the last part for React name
+    let reactName: string
+    if (componentName.includes("/")) {
+      // For subcomponents like "flex/flex_item", just use "FlexItem"
+      const subComponentName = componentName.split("/").pop()!
+      reactName = subComponentName
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("")
+    } else {
+      // For regular components like "button", use "Button"
+      reactName = componentName
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("")
+    }
 
     return {
       name: componentName,

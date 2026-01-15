@@ -13,6 +13,71 @@
     ],
     "description": "Playbook AdvancedTable component for React"
   },
+  "Playbook TableActionBar": {
+    "prefix": "pbTableActionBar",
+    "body": [
+      "<TableActionBar",
+      "\tactions=\"${1:[]}\"",
+      "\tisVisible={${2|true,false|}}",
+      "\tselectedCount=\"${3:0}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableActionBar component for React"
+  },
+  "Playbook TableBody": {
+    "prefix": "pbTableBody",
+    "body": [
+      "<TableBody",
+      "\ttag={${1|\\\"table\\\",\\\"div\\\"|}}",
+      "\tdraggableContainer={${2|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableBody component for React"
+  },
+  "Playbook TableHeader": {
+    "prefix": "pbTableHeader",
+    "body": [
+      "<TableHeader",
+      "\ttext=\"${1:}\"",
+      "\talign={${2|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"baseline\\\",\\\"none\\\"|}}",
+      "\talignContent={${3|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"baseline\\\",\\\"none\\\"|}}",
+      "\tjustifySortIcon={${4|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"around\\\",\\\"between\\\",\\\"evenly\\\",\\\"none\\\"|}}",
+      "\tcolspan=\"${5:1}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableHeader component for React"
+  },
+  "Playbook TableRow": {
+    "prefix": "pbTableRow",
+    "body": [
+      "<TableRow",
+      "\tsideHighlightColor=\"${1:none}\"",
+      "\ttag={${2|\\\"table\\\",\\\"div\\\"|}}",
+      "\tcollapsible={${3|true,false|}}",
+      "\tcollapsibleContent=\"${4}\"",
+      "\tcollapsibleSideHighlight={${5|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableRow component for React"
+  },
+  "Playbook TableSubrowHeader": {
+    "prefix": "pbTableSubrowHeader",
+    "body": [
+      "<TableSubrowHeader",
+      "\tcolumnDefinitions=\"${1:[]}\"",
+      "\tdepth=\"${2}\"",
+      "\trow=\"${3}\"",
+      "\tenableToggleExpansion={${4|\\\"all\\\",\\\"header\\\",\\\"none\\\"|}}",
+      "\tsubrowHeader=\"${5:}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableSubrowHeader component for React"
+  },
   "Playbook Avatar": {
     "prefix": "pbAvatar",
     "body": [
@@ -71,13 +136,11 @@
     "prefix": "pbBody",
     "body": [
       "<Body",
-      "\ttext=\"${1}\"",
-      "\tcolor={${2|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"link\\\",\\\"success\\\",\\\"error\\\"|}}",
-      "\tstatus={${3|\\\"neutral\\\",\\\"positive\\\",\\\"negative\\\"|}}",
-      "\ttag={${4|\\\"h1\\\",\\\"h2\\\",\\\"h3\\\",\\\"h4\\\",\\\"h5\\\",\\\"h6\\\",\\\"p\\\",\\\"span\\\",\\\"div\\\"|}}",
-      "\thighlighting={${5|true,false|}}",
+      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
       "\t$0",
-      "/>"
+      ">",
+      "\t${2:Content}",
+      "</Body>"
     ],
     "description": "Playbook Body component for React"
   },
@@ -89,6 +152,16 @@
       "/>"
     ],
     "description": "Playbook BreadCrumbs component for React"
+  },
+  "Playbook BreadCrumbItem": {
+    "prefix": "pbBreadCrumbItem",
+    "body": [
+      "<BreadCrumbItem",
+      "\tlink=\"${1}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook BreadCrumbItem component for React"
   },
   "Playbook Button": {
     "prefix": "pbButton",
@@ -147,6 +220,30 @@
     ],
     "description": "Playbook Card component for React"
   },
+  "Playbook CardBody": {
+    "prefix": "pbCardBody",
+    "body": [
+      "<CardBody",
+      "\t$0",
+      ">",
+      "\t${1:Content}",
+      "</CardBody>"
+    ],
+    "description": "Playbook CardBody component for React"
+  },
+  "Playbook CardHeader": {
+    "prefix": "pbCardHeader",
+    "body": [
+      "<CardHeader",
+      "\theaderColor=\"${1:category_1}\"",
+      "\theaderColorStriped={${2|true,false|}}",
+      "\t$0",
+      ">",
+      "\t${3:Content}",
+      "</CardHeader>"
+    ],
+    "description": "Playbook CardHeader component for React"
+  },
   "Playbook Checkbox": {
     "prefix": "pbCheckbox",
     "body": [
@@ -200,6 +297,47 @@
       "</Collapsible>"
     ],
     "description": "Playbook Collapsible component for React"
+  },
+  "Playbook CollapsibleContent": {
+    "prefix": "pbCollapsibleContent",
+    "body": [
+      "<CollapsibleContent",
+      "\tcollapsed={${1|true,false|}}",
+      "\t$0",
+      ">",
+      "\t${2:Content}",
+      "</CollapsibleContent>"
+    ],
+    "description": "Playbook CollapsibleContent component for React"
+  },
+  "Playbook CollapsibleIcon": {
+    "prefix": "pbCollapsibleIcon",
+    "body": [
+      "<CollapsibleIcon",
+      "\tsize={${1|\\\"lg\\\",\\\"xs\\\",\\\"sm\\\",\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\"|}}",
+      "\tcollapsed={${2|true,false|}}",
+      "\tcolor={${3|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"link\\\",\\\"success\\\",\\\"error\\\"|}}",
+      "\ticon=\"${4}\"",
+      "\t$0",
+      ">",
+      "\t${5:Content}",
+      "</CollapsibleIcon>"
+    ],
+    "description": "Playbook CollapsibleIcon component for React"
+  },
+  "Playbook CollapsibleMain": {
+    "prefix": "pbCollapsibleMain",
+    "body": [
+      "<CollapsibleMain",
+      "\tsize={${1|\\\"lg\\\",\\\"xs\\\",\\\"sm\\\",\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\"|}}",
+      "\tcolor={${2|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"link\\\",\\\"success\\\",\\\"error\\\"|}}",
+      "\ticon=\"${3}\"",
+      "\t$0",
+      ">",
+      "\t${4:Content}",
+      "</CollapsibleMain>"
+    ],
+    "description": "Playbook CollapsibleMain component for React"
   },
   "Playbook Contact": {
     "prefix": "pbContact",
@@ -369,10 +507,6 @@
     "prefix": "pbDetail",
     "body": [
       "<Detail",
-      "\ttext=\"${1}\"",
-      "\tbold={${2|true,false|}}",
-      "\tcolor={${3|\\\"light\\\",\\\"default\\\",\\\"lighter\\\",\\\"link\\\",\\\"error\\\",\\\"success\\\"|}}",
-      "\ttag={${4|\\\"h1\\\",\\\"h2\\\",\\\"h3\\\",\\\"h4\\\",\\\"h5\\\",\\\"h6\\\",\\\"p\\\",\\\"span\\\",\\\"div\\\"|}}",
       "\t$0",
       "/>"
     ],
@@ -391,6 +525,40 @@
       "/>"
     ],
     "description": "Playbook Dialog component for React"
+  },
+  "Playbook DialogBody": {
+    "prefix": "pbDialogBody",
+    "body": [
+      "<DialogBody",
+      "\ttext=\"${1}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DialogBody component for React"
+  },
+  "Playbook DialogFooter": {
+    "prefix": "pbDialogFooter",
+    "body": [
+      "<DialogFooter",
+      "\tcancelButton=\"${1}\"",
+      "\tcancelButtonId=\"${2}\"",
+      "\tconfirmButton=\"${3}\"",
+      "\tconfirmButtonId=\"${4}\"",
+      "\tloading=\"${5}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DialogFooter component for React"
+  },
+  "Playbook DialogHeader": {
+    "prefix": "pbDialogHeader",
+    "body": [
+      "<DialogHeader",
+      "\ttitle=\"${1}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DialogHeader component for React"
   },
   "Playbook DistributionBar": {
     "prefix": "pbDistributionBar",
@@ -416,6 +584,31 @@
     ],
     "description": "Playbook Draggable component for React"
   },
+  "Playbook DraggableContainer": {
+    "prefix": "pbDraggableContainer",
+    "body": [
+      "<DraggableContainer",
+      "\ttag=\"${1:div}\"",
+      "\tcontainer=\"${2:}\"",
+      "\tdropZoneDirection={${3|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DraggableContainer component for React"
+  },
+  "Playbook DraggableItem": {
+    "prefix": "pbDraggableItem",
+    "body": [
+      "<DraggableItem",
+      "\tdragId=\"${1:}\"",
+      "\ttag=\"${2:div}\"",
+      "\tcontainer=\"${3:}\"",
+      "\tdropZoneLineColor={${4|\\\"primary\\\",\\\"purple\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DraggableItem component for React"
+  },
   "Playbook Dropdown": {
     "prefix": "pbDropdown",
     "body": [
@@ -429,6 +622,41 @@
       "/>"
     ],
     "description": "Playbook Dropdown component for React"
+  },
+  "Playbook DropdownContainer": {
+    "prefix": "pbDropdownContainer",
+    "body": [
+      "<DropdownContainer",
+      "\tsearchbar={${1|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DropdownContainer component for React"
+  },
+  "Playbook DropdownOption": {
+    "prefix": "pbDropdownOption",
+    "body": [
+      "<DropdownOption",
+      "\toption=\"${1}\"",
+      "\tid=\"${2}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DropdownOption component for React"
+  },
+  "Playbook DropdownTrigger": {
+    "prefix": "pbDropdownTrigger",
+    "body": [
+      "<DropdownTrigger",
+      "\toptions=\"${1:[]}\"",
+      "\tid=\"${2:}\"",
+      "\tplaceholder=\"${3}\"",
+      "\tcustomDisplay=\"${4}\"",
+      "\tautocomplete={${5|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook DropdownTrigger component for React"
   },
   "Playbook EmptyState": {
     "prefix": "pbEmptyState",
@@ -501,6 +729,22 @@
       "</Flex>"
     ],
     "description": "Playbook Flex component for React"
+  },
+  "Playbook FlexItem": {
+    "prefix": "pbFlexItem",
+    "body": [
+      "<FlexItem",
+      "\tfixedSize=\"${1}\"",
+      "\tgrow={${2|true,false|}}",
+      "\tshrink={${3|true,false|}}",
+      "\talignSelf={${4|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\"|}}",
+      "\tdisplayFlex={${5|true,false|}}",
+      "\t$0",
+      ">",
+      "\t${6:Content}",
+      "</FlexItem>"
+    ],
+    "description": "Playbook FlexItem component for React"
   },
   "Playbook Form": {
     "prefix": "pbForm",
@@ -591,6 +835,48 @@
       "/>"
     ],
     "description": "Playbook HomeAddressStreet component for React"
+  },
+  "Playbook CityEmphasis": {
+    "prefix": "pbCityEmphasis",
+    "body": [
+      "<CityEmphasis",
+      "\taddressHouseStyle=\"${1}\"",
+      "\taddressHouseStyle2=\"${2}\"",
+      "\tcityState=\"${3}\"",
+      "\thomeId=\"${4}\"",
+      "\thomeUrl=\"${5}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook CityEmphasis component for React"
+  },
+  "Playbook NoneEmphasis": {
+    "prefix": "pbNoneEmphasis",
+    "body": [
+      "<NoneEmphasis",
+      "\taddressHouseStyle=\"${1}\"",
+      "\taddressHouseStyle2=\"${2}\"",
+      "\tcityStateZip=\"${3}\"",
+      "\thomeId=\"${4}\"",
+      "\thomeUrl=\"${5}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook NoneEmphasis component for React"
+  },
+  "Playbook StreetEmphasis": {
+    "prefix": "pbStreetEmphasis",
+    "body": [
+      "<StreetEmphasis",
+      "\taddressHouseStyle=\"${1}\"",
+      "\taddressHouseStyle2=\"${2}\"",
+      "\tcityStateZip=\"${3}\"",
+      "\thomeId=\"${4}\"",
+      "\thomeUrl=\"${5}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook StreetEmphasis component for React"
   },
   "Playbook Icon": {
     "prefix": "pbIcon",
@@ -715,6 +1001,54 @@
     ],
     "description": "Playbook Layout component for React"
   },
+  "Playbook Footer": {
+    "prefix": "pbFooter",
+    "body": [
+      "<Footer",
+      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
+      "\t$0",
+      ">",
+      "\t${2:Content}",
+      "</Footer>"
+    ],
+    "description": "Playbook Footer component for React"
+  },
+  "Playbook Header": {
+    "prefix": "pbHeader",
+    "body": [
+      "<Header",
+      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
+      "\t$0",
+      ">",
+      "\t${2:Content}",
+      "</Header>"
+    ],
+    "description": "Playbook Header component for React"
+  },
+  "Playbook Item": {
+    "prefix": "pbItem",
+    "body": [
+      "<Item",
+      "\tdate=\"${1}\"",
+      "\ticon=\"${2:user}\"",
+      "\ticonColor={${3|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\"|}}",
+      "\tlineStyle={${4|\\\"solid\\\",\\\"dotted\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook Item component for React"
+  },
+  "Playbook Sidebar": {
+    "prefix": "pbSidebar",
+    "body": [
+      "<Sidebar",
+      "\t$0",
+      ">",
+      "\t${1:Content}",
+      "</Sidebar>"
+    ],
+    "description": "Playbook Sidebar component for React"
+  },
   "Playbook Legend": {
     "prefix": "pbLegend",
     "body": [
@@ -795,6 +1129,16 @@
       "/>"
     ],
     "description": "Playbook Message component for React"
+  },
+  "Playbook MessageMention": {
+    "prefix": "pbMessageMention",
+    "body": [
+      "<MessageMention",
+      "\tvariant={${1|\\\"user\\\",\\\"self\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook MessageMention component for React"
   },
   "Playbook MultiLevelSelect": {
     "prefix": "pbMultiLevelSelect",
@@ -1027,6 +1371,20 @@
     ],
     "description": "Playbook ProgressStep component for React"
   },
+  "Playbook ProgressStepItem": {
+    "prefix": "pbProgressStepItem",
+    "body": [
+      "<ProgressStepItem",
+      "\tstatus={${1|\\\"complete\\\",\\\"active\\\",\\\"inactive\\\",\\\"hidden\\\"|}}",
+      "\ticon=\"${2:check}\"",
+      "\ttooltip=\"${3}\"",
+      "\ttooltipPosition=\"${4}\"",
+      "\tstepDirection={${5|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook ProgressStepItem component for React"
+  },
   "Playbook Radio": {
     "prefix": "pbRadio",
     "body": [
@@ -1144,6 +1502,20 @@
     ],
     "description": "Playbook SelectableList component for React"
   },
+  "Playbook SelectableListItem": {
+    "prefix": "pbSelectableListItem",
+    "body": [
+      "<SelectableListItem",
+      "\ttext=\"${1}\"",
+      "\tvariant={${2|\\\"radio\\\",\\\"checkbox\\\"|}}",
+      "\ttabindex=\"${3}\"",
+      "\tchecked={${4|true,false|}}",
+      "\tdragHandle={${5|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook SelectableListItem component for React"
+  },
   "Playbook SkeletonLoading": {
     "prefix": "pbSkeletonLoading",
     "body": [
@@ -1223,6 +1595,27 @@
     ],
     "description": "Playbook Table component for React"
   },
+  "Playbook TableCell": {
+    "prefix": "pbTableCell",
+    "body": [
+      "<TableCell",
+      "\ttext=\"${1:}\"",
+      "\ttag={${2|\\\"table\\\",\\\"div\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableCell component for React"
+  },
+  "Playbook TableHead": {
+    "prefix": "pbTableHead",
+    "body": [
+      "<TableHead",
+      "\ttag={${1|\\\"table\\\",\\\"div\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook TableHead component for React"
+  },
   "Playbook TextInput": {
     "prefix": "pbTextInput",
     "body": [
@@ -1236,6 +1629,18 @@
       "/>"
     ],
     "description": "Playbook TextInput component for React"
+  },
+  "Playbook AddOn": {
+    "prefix": "pbAddOn",
+    "body": [
+      "<AddOn",
+      "\ticon=\"${1}\"",
+      "\talignment={${2|\\\"right\\\",\\\"left\\\"|}}",
+      "\tborder={${3|true,false|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook AddOn component for React"
   },
   "Playbook Textarea": {
     "prefix": "pbTextarea",
@@ -1302,6 +1707,27 @@
       "/>"
     ],
     "description": "Playbook Timeline component for React"
+  },
+  "Playbook Label": {
+    "prefix": "pbLabel",
+    "body": [
+      "<Label",
+      "\tdate=\"${1}\"",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook Label component for React"
+  },
+  "Playbook Step": {
+    "prefix": "pbStep",
+    "body": [
+      "<Step",
+      "\ticon=\"${1}\"",
+      "\ticonColor={${2|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\"|}}",
+      "\t$0",
+      "/>"
+    ],
+    "description": "Playbook Step component for React"
   },
   "Playbook Timestamp": {
     "prefix": "pbTimestamp",

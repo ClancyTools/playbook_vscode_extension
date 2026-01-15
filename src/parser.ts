@@ -169,25 +169,41 @@ export function findComponentContext(
   position: vscode.Position
 ): ComponentUsage | null {
   // Search backwards from current position to find the component
-  for (let line = position.line; line >= Math.max(0, position.line - 10); line--) {
-    const tempPos = new vscode.Position(line, 0)
+  for (let line = position.line; line >= Math.max(0, position.line - 20); line--) {
+    const lineText = document.lineAt(line).text
 
-    // Try Rails
-    const railsComponent = parseRailsComponent(
-      document,
-      new vscode.Position(line, document.lineAt(line).text.length / 2)
-    )
-    if (railsComponent) {
-      return railsComponent
+    // Try Rails - look for pb_rails("component_name")
+    const railsMatch = lineText.match(/pb_rails\(\s*["']([^"']+)["']/)
+    if (railsMatch) {
+      const componentName = railsMatch[1]
+      const startIndex = railsMatch.index! + railsMatch[0].indexOf(componentName)
+      const endIndex = startIndex + componentName.length
+      const startPos = new vscode.Position(line, startIndex)
+      const endPos = new vscode.Position(line, endIndex)
+      const range = new vscode.Range(startPos, endPos)
+
+      return {
+        componentName,
+        range,
+        type: "rails"
+      }
     }
 
-    // Try React
-    const reactComponent = parseReactComponent(
-      document,
-      new vscode.Position(line, document.lineAt(line).text.length / 2)
-    )
-    if (reactComponent) {
-      return reactComponent
+    // Try React - look for <ComponentName
+    const reactMatch = lineText.match(/<([A-Z][a-zA-Z0-9]*)/)
+    if (reactMatch) {
+      const componentName = reactMatch[1]
+      const startIndex = reactMatch.index! + 1 // +1 to skip '<'
+      const endIndex = startIndex + componentName.length
+      const startPos = new vscode.Position(line, startIndex)
+      const endPos = new vscode.Position(line, endIndex)
+      const range = new vscode.Range(startPos, endPos)
+
+      return {
+        componentName,
+        range,
+        type: "react"
+      }
     }
   }
 
