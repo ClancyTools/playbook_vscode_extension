@@ -1,200 +1,5328 @@
 {
   "$schema": "./playbook-schema.json",
+  "generatedAt": "2026-01-15T01:23:05.280Z",
   "components": {
-    "Button": {
-      "rails": "button",
-      "react": "Button",
-      "description": "Primary action button component",
-      "category": "actions",
+    "AdvancedTable": {
+      "rails": "advanced_table",
+      "react": "AdvancedTable",
+      "description": "Playbook AdvancedTable component",
+      "hasChildren": false,
       "props": {
-        "text": {
-          "type": "string",
-          "description": "Button text content",
-          "required": true
+        "table_data": {
+          "type": "array",
+          "default": "[]"
         },
-        "variant": {
+        "column_definitions": {
+          "type": "array",
+          "default": "[]"
+        },
+        "column_group_border_color": {
           "type": "enum",
-          "values": ["primary", "secondary", "link"],
-          "default": "primary",
-          "description": "Button style variant"
+          "default": "\"none\"",
+          "values": [
+            "text_lt_default",
+            "text_lt_light",
+            "text_lt_lighter",
+            "text_dk_default",
+            "text_dk_light",
+            "text_dk_lighter",
+            "none"
+          ]
         },
-        "size": {
+        "enable_toggle_expansion": {
           "type": "enum",
-          "values": ["sm", "md", "lg"],
-          "default": "md",
-          "description": "Button size"
+          "default": "\"header\"",
+          "values": [
+            "all",
+            "header",
+            "none"
+          ]
         },
-        "disabled": {
+        "loading": {
           "type": "boolean",
-          "default": false,
-          "description": "Disabled state"
+          "default": "false"
         },
-        "onClick": {
-          "type": "function",
-          "description": "Click handler (React only)"
-        }
-      }
-    },
-    "Card": {
-      "rails": "card",
-      "react": "Card",
-      "description": "Container component for grouping related content",
-      "category": "layout",
-      "props": {
-        "padding": {
+        "responsive": {
           "type": "enum",
-          "values": ["none", "xs", "sm", "md", "lg", "xl"],
-          "default": "md",
-          "description": "Internal padding"
+          "default": "\"scroll\"",
+          "values": [
+            "none",
+            "scroll"
+          ]
         },
-        "borderRadius": {
-          "type": "enum",
-          "values": ["none", "sm", "md", "lg", "rounded"],
-          "default": "md",
-          "description": "Border radius"
+        "table_props": {
+          "type": "hashprop",
+          "default": "{}"
         },
-        "shadow": {
+        "max_height": {
           "type": "enum",
-          "values": ["none", "sm", "md", "lg", "deep"],
-          "default": "none",
-          "description": "Box shadow depth"
-        }
-      }
-    },
-    "Flex": {
-      "rails": "flex",
-      "react": "Flex",
-      "description": "Flexbox layout container",
-      "category": "layout",
-      "props": {
-        "align": {
-          "type": "enum",
-          "values": ["none", "start", "end", "center", "stretch"],
-          "default": "none",
-          "description": "Align items (cross-axis)"
+          "default": "\"auto\"",
+          "values": [
+            "auto",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "xxl",
+            "xxxl"
+          ]
         },
-        "justify": {
-          "type": "enum",
-          "values": ["none", "start", "end", "center", "between", "around", "evenly"],
-          "default": "none",
-          "description": "Justify content (main-axis)"
-        },
-        "direction": {
-          "type": "enum",
-          "values": ["row", "column"],
-          "default": "row",
-          "description": "Flex direction"
-        },
-        "wrap": {
+        "selectable_rows": {
           "type": "boolean",
-          "default": false,
-          "description": "Allow wrapping"
-        }
-      }
-    },
-    "Body": {
-      "rails": "body",
-      "react": "Body",
-      "description": "Body text component with standardized typography",
-      "category": "typography",
-      "props": {
-        "text": {
-          "type": "string",
-          "description": "Body text content",
-          "required": true
+          "default": "false"
         },
-        "color": {
-          "type": "enum",
-          "values": ["default", "light", "lighter", "link", "error", "success"],
-          "default": "default",
-          "description": "Text color"
+        "show_actions_bar": {
+          "type": "boolean",
+          "default": "true"
         },
-        "tag": {
-          "type": "enum",
-          "values": ["p", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6"],
-          "default": "p",
-          "description": "HTML tag to render"
-        }
-      }
-    },
-    "Title": {
-      "rails": "title",
-      "react": "Title",
-      "description": "Title/heading component",
-      "category": "typography",
-      "props": {
-        "text": {
-          "type": "string",
-          "description": "Title text",
-          "required": true
+        "actions": {
+          "type": "array",
+          "default": "[]"
         },
-        "size": {
-          "type": "number",
-          "values": [1, 2, 3, 4],
-          "default": 3,
-          "description": "Title size (1 = largest, 4 = smallest)"
+        "scroll_bar_none": {
+          "type": "boolean",
+          "default": "false"
         },
-        "tag": {
-          "type": "enum",
-          "values": ["h1", "h2", "h3", "h4", "h5", "h6", "div", "span"],
-          "default": "h3",
-          "description": "HTML tag to render"
+        "row_styling": {
+          "type": "array",
+          "default": "[]"
         }
       }
     },
     "Avatar": {
       "rails": "avatar",
       "react": "Avatar",
-      "description": "User avatar component",
-      "category": "content",
+      "description": "Playbook Avatar component",
+      "hasChildren": false,
       "props": {
+        "component_overlay": {
+          "type": "any"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "image_alt": {
+          "type": "string",
+          "default": "\"\""
+        },
         "name": {
           "type": "string",
-          "description": "User name for fallback initials",
-          "required": true
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "Avatar image URL"
+          "default": "\"\""
         },
         "size": {
           "type": "enum",
-          "values": ["xs", "sm", "md", "lg", "xl"],
-          "default": "md",
-          "description": "Avatar size"
+          "default": "\"md\"",
+          "values": [
+            "xxs",
+            "xs",
+            "sm",
+            "md",
+            "base",
+            "lg",
+            "xl"
+          ]
+        },
+        "status": {
+          "type": "any"
+        },
+        "grayscale": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Background": {
+      "rails": "background",
+      "react": "Background",
+      "description": "Playbook Background component",
+      "hasChildren": false,
+      "props": {
+        "background_color": {
+          "type": "enum",
+          "default": "\"light\"",
+          "values": [
+            "gradient",
+            "dark",
+            "light",
+            "white",
+            "success",
+            "warning",
+            "error",
+            "info",
+            "neutral",
+            "primary",
+            "shadow",
+            "category_1",
+            "category_2",
+            "category_3",
+            "category_4",
+            "category_5",
+            "category_6",
+            "category_7",
+            "category_8",
+            "category_9",
+            "category_10",
+            "category_11",
+            "category_12",
+            "category_13",
+            "category_14",
+            "category_15",
+            "category_16",
+            "category_17",
+            "category_18",
+            "category_19",
+            "category_20",
+            "category_21",
+            "success_secondary",
+            "error_secondary",
+            "info_secondary",
+            "warning_secondary",
+            "neutral_secondary",
+            "primary_secondary",
+            "text_lt_default",
+            "text_lt_light",
+            "text_lt_lighter",
+            "text_dk_default",
+            "text_dk_light",
+            "text_dk_lighter",
+            "card_light",
+            "card_dark",
+            "data_1",
+            "data_2",
+            "data_3",
+            "data_4",
+            "data_5",
+            "data_6",
+            "data_7",
+            "data_8",
+            "border_light",
+            "border_dark",
+            "success_subtle",
+            "warning_subtle",
+            "error_subtle",
+            "info_subtle",
+            "neutral_subtle"
+          ]
+        },
+        "background_position": {
+          "type": "string",
+          "default": "nil"
+        },
+        "background_repeat": {
+          "type": "enum",
+          "default": "\"initial\"",
+          "values": [
+            "repeat",
+            "repeat-x",
+            "repeat-y",
+            "no-repeat",
+            "space",
+            "round",
+            "initial",
+            "inherit"
+          ]
+        },
+        "background_size": {
+          "type": "enum",
+          "default": "\"cover\"",
+          "values": [
+            "contain",
+            "cover",
+            "auto"
+          ]
+        },
+        "image_url": {
+          "type": "any"
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "div",
+            "span",
+            "tr",
+            "th",
+            "td",
+            "thead",
+            "col"
+          ]
+        },
+        "transition": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "blur",
+            "fade",
+            "scale"
+          ]
+        },
+        "custom_color": {
+          "type": "string",
+          "default": "nil"
+        }
+      }
+    },
+    "Badge": {
+      "rails": "badge",
+      "react": "Badge",
+      "description": "Playbook Badge component",
+      "hasChildren": false,
+      "props": {
+        "rounded": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "text": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "success",
+            "warning",
+            "error",
+            "info",
+            "neutral",
+            "notification",
+            "notification_error",
+            "primary"
+          ]
+        }
+      }
+    },
+    "BarGraph": {
+      "rails": "bar_graph",
+      "react": "BarGraph",
+      "description": "Playbook BarGraph component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"center\"",
+          "values": [
+            "left",
+            "right",
+            "center"
+          ]
+        },
+        "axis_title": {
+          "type": "any"
+        },
+        "axis_format": {
+          "type": "any"
+        },
+        "chart_data": {
+          "type": "array",
+          "default": "[]"
+        },
+        "custom_options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"vertical\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "point_start": {
+          "type": "numeric"
+        },
+        "stacking": {
+          "type": "any"
+        },
+        "subtitle": {
+          "type": "any"
+        },
+        "title": {
+          "type": "any"
+        },
+        "x_axis_categories": {
+          "type": "array",
+          "default": "[]"
+        },
+        "y_axis_min": {
+          "type": "numeric"
+        },
+        "y_axis_max": {
+          "type": "numeric"
+        },
+        "legend": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "toggle_legend_click": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "height": {
+          "type": "any"
+        },
+        "colors": {
+          "type": "array",
+          "default": "[]"
+        },
+        "layout": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "horizontal",
+            "vertical",
+            "proximate"
+          ]
+        },
+        "vertical_align": {
+          "type": "enum",
+          "default": "\"bottom\"",
+          "values": [
+            "top",
+            "middle",
+            "bottom"
+          ]
+        },
+        "x": {
+          "type": "numeric"
+        },
+        "y": {
+          "type": "numeric"
+        }
+      }
+    },
+    "Body": {
+      "rails": "body",
+      "react": "Body",
+      "description": "Playbook Body component",
+      "hasChildren": false,
+      "props": {
+        "color": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "light",
+            "lighter",
+            "link",
+            "success",
+            "error"
+          ]
         },
         "status": {
           "type": "enum",
-          "values": ["online", "away", "offline"],
-          "description": "Status indicator"
+          "default": "\"neutral\"",
+          "values": [
+            "neutral",
+            "positive",
+            "negative"
+          ]
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "span",
+            "div"
+          ]
+        },
+        "text": {
+          "type": "any"
+        },
+        "highlighting": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "highlighted_text": {
+          "type": "array",
+          "default": "[]"
+        }
+      }
+    },
+    "BreadCrumbs": {
+      "rails": "bread_crumbs",
+      "react": "BreadCrumbs",
+      "description": "Playbook BreadCrumbs component",
+      "hasChildren": false,
+      "props": {}
+    },
+    "Button": {
+      "rails": "button",
+      "react": "Button",
+      "description": "Playbook Button component",
+      "hasChildren": false,
+      "props": {
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "full_width": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "icon_right": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "link": {
+          "type": "any"
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "new_window": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "secondary",
+            "link",
+            "danger",
+            "reaction"
+          ]
+        },
+        "count": {
+          "type": "number"
+        },
+        "highlight": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "target": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "type": {
+          "type": "any"
+        },
+        "value": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "form": {
+          "type": "any",
+          "default": "nil"
+        },
+        "icon_font_family": {
+          "type": "enum",
+          "default": "\"far\"",
+          "values": [
+            "far",
+            "fas",
+            "fab",
+            "fak"
+          ]
+        }
+      }
+    },
+    "ButtonToolbar": {
+      "rails": "button_toolbar",
+      "react": "ButtonToolbar",
+      "description": "Playbook ButtonToolbar component",
+      "hasChildren": false,
+      "props": {
+        "connected": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "secondary"
+          ]
+        },
+        "text": {
+          "type": "any"
+        }
+      }
+    },
+    "Caption": {
+      "rails": "caption",
+      "react": "Caption",
+      "description": "Playbook Caption component",
+      "hasChildren": false,
+      "props": {
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "base",
+            "lg",
+            "xl"
+          ]
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "span",
+            "div",
+            "caption"
+          ]
+        },
+        "text": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "link"
+          ]
+        },
+        "color": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "default",
+            "light",
+            "lighter",
+            "success",
+            "error",
+            "link"
+          ]
+        }
+      }
+    },
+    "Card": {
+      "rails": "card",
+      "react": "Card",
+      "description": "Playbook Card component",
+      "hasChildren": true,
+      "props": {
+        "selected": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "highlight": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "div",
+            "section",
+            "footer",
+            "header",
+            "article",
+            "aside",
+            "main",
+            "nav"
+          ]
+        },
+        "border_none": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "border_radius": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "none",
+            "rounded"
+          ]
+        },
+        "background": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "white",
+            "light",
+            "dark",
+            "product_1_background",
+            "product_1_highlight",
+            "product_2_background",
+            "product_2_highlight",
+            "product_3_background",
+            "product_3_highlight",
+            "product_4_background",
+            "product_4_highlight",
+            "product_5_background",
+            "product_5_highlight",
+            "product_6_background",
+            "product_6_highlight",
+            "product_7_background",
+            "product_7_highlight",
+            "product_8_background",
+            "product_8_highlight",
+            "product_9_background",
+            "product_9_highlight",
+            "product_10_background",
+            "product_10_highlight",
+            "windows",
+            "siding",
+            "doors",
+            "solar",
+            "roofing",
+            "gutters",
+            "insulation",
+            "none",
+            "success_subtle",
+            "warning_subtle",
+            "error_subtle",
+            "info_subtle",
+            "neutral_subtle"
+          ]
+        },
+        "drag_id": {
+          "type": "string"
+        },
+        "draggable_item": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "drag_handle": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "items": {
+          "type": "array",
+          "default": "[]"
+        },
+        "drop_zone_line_color": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "primary",
+            "purple"
+          ]
+        }
+      }
+    },
+    "Checkbox": {
+      "rails": "checkbox",
+      "react": "Checkbox",
+      "description": "Playbook Checkbox component",
+      "hasChildren": false,
+      "props": {
+        "error": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "indeterminate_main": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "indeterminate_main_labels": {
+          "type": "array",
+          "default": "[]"
+        },
+        "indeterminate_parent": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "value": {
+          "type": "any"
+        },
+        "name": {
+          "type": "any"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "form_spacing": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "hidden_input": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "hidden_value": {
+          "type": "any"
+        }
+      }
+    },
+    "CircleChart": {
+      "rails": "circle_chart",
+      "react": "CircleChart",
+      "description": "Playbook CircleChart component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"center\"",
+          "values": [
+            "left",
+            "right",
+            "center"
+          ]
+        },
+        "border_width": {
+          "type": "numeric"
+        },
+        "chart_data": {
+          "type": "array",
+          "default": "[]"
+        },
+        "custom_options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "style": {
+          "type": "enum",
+          "default": "\"pie\"",
+          "values": [
+            "pie"
+          ]
+        },
+        "data_labels": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "min_point_size": {
+          "type": "numeric"
+        },
+        "max_point_size": {
+          "type": "numeric"
+        },
+        "inner_size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md",
+            "lg",
+            "none"
+          ]
+        },
+        "z_min": {
+          "type": "numeric"
+        },
+        "start_angle": {
+          "type": "numeric"
+        },
+        "data_label_html": {
+          "type": "any",
+          "default": "\"<div>{point.name}</div>\""
+        },
+        "tooltip_html": {
+          "type": "any",
+          "default": "'<span style=\"font-weight: bold; color:{point.color};\">&#9679; </span>                                       {point.name}: ' + '<b>{point.y}                                     </b>'"
+        },
+        "use_html": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "legend": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "title": {
+          "type": "any",
+          "default": "\"\""
+        },
+        "height": {
+          "type": "any"
+        },
+        "rounded": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "colors": {
+          "type": "array",
+          "default": "[]"
+        },
+        "layout": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "horizontal",
+            "vertical",
+            "proximate"
+          ]
+        },
+        "vertical_align": {
+          "type": "enum",
+          "default": "\"bottom\"",
+          "values": [
+            "top",
+            "middle",
+            "bottom"
+          ]
+        },
+        "x": {
+          "type": "numeric"
+        },
+        "y": {
+          "type": "numeric"
+        }
+      }
+    },
+    "CircleIconButton": {
+      "rails": "circle_icon_button",
+      "react": "CircleIconButton",
+      "description": "Playbook CircleIconButton component",
+      "hasChildren": false,
+      "props": {
+        "type": {
+          "type": "enum",
+          "default": "\"button\"",
+          "values": [
+            "button",
+            "submit",
+            "reset"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "secondary",
+            "link"
+          ]
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "link": {
+          "type": "any"
+        },
+        "new_window": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "target": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "sm"
+          ]
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "Collapsible": {
+      "rails": "collapsible",
+      "react": "Collapsible",
+      "description": "Playbook Collapsible component",
+      "hasChildren": true,
+      "props": {
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "div",
+            "span",
+            "tr",
+            "th",
+            "td",
+            "thead",
+            "col"
+          ]
+        }
+      }
+    },
+    "Contact": {
+      "rails": "contact",
+      "react": "Contact",
+      "description": "Playbook Contact component",
+      "hasChildren": false,
+      "props": {
+        "contact_type": {
+          "type": "any"
+        },
+        "contact_value": {
+          "type": "any"
+        },
+        "contact_detail": {
+          "type": "any"
+        }
+      }
+    },
+    "CopyButton": {
+      "rails": "copy_button",
+      "react": "CopyButton",
+      "description": "Playbook CopyButton component",
+      "hasChildren": false,
+      "props": {
+        "text": {
+          "type": "any"
+        },
+        "tooltip_position": {
+          "type": "enum",
+          "default": "\"top\"",
+          "values": [
+            "top",
+            "right",
+            "bottom",
+            "left"
+          ]
+        },
+        "tooltip_text": {
+          "type": "string",
+          "default": "\"Copied!\""
+        },
+        "value": {
+          "type": "any"
+        },
+        "from": {
+          "type": "any"
+        }
+      }
+    },
+    "Currency": {
+      "rails": "currency",
+      "react": "Currency",
+      "description": "Playbook Currency component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "lg",
+            "md",
+            "sm"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "symbol": {
+          "type": "string",
+          "default": "\"$\""
+        },
+        "amount": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "emphasized": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "light",
+            "bold"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "abbreviate": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "decimals": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "matching"
+          ]
+        },
+        "unstyled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "comma_separator": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "null_display": {
+          "type": "string"
+        }
+      }
+    },
+    "DashboardValue": {
+      "rails": "dashboard_value",
+      "react": "DashboardValue",
+      "description": "Playbook DashboardValue component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "stat_change": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "stat_label": {
+          "type": "any"
+        },
+        "stat_value": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "Date": {
+      "rails": "date",
+      "react": "Date",
+      "description": "Playbook Date component",
+      "hasChildren": false,
+      "props": {
+        "date": {
+          "type": "any"
+        },
+        "alignment": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "show_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_day_of_week": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_current_year": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "lg",
+            "md",
+            "sm",
+            "xs"
+          ]
+        },
+        "timezone": {
+          "type": "any",
+          "default": "\"America/New_York\""
+        },
+        "unstyled": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "DatePicker": {
+      "rails": "date_picker",
+      "react": "DatePicker",
+      "description": "Playbook DatePicker component",
+      "hasChildren": false,
+      "props": {
+        "allow_input": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "custom_quick_pick_dates": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "default_date": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "disable_date": {
+          "type": "array",
+          "default": "[]"
+        },
+        "disable_input": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disable_range": {
+          "type": "array",
+          "default": "[]"
+        },
+        "disable_weekdays": {
+          "type": "array",
+          "default": "[]"
+        },
+        "enable_time": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "end_date_id": {
+          "type": "string",
+          "default": "\"end_date_id\""
+        },
+        "end_date_name": {
+          "type": "string",
+          "default": "\"end_date_name\""
+        },
+        "error": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "default": "\"m/d/Y\""
+        },
+        "hide_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "hide_label": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "label": {
+          "type": "string",
+          "default": "\"Date Picker\""
+        },
+        "input_aria": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "input_data": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "max_date": {
+          "type": "string"
+        },
+        "min_date": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "default": "\"single\""
+        },
+        "picker_id": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string",
+          "default": "\"Select Date\""
+        },
+        "plugins": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "position": {
+          "type": "string",
+          "default": "\"auto\""
+        },
+        "position_element": {
+          "type": "string"
+        },
+        "scroll_container": {
+          "type": "string"
+        },
+        "selection_type": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "week",
+            "month",
+            "quickpick",
+            "none"
+          ]
+        },
+        "show_timezone": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "start_date_id": {
+          "type": "string",
+          "default": "\"start_date_id\""
+        },
+        "start_date_name": {
+          "type": "string",
+          "default": "\"start_date_name\""
+        },
+        "static_position": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "this_ranges_end_today": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "year_range": {
+          "type": "array",
+          "default": "[1900"
+        },
+        "custom_event_type": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "validation_message": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "controls_start_id": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "controls_end_id": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "sync_start_with": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "sync_end_with": {
+          "type": "string",
+          "default": "\"\""
+        }
+      }
+    },
+    "DateRangeInline": {
+      "rails": "date_range_inline",
+      "react": "DateRangeInline",
+      "description": "Playbook DateRangeInline component",
+      "hasChildren": true,
+      "props": {
+        "end_date": {
+          "type": "date"
+        },
+        "start_date": {
+          "type": "date"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "xs",
+            "sm"
+          ]
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        }
+      }
+    },
+    "DateRangeStacked": {
+      "rails": "date_range_stacked",
+      "react": "DateRangeStacked",
+      "description": "Playbook DateRangeStacked component",
+      "hasChildren": false,
+      "props": {
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "end_date": {
+          "type": "date"
+        },
+        "start_date": {
+          "type": "date"
+        }
+      }
+    },
+    "DateStacked": {
+      "rails": "date_stacked",
+      "react": "DateStacked",
+      "description": "Playbook DateStacked component",
+      "hasChildren": true,
+      "props": {
+        "date": {
+          "type": "date"
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md"
+          ]
+        },
+        "reverse": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "bold": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "DateTime": {
+      "rails": "date_time",
+      "react": "DateTime",
+      "description": "Playbook DateTime component",
+      "hasChildren": false,
+      "props": {
+        "date": {
+          "type": "date",
+          "default": "::DateTime.current"
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "timezone": {
+          "type": "string",
+          "default": "\"America/New_York\""
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_day_of_week": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "DateTimeStacked": {
+      "rails": "date_time_stacked",
+      "react": "DateTimeStacked",
+      "description": "Playbook DateTimeStacked component",
+      "hasChildren": false,
+      "props": {
+        "date": {
+          "type": "any"
+        },
+        "date_time": {
+          "type": "date",
+          "default": "::DateTime.current"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "timezone": {
+          "type": "string",
+          "default": "\"America/New_York\""
+        }
+      }
+    },
+    "DateYearStacked": {
+      "rails": "date_year_stacked",
+      "react": "DateYearStacked",
+      "description": "Playbook DateYearStacked component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "date": {
+          "type": "any"
+        }
+      }
+    },
+    "Detail": {
+      "rails": "detail",
+      "react": "Detail",
+      "description": "Playbook Detail component",
+      "hasChildren": false,
+      "props": {
+        "bold": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "color": {
+          "type": "enum",
+          "default": "\"light\"",
+          "values": [
+            "light",
+            "default",
+            "lighter",
+            "link",
+            "error",
+            "success"
+          ]
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"div\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "span",
+            "div"
+          ]
+        },
+        "text": {
+          "type": "any"
+        }
+      }
+    },
+    "Dialog": {
+      "rails": "dialog",
+      "react": "Dialog",
+      "description": "Playbook Dialog component",
+      "hasChildren": false,
+      "props": {
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "status_size",
+            "content"
+          ]
+        },
+        "full_height": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "placement": {
+          "type": "enum",
+          "default": "\"center\"",
+          "values": [
+            "left",
+            "right",
+            "center"
+          ]
+        },
+        "should_close_on_overlay_click": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "title": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "loading": {
+          "type": "any"
+        },
+        "confirm_button": {
+          "type": "any"
+        },
+        "confirm_button_id": {
+          "type": "any"
+        },
+        "cancel_button": {
+          "type": "any"
+        },
+        "cancel_button_id": {
+          "type": "any"
+        },
+        "status": {
+          "type": "enum",
+          "default": "\"\"",
+          "values": [
+            "info",
+            "caution",
+            "delete",
+            "error",
+            "success",
+            "default"
+          ]
+        },
+        "custom_event_type": {
+          "type": "string",
+          "default": "\"\""
+        }
+      }
+    },
+    "DistributionBar": {
+      "rails": "distribution_bar",
+      "react": "DistributionBar",
+      "description": "Playbook DistributionBar component",
+      "hasChildren": false,
+      "props": {
+        "size": {
+          "type": "enum",
+          "default": "\"lg\"",
+          "values": [
+            "lg",
+            "sm"
+          ]
+        },
+        "widths": {
+          "type": "numberarray",
+          "default": "[1]"
+        },
+        "colors": {
+          "type": "array",
+          "default": "[]"
+        }
+      }
+    },
+    "Draggable": {
+      "rails": "draggable",
+      "react": "Draggable",
+      "description": "Playbook Draggable component",
+      "hasChildren": false,
+      "props": {
+        "initial_items": {
+          "type": "array",
+          "default": "[]"
+        },
+        "drop_zone_type": {
+          "type": "enum",
+          "default": "\"ghost\"",
+          "values": [
+            "ghost",
+            "shadow",
+            "outline",
+            "line"
+          ]
+        },
+        "drop_zone_color": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "neutral",
+            "primary",
+            "purple"
+          ]
+        }
+      }
+    },
+    "Dropdown": {
+      "rails": "dropdown",
+      "react": "Dropdown",
+      "description": "Playbook Dropdown component",
+      "hasChildren": false,
+      "props": {
+        "options": {
+          "type": "array",
+          "default": "[]"
+        },
+        "label": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "default_value": {
+          "type": "any"
+        },
+        "blank_selection": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "subtle"
+          ]
+        },
+        "separators": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "autocomplete": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "searchbar": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "multi_select": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "form_pill_props": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "EmptyState": {
+      "rails": "empty_state",
+      "react": "EmptyState",
+      "description": "Playbook EmptyState component",
+      "hasChildren": false,
+      "props": {
+        "alignment": {
+          "type": "enum",
+          "default": "\"center\"",
+          "values": [
+            "center",
+            "left",
+            "right"
+          ]
+        },
+        "description": {
+          "type": "any"
+        },
+        "header": {
+          "type": "any"
+        },
+        "image": {
+          "type": "any"
+        },
+        "link_button": {
+          "type": "any"
+        },
+        "link_button_url": {
+          "type": "any"
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"vertical\"",
+          "values": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "primary_button": {
+          "type": "any"
+        },
+        "primary_button_url": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        }
+      }
+    },
+    "FileUpload": {
+      "rails": "file_upload",
+      "react": "FileUpload",
+      "description": "Playbook FileUpload component",
+      "hasChildren": false,
+      "props": {
+        "accept": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "files": {
+          "type": "array",
+          "default": "[]"
+        },
+        "label": {
+          "type": "string",
+          "default": "\"Upload File\""
+        },
+        "placeholder": {
+          "type": "string",
+          "default": "\"No file\""
+        },
+        "full_width": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "Filter": {
+      "rails": "filter",
+      "react": "Filter",
+      "description": "Playbook Filter component",
+      "hasChildren": false,
+      "props": {
+        "filters": {
+          "type": "hasharray",
+          "default": "[{ name: \"\" }]"
+        },
+        "sort_menu": {
+          "type": "hasharray",
+          "default": "[{}]"
+        },
+        "results": {
+          "type": "numeric"
+        },
+        "template": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "single",
+            "filter_only",
+            "sort_only"
+          ]
+        },
+        "background": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "max_height": {
+          "type": "any"
+        },
+        "min_width": {
+          "type": "any",
+          "default": "\"auto\""
+        },
+        "placement": {
+          "type": "enum",
+          "default": "\"bottom-start\"",
+          "values": [
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "top-start",
+            "top-end",
+            "bottom-start",
+            "bottom-end",
+            "right-start",
+            "right-end",
+            "left-start",
+            "left-end"
+          ]
+        },
+        "popover_props": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "FixedConfirmationToast": {
+      "rails": "fixed_confirmation_toast",
+      "react": "FixedConfirmationToast",
+      "description": "Playbook FixedConfirmationToast component",
+      "hasChildren": false,
+      "props": {
+        "status": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "success",
+            "error",
+            "neutral",
+            "tip"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "multi_line": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "closeable": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "horizontal": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "right",
+            "left",
+            "center"
+          ]
+        },
+        "vertical": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "top",
+            "bottom"
+          ]
+        },
+        "auto_close": {
+          "type": "number"
+        },
+        "icon": {
+          "type": "string"
+        }
+      }
+    },
+    "Flex": {
+      "rails": "flex",
+      "react": "Flex",
+      "description": "Playbook Flex component",
+      "hasChildren": true,
+      "props": {
+        "horizontal": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right",
+            "stretch",
+            "none"
+          ]
+        },
+        "justify": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "start",
+            "center",
+            "end",
+            "stretch",
+            "around",
+            "between",
+            "evenly",
+            "none"
+          ]
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"row\"",
+          "values": [
+            "row",
+            "column"
+          ]
+        },
+        "spacing": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "around",
+            "between",
+            "evenly",
+            "none"
+          ]
+        },
+        "gap": {
+          "type": "any"
+        },
+        "row_gap": {
+          "type": "any"
+        },
+        "column_gap": {
+          "type": "any"
+        },
+        "reverse": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "vertical": {
+          "type": "enum",
+          "default": "\"top\"",
+          "values": [
+            "top",
+            "center",
+            "bottom",
+            "stretch",
+            "baseline",
+            "none"
+          ]
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "start",
+            "center",
+            "end",
+            "stretch",
+            "baseline",
+            "none"
+          ]
+        },
+        "align_self": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "start",
+            "end",
+            "center",
+            "stretch",
+            "none"
+          ]
+        },
+        "wrap": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Form": {
+      "rails": "form",
+      "react": "Form",
+      "description": "Playbook Form component",
+      "hasChildren": false,
+      "props": {
+        "form_system": {
+          "type": "base"
+        },
+        "form_system_options": {
+          "type": "base"
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "options": {
+          "type": "base"
+        },
+        "validate": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "FormGroup": {
+      "rails": "form_group",
+      "react": "FormGroup",
+      "description": "Playbook FormGroup component",
+      "hasChildren": false,
+      "props": {
+        "full_width": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "FormPill": {
+      "rails": "form_pill",
+      "react": "FormPill",
+      "description": "Playbook FormPill component",
+      "hasChildren": false,
+      "props": {
+        "avatar_url": {
+          "type": "any"
+        },
+        "name": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "size": {
+          "type": "any"
+        },
+        "text_transform": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "none",
+            "lowercase"
+          ]
+        },
+        "color": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "neutral",
+            "success",
+            "warning",
+            "error",
+            "info",
+            "data_1",
+            "data_2",
+            "data_3",
+            "data_4",
+            "data_5",
+            "data_6",
+            "data_7",
+            "data_8",
+            "windows",
+            "siding",
+            "roofing",
+            "doors",
+            "gutters",
+            "solar",
+            "insulation",
+            "accessories"
+          ]
+        },
+        "tabindex": {
+          "type": "any"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "wrapped": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Gauge": {
+      "rails": "gauge",
+      "react": "Gauge",
+      "description": "Playbook Gauge component",
+      "hasChildren": false,
+      "props": {
+        "chart_data": {
+          "type": "array",
+          "default": "[{ name: \"Name\""
+        },
+        "custom_options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "style": {
+          "type": "enum",
+          "default": "\"solidgauge\"",
+          "values": [
+            "solidgauge"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "prefix": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "suffix": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "height": {
+          "type": "string",
+          "default": "nil"
+        },
+        "tooltip_html": {
+          "type": "any",
+          "default": "'<span style=\"font-weight: bold; color:{point.color};\">●</span>                                       {point.name}: ' + '<b>{point.y}                                     </b>'"
+        },
+        "full_circle": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_labels": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disable_animation": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "min": {
+          "type": "numeric",
+          "default": "0"
+        },
+        "max": {
+          "type": "numeric",
+          "default": "100"
+        },
+        "colors": {
+          "type": "array",
+          "default": "[]"
+        }
+      }
+    },
+    "Hashtag": {
+      "rails": "hashtag",
+      "react": "Hashtag",
+      "description": "Playbook Hashtag component",
+      "hasChildren": false,
+      "props": {
+        "new_window": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "text": {
+          "type": "any"
+        },
+        "type": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "project",
+            "home",
+            "appointment"
+          ]
+        },
+        "url": {
+          "type": "any"
+        },
+        "target": {
+          "type": "any"
+        }
+      }
+    },
+    "Highlight": {
+      "rails": "highlight",
+      "react": "Highlight",
+      "description": "Playbook Highlight component",
+      "hasChildren": false,
+      "props": {
+        "text": {
+          "type": "any"
+        }
+      }
+    },
+    "HomeAddressStreet": {
+      "rails": "home_address_street",
+      "react": "HomeAddressStreet",
+      "description": "Playbook HomeAddressStreet component",
+      "hasChildren": false,
+      "props": {
+        "address": {
+          "type": "any"
+        },
+        "address_cont": {
+          "type": "any"
+        },
+        "city": {
+          "type": "any"
+        },
+        "emphasis": {
+          "type": "enum",
+          "default": "\"street\"",
+          "values": [
+            "street",
+            "city",
+            "none"
+          ]
+        },
+        "home_id": {
+          "type": "number"
+        },
+        "home_url": {
+          "type": "any"
+        },
+        "house_style": {
+          "type": "any"
+        },
+        "new_window": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "target": {
+          "type": "any"
+        },
+        "state": {
+          "type": "any"
+        },
+        "zipcode": {
+          "type": "any"
+        },
+        "territory": {
+          "type": "any"
+        },
+        "preserve_case": {
+          "type": "any",
+          "default": "false"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
         }
       }
     },
     "Icon": {
       "rails": "icon",
       "react": "Icon",
-      "description": "Icon component using FontAwesome",
-      "category": "content",
+      "description": "Playbook Icon component",
+      "hasChildren": false,
       "props": {
+        "border": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "fixed_width": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "flip": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "horizontal",
+            "vertical",
+            "both"
+          ]
+        },
         "icon": {
+          "type": "any"
+        },
+        "custom_icon": {
           "type": "string",
-          "description": "FontAwesome icon name",
-          "required": true
+          "default": "nil"
+        },
+        "inverse": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "list_item": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "pull": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "left",
+            "right"
+          ]
+        },
+        "pulse": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "rotation": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "90",
+            "180",
+            "270"
+          ]
         },
         "size": {
           "type": "enum",
-          "values": ["xs", "sm", "lg", "1x", "2x", "3x", "4x", "5x"],
-          "default": "1x",
-          "description": "Icon size"
+          "default": "nil",
+          "values": [
+            "lg",
+            "xs",
+            "sm",
+            "1x",
+            "2x",
+            "3x",
+            "4x",
+            "5x",
+            "6x",
+            "7x",
+            "8x",
+            "9x",
+            "10x"
+          ]
+        },
+        "font_style": {
+          "type": "enum",
+          "default": "\"far\"",
+          "values": [
+            "far",
+            "fas",
+            "fab",
+            "fak"
+          ]
+        },
+        "spin": {
+          "type": "boolean",
+          "default": "false"
         },
         "color": {
-          "type": "string",
-          "description": "Icon color"
+          "type": "string"
         },
-        "fixedWidth": {
+        "tabindex": {
+          "type": "any"
+        }
+      }
+    },
+    "IconButton": {
+      "rails": "icon_button",
+      "react": "IconButton",
+      "description": "Playbook IconButton component",
+      "hasChildren": false,
+      "props": {
+        "type": {
+          "type": "enum",
+          "default": "\"button\"",
+          "values": [
+            "button",
+            "submit",
+            "reset"
+          ]
+        },
+        "icon": {
+          "type": "any",
+          "default": "\"bars\""
+        },
+        "link": {
+          "type": "any"
+        },
+        "new_window": {
           "type": "boolean",
-          "default": false,
-          "description": "Fixed width for alignment"
+          "default": "false"
+        },
+        "target": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "link"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"2x\"",
+          "values": [
+            "1x",
+            "2x",
+            "3x",
+            "4x",
+            "5x",
+            "6x",
+            "7x",
+            "8x",
+            "9x",
+            "10x",
+            "xs",
+            "sm",
+            "lg"
+          ]
+        }
+      }
+    },
+    "IconCircle": {
+      "rails": "icon_circle",
+      "react": "IconCircle",
+      "description": "Playbook IconCircle component",
+      "hasChildren": false,
+      "props": {
+        "icon": {
+          "type": "any"
+        },
+        "emoji": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "xxs",
+            "xs",
+            "sm",
+            "md",
+            "base",
+            "lg",
+            "xl"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "royal",
+            "blue",
+            "orange",
+            "purple",
+            "teal",
+            "red",
+            "yellow",
+            "green",
+            "orange",
+            "lighter"
+          ]
+        }
+      }
+    },
+    "IconStatValue": {
+      "rails": "icon_stat_value",
+      "react": "IconStatValue",
+      "description": "Playbook IconStatValue component",
+      "hasChildren": false,
+      "props": {
+        "icon": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "royal",
+            "blue",
+            "purple",
+            "teal",
+            "red",
+            "yellow",
+            "green",
+            "orange"
+          ]
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "text": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "value": {
+          "type": "any"
+        }
+      }
+    },
+    "IconValue": {
+      "rails": "icon_value",
+      "react": "IconValue",
+      "description": "Playbook IconValue component",
+      "hasChildren": false,
+      "props": {
+        "text": {
+          "type": "any"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        }
+      }
+    },
+    "Image": {
+      "rails": "image",
+      "react": "Image",
+      "description": "Playbook Image component",
+      "hasChildren": false,
+      "props": {
+        "alt": {
+          "type": "any"
+        },
+        "on_error": {
+          "type": "string",
+          "default": "nil"
+        },
+        "rounded": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "none"
+          ]
+        },
+        "transition": {
+          "type": "enum",
+          "default": "\"fade\"",
+          "values": [
+            "blur",
+            "fade",
+            "scale",
+            "none"
+          ]
+        },
+        "url": {
+          "type": "any"
+        }
+      }
+    },
+    "LabelPill": {
+      "rails": "label_pill",
+      "react": "LabelPill",
+      "description": "Playbook LabelPill component",
+      "hasChildren": false,
+      "props": {
+        "variant": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "success",
+            "warning",
+            "error",
+            "info",
+            "neutral",
+            "primary"
+          ]
+        },
+        "label": {
+          "type": "any"
+        },
+        "pill_value": {
+          "type": "any"
+        }
+      }
+    },
+    "LabelValue": {
+      "rails": "label_value",
+      "react": "LabelValue",
+      "description": "Playbook LabelValue component",
+      "hasChildren": false,
+      "props": {
+        "label": {
+          "type": "any"
+        },
+        "value": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "details"
+          ]
+        },
+        "icon": {
+          "type": "any"
+        },
+        "description": {
+          "type": "any"
+        },
+        "title": {
+          "type": "any"
+        },
+        "date": {
+          "type": "any"
+        },
+        "active": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Layout": {
+      "rails": "layout",
+      "react": "Layout",
+      "description": "Playbook Layout component",
+      "hasChildren": true,
+      "props": {
+        "collapse": {
+          "type": "enum",
+          "default": "\"xs\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "full": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "position": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "transparent": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"light\"",
+          "values": [
+            "light",
+            "dark",
+            "gradient"
+          ]
+        },
+        "layout": {
+          "type": "enum",
+          "default": "\"sidebar\"",
+          "values": [
+            "sidebar",
+            "collection",
+            "collection_detail",
+            "kanban",
+            "content",
+            "masonry"
+          ]
+        },
+        "responsive": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Legend": {
+      "rails": "legend",
+      "react": "Legend",
+      "description": "Playbook Legend component",
+      "hasChildren": false,
+      "props": {
+        "color": {
+          "type": "string",
+          "default": "\"data_1\""
+        },
+        "prefix_text": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        }
+      }
+    },
+    "LineGraph": {
+      "rails": "line_graph",
+      "react": "LineGraph",
+      "description": "Playbook LineGraph component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"center\"",
+          "values": [
+            "left",
+            "right",
+            "center"
+          ]
+        },
+        "axis_title": {
+          "type": "any"
+        },
+        "chart_data": {
+          "type": "array",
+          "default": "[]"
+        },
+        "custom_options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "gradient": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "point_start": {
+          "type": "numeric"
+        },
+        "subtitle": {
+          "type": "any"
+        },
+        "title": {
+          "type": "any"
+        },
+        "x_axis_categories": {
+          "type": "array",
+          "default": "[]"
+        },
+        "y_axis_min": {
+          "type": "numeric"
+        },
+        "y_axis_max": {
+          "type": "numeric"
+        },
+        "legend": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "toggle_legend_click": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "height": {
+          "type": "any"
+        },
+        "colors": {
+          "type": "array",
+          "default": "[]"
+        },
+        "layout": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "horizontal",
+            "vertical",
+            "proximate"
+          ]
+        },
+        "vertical_align": {
+          "type": "enum",
+          "default": "\"bottom\"",
+          "values": [
+            "top",
+            "middle",
+            "bottom"
+          ]
+        },
+        "x": {
+          "type": "numeric"
+        },
+        "y": {
+          "type": "numeric"
+        }
+      }
+    },
+    "Link": {
+      "rails": "link",
+      "react": "Link",
+      "description": "Playbook Link component",
+      "hasChildren": false,
+      "props": {
+        "color": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "body",
+            "muted",
+            "destructive"
+          ]
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "href": {
+          "type": "any"
+        },
+        "icon": {
+          "type": "any"
+        },
+        "icon_right": {
+          "type": "any"
+        },
+        "tabindex": {
+          "type": "any"
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"a\"",
+          "values": [
+            "a",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "span",
+            "div"
+          ]
+        },
+        "target": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "underline": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "List": {
+      "rails": "list",
+      "react": "List",
+      "description": "Playbook List component",
+      "hasChildren": false,
+      "props": {
+        "borderless": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "enable_drag": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "items": {
+          "type": "array",
+          "default": "[]"
+        },
+        "layout": {
+          "type": "enum",
+          "default": "\"\"",
+          "values": [
+            "left",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "any"
+        },
+        "ordered": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "xpadding": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "role": {
+          "type": "any"
+        },
+        "tabindex": {
+          "type": "any"
+        }
+      }
+    },
+    "LoadingInline": {
+      "rails": "loading_inline",
+      "react": "LoadingInline",
+      "description": "Playbook LoadingInline component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "text": {
+          "type": "string",
+          "default": "\"Loading\""
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"dotted\"",
+          "values": [
+            "dotted",
+            "solid"
+          ]
+        }
+      }
+    },
+    "Message": {
+      "rails": "message",
+      "react": "Message",
+      "description": "Playbook Message component",
+      "hasChildren": false,
+      "props": {
+        "avatar_name": {
+          "type": "any"
+        },
+        "avatar_status": {
+          "type": "any"
+        },
+        "avatar_url": {
+          "type": "any"
+        },
+        "avatar_grayscale": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "label": {
+          "type": "any"
+        },
+        "message": {
+          "type": "any"
+        },
+        "timestamp": {
+          "type": "any"
+        },
+        "timestamp_object": {
+          "type": "any"
+        },
+        "timezone": {
+          "type": "any",
+          "default": "\"America/New_York\""
+        },
+        "align_timestamp": {
+          "type": "enum",
+          "default": "\"right\"",
+          "values": [
+            "left",
+            "right"
+          ]
+        }
+      }
+    },
+    "MultiLevelSelect": {
+      "rails": "multi_level_select",
+      "react": "MultiLevelSelect",
+      "description": "Playbook MultiLevelSelect component",
+      "hasChildren": false,
+      "props": {
+        "id": {
+          "type": "any"
+        },
+        "name": {
+          "type": "any"
+        },
+        "tree_data": {
+          "type": "array",
+          "default": "[]"
+        },
+        "return_all_selected": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "selected_ids": {
+          "type": "array",
+          "default": "[]"
+        },
+        "input_display": {
+          "type": "enum",
+          "default": "\"pills\"",
+          "values": [
+            "pills",
+            "none"
+          ]
+        },
+        "input_name": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"multi\"",
+          "values": [
+            "multi",
+            "single"
+          ]
+        },
+        "pill_color": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "neutral",
+            "success",
+            "warning",
+            "error",
+            "info",
+            "data_1",
+            "data_2",
+            "data_3",
+            "data_4",
+            "data_5",
+            "data_6",
+            "data_7",
+            "data_8",
+            "windows",
+            "siding",
+            "roofing",
+            "doors",
+            "gutters",
+            "solar",
+            "insulation",
+            "accessories"
+          ]
+        },
+        "wrapped": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "error": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "label": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "show_checked_children": {
+          "type": "boolean",
+          "default": "true"
+        }
+      }
+    },
+    "MultipleUsers": {
+      "rails": "multiple_users",
+      "react": "MultipleUsers",
+      "description": "Playbook MultipleUsers component",
+      "hasChildren": false,
+      "props": {
+        "reverse": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"xs\"",
+          "values": [
+            "xxs",
+            "xs"
+          ]
+        },
+        "users": {
+          "type": "hasharray"
+        }
+      }
+    },
+    "MultipleUsersStacked": {
+      "rails": "multiple_users_stacked",
+      "react": "MultipleUsersStacked",
+      "description": "Playbook MultipleUsersStacked component",
+      "hasChildren": false,
+      "props": {
+        "users": {
+          "type": "hasharray"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "bubble"
+          ]
+        }
+      }
+    },
+    "Nav": {
+      "rails": "nav",
+      "react": "Nav",
+      "description": "Playbook Nav component",
+      "hasChildren": false,
+      "props": {
+        "link": {
+          "type": "any",
+          "default": "\"#\""
+        },
+        "title": {
+          "type": "any"
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"vertical\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"normal\"",
+          "values": [
+            "normal",
+            "subtle",
+            "bold"
+          ]
+        },
+        "highlight": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "borderless": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "tabbing": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "extended_underline": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "OnlineStatus": {
+      "rails": "online_status",
+      "react": "OnlineStatus",
+      "description": "Playbook OnlineStatus component",
+      "hasChildren": false,
+      "props": {
+        "status": {
+          "type": "enum",
+          "default": "\"offline\"",
+          "values": [
+            "online",
+            "offline",
+            "away",
+            "success",
+            "warning",
+            "error",
+            "info",
+            "neutral",
+            "primary"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "no_border": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Overlay": {
+      "rails": "overlay",
+      "react": "Overlay",
+      "description": "Playbook Overlay component",
+      "hasChildren": false,
+      "props": {
+        "color": {
+          "type": "enum",
+          "default": "\"card_light\"",
+          "values": [
+            "card_light",
+            "bg_light",
+            "card_dark",
+            "bg_dark"
+          ]
+        },
+        "layout": {
+          "type": "hashprop",
+          "default": "{ \"bottom\": \"full\" }"
+        },
+        "dynamic": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "scroll_bar_none": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Pagination": {
+      "rails": "pagination",
+      "react": "Pagination",
+      "description": "Playbook Pagination component",
+      "hasChildren": false,
+      "props": {
+        "model": {
+          "type": "any"
+        },
+        "view": {
+          "type": "any"
+        }
+      }
+    },
+    "Passphrase": {
+      "rails": "passphrase",
+      "react": "Passphrase",
+      "description": "Playbook Passphrase component",
+      "hasChildren": false,
+      "props": {
+        "confirmation": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_props": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "label": {
+          "type": "any"
+        },
+        "show_tips_below": {
+          "type": "enum",
+          "default": "\"always\"",
+          "values": [
+            "always",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "tips": {
+          "type": "array",
+          "default": "[]"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "PbBarGraph": {
+      "rails": "pb_bar_graph",
+      "react": "PbBarGraph",
+      "description": "Playbook PbBarGraph component",
+      "hasChildren": false,
+      "props": {
+        "options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "container_props": {
+          "type": "any",
+          "default": "{}"
+        }
+      }
+    },
+    "PbCircleChart": {
+      "rails": "pb_circle_chart",
+      "react": "PbCircleChart",
+      "description": "Playbook PbCircleChart component",
+      "hasChildren": false,
+      "props": {
+        "options": {
+          "type": "any",
+          "default": "{}"
+        },
+        "container_props": {
+          "type": "any",
+          "default": "{}"
+        }
+      }
+    },
+    "Person": {
+      "rails": "person",
+      "react": "Person",
+      "description": "Playbook Person component",
+      "hasChildren": false,
+      "props": {
+        "first_name": {
+          "type": "any"
+        },
+        "last_name": {
+          "type": "any"
+        }
+      }
+    },
+    "PersonContact": {
+      "rails": "person_contact",
+      "react": "PersonContact",
+      "description": "Playbook PersonContact component",
+      "hasChildren": false,
+      "props": {
+        "contacts": {
+          "type": "hasharray",
+          "default": "[]"
+        },
+        "first_name": {
+          "type": "any"
+        },
+        "last_name": {
+          "type": "any"
+        }
+      }
+    },
+    "PhoneNumberInput": {
+      "rails": "phone_number_input",
+      "react": "PhoneNumberInput",
+      "description": "Playbook PhoneNumberInput component",
+      "hasChildren": false,
+      "props": {
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "initial_country": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "label": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "name": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "only_countries": {
+          "type": "array",
+          "default": "[]"
+        },
+        "exclude_countries": {
+          "type": "array",
+          "default": "[]"
+        },
+        "preferred_countries": {
+          "type": "array",
+          "default": "[]"
+        },
+        "error": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "value": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "format_as_you_type": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "strict_mode": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "hidden_inputs": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "country_search": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Pill": {
+      "rails": "pill",
+      "react": "Pill",
+      "description": "Playbook Pill component",
+      "hasChildren": false,
+      "props": {
+        "text": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "success",
+            "warning",
+            "error",
+            "info",
+            "neutral",
+            "primary"
+          ]
+        },
+        "text_transform": {
+          "type": "enum",
+          "default": "\"lowercase\"",
+          "values": [
+            "none",
+            "lowercase"
+          ]
+        }
+      }
+    },
+    "Popover": {
+      "rails": "popover",
+      "react": "Popover",
+      "description": "Playbook Popover component",
+      "hasChildren": false,
+      "props": {
+        "append_to": {
+          "type": "string",
+          "default": "\"body\""
+        },
+        "position": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "top-start",
+            "top-end",
+            "bottom-start",
+            "bottom-end",
+            "right-start",
+            "right-end",
+            "left-start",
+            "left-end"
+          ]
+        },
+        "trigger_element_id": {
+          "type": "any"
+        },
+        "tooltip_id": {
+          "type": "any"
+        },
+        "max_height": {
+          "type": "any"
+        },
+        "max_width": {
+          "type": "any"
+        },
+        "min_width": {
+          "type": "any"
+        },
+        "min_height": {
+          "type": "any"
+        },
+        "width": {
+          "type": "any"
+        },
+        "z_index": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "close_on_click": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "none",
+            "outside",
+            "inside",
+            "any"
+          ]
+        }
+      }
+    },
+    "ProgressPills": {
+      "rails": "progress_pills",
+      "react": "ProgressPills",
+      "description": "Playbook ProgressPills component",
+      "hasChildren": true,
+      "props": {
+        "active": {
+          "type": "number",
+          "default": "0"
+        },
+        "value": {
+          "type": "any"
+        },
+        "steps": {
+          "type": "number",
+          "default": "3"
+        },
+        "title": {
+          "type": "any"
+        },
+        "full_width_pill": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "ProgressSimple": {
+      "rails": "progress_simple",
+      "react": "ProgressSimple",
+      "description": "Playbook ProgressSimple component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "value": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "muted": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "percent": {
+          "type": "percentage"
+        },
+        "width": {
+          "type": "any",
+          "default": "\"100%\""
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "positive",
+            "negative",
+            "warning"
+          ]
+        }
+      }
+    },
+    "ProgressStep": {
+      "rails": "progress_step",
+      "react": "ProgressStep",
+      "description": "Playbook ProgressStep component",
+      "hasChildren": false,
+      "props": {
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "tracker"
+          ]
+        },
+        "color": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "info"
+          ]
+        }
+      }
+    },
+    "Radio": {
+      "rails": "radio",
+      "react": "Radio",
+      "description": "Playbook Radio component",
+      "hasChildren": false,
+      "props": {
+        "alignment": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "error": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "name": {
+          "type": "string",
+          "default": "\"radio_name\""
+        },
+        "text": {
+          "type": "string",
+          "default": "\"Radio Text\""
+        },
+        "value": {
+          "type": "string",
+          "default": "\"radio_text\""
+        },
+        "custom_children": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "RichTextEditor": {
+      "rails": "rich_text_editor",
+      "react": "RichTextEditor",
+      "description": "Playbook RichTextEditor component",
+      "hasChildren": false,
+      "props": {
+        "focus": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "simple": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "sticky": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "toolbar_bottom": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "value": {
+          "type": "any"
+        },
+        "template": {
+          "type": "any"
+        },
+        "placeholder": {
+          "type": "any"
+        },
+        "input_options": {
+          "type": "any"
+        }
+      }
+    },
+    "SectionSeparator": {
+      "rails": "section_separator",
+      "react": "SectionSeparator",
+      "description": "Playbook SectionSeparator component",
+      "hasChildren": true,
+      "props": {
+        "color": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "primary"
+          ]
+        },
+        "text": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"card\"",
+          "values": [
+            "card",
+            "background"
+          ]
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "line_style": {
+          "type": "enum",
+          "default": "\"solid\"",
+          "values": [
+            "dashed",
+            "solid"
+          ]
+        }
+      }
+    },
+    "Select": {
+      "rails": "select",
+      "react": "Select",
+      "description": "Playbook Select component",
+      "hasChildren": false,
+      "props": {
+        "attributes": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "blank_selection": {
+          "type": "any"
+        },
+        "compact": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "error": {
+          "type": "any"
+        },
+        "include_blank": {
+          "type": "any"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "label": {
+          "type": "any"
+        },
+        "multiple": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "name": {
+          "type": "any"
+        },
+        "onchange": {
+          "type": "any"
+        },
+        "options": {
+          "type": "hasharray",
+          "default": "[]"
+        },
+        "show_arrow": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "validation_message": {
+          "type": "string",
+          "default": "\"\""
+        }
+      }
+    },
+    "SelectableCard": {
+      "rails": "selectable_card",
+      "react": "SelectableCard",
+      "description": "Playbook SelectableCard component",
+      "hasChildren": true,
+      "props": {
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "error": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "multi": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "input_id": {
+          "type": "string"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "name": {
+          "type": "any"
+        },
+        "text": {
+          "type": "any"
+        },
+        "value": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "string",
+          "default": "\"default\""
+        }
+      }
+    },
+    "SelectableCardIcon": {
+      "rails": "selectable_card_icon",
+      "react": "SelectableCardIcon",
+      "description": "Playbook SelectableCardIcon component",
+      "hasChildren": true,
+      "props": {
+        "custom_icon": {
+          "type": "string",
+          "default": "nil"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "title_text": {
+          "type": "string"
+        },
+        "body_text": {
+          "type": "string"
+        },
+        "input_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "multi": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "checkmark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "value": {
+          "type": "any"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "SelectableIcon": {
+      "rails": "selectable_icon",
+      "react": "SelectableIcon",
+      "description": "Playbook SelectableIcon component",
+      "hasChildren": false,
+      "props": {
+        "custom_icon": {
+          "type": "string",
+          "default": "nil"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "input_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "multi": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "value": {
+          "type": "any"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "inputs": {
+          "type": "string",
+          "default": "\"enabled\""
+        }
+      }
+    },
+    "SelectableList": {
+      "rails": "selectable_list",
+      "react": "SelectableList",
+      "description": "Playbook SelectableList component",
+      "hasChildren": false,
+      "props": {
+        "variant": {
+          "type": "enum",
+          "default": "\"checkbox\"",
+          "values": [
+            "radio",
+            "checkbox"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "default": "[]"
+        },
+        "enable_drag": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "SkeletonLoading": {
+      "rails": "skeleton_loading",
+      "react": "SkeletonLoading",
+      "description": "Playbook SkeletonLoading component",
+      "hasChildren": false,
+      "props": {
+        "height": {
+          "type": "string",
+          "default": "\"16px\""
+        },
+        "width": {
+          "type": "string",
+          "default": "\"100%\""
+        },
+        "border_radius": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "none",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "rounded"
+          ]
+        },
+        "gap": {
+          "type": "enum",
+          "default": "\"xxs\"",
+          "values": [
+            "none",
+            "xxs",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "xxl"
+          ]
+        },
+        "stack": {
+          "type": "number",
+          "default": "1"
+        },
+        "color": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "white"
+          ]
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Source": {
+      "rails": "source",
+      "react": "Source",
+      "description": "Playbook Source component",
+      "hasChildren": false,
+      "props": {
+        "hide_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "source": {
+          "type": "string"
+        },
+        "type": {
+          "type": "enum",
+          "default": "\"inbound\"",
+          "values": [
+            "user",
+            "retail",
+            "inbound",
+            "outbound",
+            "prospecting",
+            "events",
+            "referral"
+          ]
+        },
+        "user": {
+          "type": "hashprop",
+          "default": "{}"
+        }
+      }
+    },
+    "StarRating": {
+      "rails": "star_rating",
+      "react": "StarRating",
+      "description": "Playbook StarRating component",
+      "hasChildren": false,
+      "props": {
+        "rating": {
+          "type": "numeric",
+          "default": "0"
+        },
+        "denominator": {
+          "type": "numeric",
+          "default": "5"
+        },
+        "layout_option": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "onestar",
+            "number"
+          ]
+        },
+        "color_option": {
+          "type": "enum",
+          "default": "\"yellow\"",
+          "values": [
+            "yellow",
+            "primary",
+            "subtle"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "background_type": {
+          "type": "enum",
+          "default": "\"fill\"",
+          "values": [
+            "fill",
+            "outline"
+          ]
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"display\"",
+          "values": [
+            "display",
+            "interactive"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "default_value": {
+          "type": "any"
+        }
+      }
+    },
+    "StatChange": {
+      "rails": "stat_change",
+      "react": "StatChange",
+      "description": "Playbook StatChange component",
+      "hasChildren": false,
+      "props": {
+        "change": {
+          "type": "enum",
+          "default": "\"neutral\"",
+          "values": [
+            "neutral",
+            "increase",
+            "decrease"
+          ]
+        },
+        "icon": {
+          "type": "string"
+        },
+        "value": {
+          "type": "numeric"
+        }
+      }
+    },
+    "StatValue": {
+      "rails": "stat_value",
+      "react": "StatValue",
+      "description": "Playbook StatValue component",
+      "hasChildren": false,
+      "props": {
+        "unit": {
+          "type": "any"
+        },
+        "value": {
+          "type": "numeric"
+        },
+        "precision": {
+          "type": "numeric"
+        }
+      }
+    },
+    "Table": {
+      "rails": "table",
+      "react": "Table",
+      "description": "Playbook Table component",
+      "hasChildren": false,
+      "props": {
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "single_line": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "disable_hover": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "data_table": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "container": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "responsive": {
+          "type": "enum",
+          "default": "\"collapse\"",
+          "values": [
+            "collapse",
+            "scroll",
+            "none"
+          ]
+        },
+        "collapse": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "text": {
+          "type": "any"
+        },
+        "sticky": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "sticky_left_column": {
+          "type": "array",
+          "default": "[]"
+        },
+        "sticky_right_column": {
+          "type": "array",
+          "default": "[]"
+        },
+        "vertical_border": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "striped": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"table\"",
+          "values": [
+            "table",
+            "div"
+          ]
+        },
+        "outer_padding": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "none",
+            "xxs",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "header_style": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "borderless",
+            "floating"
+          ]
+        }
+      }
+    },
+    "TextInput": {
+      "rails": "text_input",
+      "react": "TextInput",
+      "description": "Playbook TextInput component",
+      "hasChildren": false,
+      "props": {
+        "autocomplete": {
+          "type": "any",
+          "default": "true"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "error": {
+          "type": "any"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "label": {
+          "type": "any"
+        },
+        "name": {
+          "type": "any"
+        },
+        "placeholder": {
+          "type": "any"
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "type": {
+          "type": "any",
+          "default": "\"text\""
+        },
+        "validation": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "value": {
+          "type": "any"
+        },
+        "add_on": {
+          "type": "nestedprops"
+        },
+        "mask": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "currency",
+            "zip_code",
+            "postal_code",
+            "ssn",
+            "credit_card",
+            "cvv"
+          ]
+        }
+      }
+    },
+    "Textarea": {
+      "rails": "textarea",
+      "react": "Textarea",
+      "description": "Playbook Textarea component",
+      "hasChildren": false,
+      "props": {
+        "error": {
+          "type": "any"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "label": {
+          "type": "any"
+        },
+        "method": {
+          "type": "any"
+        },
+        "name": {
+          "type": "any"
+        },
+        "placeholder": {
+          "type": "any"
+        },
+        "resize": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "none",
+            "both",
+            "horizontal",
+            "vertical",
+            "auto"
+          ]
+        },
+        "rows": {
+          "type": "number",
+          "default": "4"
+        },
+        "value": {
+          "type": "any"
+        },
+        "character_count": {
+          "type": "any"
+        },
+        "onkeyup": {
+          "type": "any"
+        },
+        "max_characters": {
+          "type": "any"
+        }
+      }
+    },
+    "Time": {
+      "rails": "time",
+      "react": "Time",
+      "description": "Playbook Time component",
+      "hasChildren": false,
+      "props": {
+        "time": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg"
+          ]
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "timezone": {
+          "type": "any",
+          "default": "\"America/New_York\""
+        },
+        "show_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_timezone": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "unstyled": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "TimeRangeInline": {
+      "rails": "time_range_inline",
+      "react": "TimeRangeInline",
+      "description": "Playbook TimeRangeInline component",
+      "hasChildren": false,
+      "props": {
+        "start_time": {
+          "type": "any"
+        },
+        "end_time": {
+          "type": "any"
+        },
+        "alignment": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "xs"
+          ]
+        },
+        "dark": {
+          "type": "any",
+          "default": "false"
+        },
+        "icon": {
+          "type": "any",
+          "default": "false"
+        },
+        "timezone": {
+          "type": "any",
+          "default": "false"
+        }
+      }
+    },
+    "TimeStacked": {
+      "rails": "time_stacked",
+      "react": "TimeStacked",
+      "description": "Playbook TimeStacked component",
+      "hasChildren": false,
+      "props": {
+        "time": {
+          "type": "any"
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "timezone": {
+          "type": "any",
+          "default": "\"America/New_York\""
+        }
+      }
+    },
+    "Timeline": {
+      "rails": "timeline",
+      "react": "Timeline",
+      "description": "Playbook Timeline component",
+      "hasChildren": false,
+      "props": {
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "show_date": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "item_gap": {
+          "type": "enum",
+          "default": "\"none\"",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "none"
+          ]
+        }
+      }
+    },
+    "Timestamp": {
+      "rails": "timestamp",
+      "react": "Timestamp",
+      "description": "Playbook Timestamp component",
+      "hasChildren": false,
+      "props": {
+        "text": {
+          "type": "any"
+        },
+        "timestamp": {
+          "type": "any"
+        },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "hide_updated": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_current_year": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_date": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "show_time": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "show_timezone": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "show_user": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "timezone": {
+          "type": "any",
+          "default": "\"America/New_York\""
+        },
+        "unstyled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"default\"",
+          "values": [
+            "default",
+            "elapsed",
+            "updated"
+          ]
+        }
+      }
+    },
+    "Title": {
+      "rails": "title",
+      "react": "Title",
+      "description": "Playbook Title component",
+      "hasChildren": false,
+      "props": {
+        "color": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "default",
+            "light",
+            "lighter",
+            "success",
+            "error",
+            "link"
+          ]
+        },
+        "size": {
+          "type": "any",
+          "default": "3"
+        },
+        "tag": {
+          "type": "enum",
+          "default": "\"h3\"",
+          "values": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "div",
+            "span"
+          ]
+        },
+        "text": {
+          "type": "any"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "link"
+          ]
+        },
+        "bold": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "display_size": {
+          "type": "enum",
+          "default": "nil",
+          "values": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "xxl"
+          ]
+        }
+      }
+    },
+    "TitleCount": {
+      "rails": "title_count",
+      "react": "TitleCount",
+      "description": "Playbook TitleCount component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "lg",
+            "sm"
+          ]
+        },
+        "title": {
+          "type": "any"
+        },
+        "count": {
+          "type": "numeric"
+        }
+      }
+    },
+    "TitleDetail": {
+      "rails": "title_detail",
+      "react": "TitleDetail",
+      "description": "Playbook TitleDetail component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "detail": {
+          "type": "any"
+        },
+        "title": {
+          "type": "any"
+        }
+      }
+    },
+    "Toggle": {
+      "rails": "toggle",
+      "react": "Toggle",
+      "description": "Playbook Toggle component",
+      "hasChildren": false,
+      "props": {
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "checked": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "name": {
+          "type": "any"
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "sm",
+            "md"
+          ]
+        },
+        "value": {
+          "type": "any"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "Tooltip": {
+      "rails": "tooltip",
+      "react": "Tooltip",
+      "description": "Playbook Tooltip component",
+      "hasChildren": false,
+      "props": {
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "delay_open": {
+          "type": "any"
+        },
+        "delay_close": {
+          "type": "any"
+        },
+        "height": {
+          "type": "any"
+        },
+        "interaction": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "max_height": {
+          "type": "any"
+        },
+        "max_width": {
+          "type": "any"
+        },
+        "min_height": {
+          "type": "any"
+        },
+        "min_width": {
+          "type": "any"
+        },
+        "position": {
+          "type": "any"
+        },
+        "tooltip_id": {
+          "type": "any"
+        },
+        "trigger_element_selector": {
+          "type": "any"
+        },
+        "trigger_element_id": {
+          "type": "any"
+        },
+        "trigger_method": {
+          "type": "enum",
+          "default": "\"hover\"",
+          "values": [
+            "hover",
+            "click"
+          ]
+        },
+        "use_click_to_open": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "width": {
+          "type": "any"
+        }
+      }
+    },
+    "Typeahead": {
+      "rails": "typeahead",
+      "react": "Typeahead",
+      "description": "Playbook Typeahead component",
+      "hasChildren": false,
+      "props": {
+        "async": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "default_options": {
+          "type": "hasharray",
+          "default": "[]"
+        },
+        "error": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "get_option_label": {
+          "type": "any"
+        },
+        "get_option_value": {
+          "type": "any"
+        },
+        "id": {
+          "type": "any"
+        },
+        "inline": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "label": {
+          "type": "any"
+        },
+        "load_options": {
+          "type": "any"
+        },
+        "multi_kit": {
+          "type": "string",
+          "default": "\"\""
+        },
+        "name": {
+          "type": "any"
+        },
+        "options": {
+          "type": "hasharray",
+          "default": "[]"
+        },
+        "input_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "is_multi": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "pills": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "placeholder": {
+          "type": "any"
+        },
+        "plus_icon": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "search_term_minimum_length": {
+          "type": "any",
+          "default": "3"
+        },
+        "search_debounce_timeout": {
+          "type": "any",
+          "default": "250"
+        },
+        "value": {
+          "type": "any"
+        },
+        "margin_bottom": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "none",
+            "xxs",
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ]
+        },
+        "pill_color": {
+          "type": "enum",
+          "default": "\"primary\"",
+          "values": [
+            "primary",
+            "neutral",
+            "success",
+            "warning",
+            "error",
+            "info",
+            "data_1",
+            "data_2",
+            "data_3",
+            "data_4",
+            "data_5",
+            "data_6",
+            "data_7",
+            "data_8",
+            "windows",
+            "siding",
+            "roofing",
+            "doors",
+            "gutters",
+            "solar",
+            "insulation",
+            "accessories"
+          ]
+        },
+        "required": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "validation": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "wrapped": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "clear_on_context_change": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "options_by_context": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "search_context_selector": {
+          "type": "string",
+          "default": "nil"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "preserve_search_input": {
+          "type": "boolean",
+          "default": "false"
+        }
+      }
+    },
+    "User": {
+      "rails": "user",
+      "react": "User",
+      "description": "Playbook User component",
+      "hasChildren": false,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "avatar": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "avatar_grayscale": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "avatar_url": {
+          "type": "any"
+        },
+        "bold": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "name": {
+          "type": "any"
+        },
+        "name_style": {
+          "type": "enum",
+          "default": "\"title\"",
+          "values": [
+            "title",
+            "body",
+            "caption",
+            "detail"
+          ]
+        },
+        "orientation": {
+          "type": "enum",
+          "default": "\"horizontal\"",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"sm\"",
+          "values": [
+            "lg",
+            "md",
+            "sm"
+          ]
+        },
+        "subtitle": {
+          "type": "any"
+        },
+        "title": {
+          "type": "any"
+        },
+        "title_style": {
+          "type": "enum",
+          "default": "\"body\"",
+          "values": [
+            "body",
+            "caption",
+            "detail"
+          ]
+        },
+        "territory": {
+          "type": "any"
+        }
+      }
+    },
+    "UserBadge": {
+      "rails": "user_badge",
+      "react": "UserBadge",
+      "description": "Playbook UserBadge component",
+      "hasChildren": false,
+      "props": {
+        "badge": {
+          "type": "enum",
+          "default": "\"million-dollar\"",
+          "values": [
+            "million-dollar",
+            "veteran"
+          ]
+        },
+        "size": {
+          "type": "enum",
+          "default": "\"md\"",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ]
+        }
+      }
+    },
+    "WeekdayStacked": {
+      "rails": "weekday_stacked",
+      "react": "WeekdayStacked",
+      "description": "Playbook WeekdayStacked component",
+      "hasChildren": true,
+      "props": {
+        "align": {
+          "type": "enum",
+          "default": "\"left\"",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ]
+        },
+        "date": {
+          "type": "date",
+          "default": "::Date.current"
+        },
+        "compact": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "variant": {
+          "type": "enum",
+          "default": "\"month_day\"",
+          "values": [
+            "day_only",
+            "expanded",
+            "month_day"
+          ]
         }
       }
     }

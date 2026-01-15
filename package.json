@@ -2,21 +2,31 @@
   "name": "playbook-vscode",
   "displayName": "Playbook UI",
   "description": "Developer experience enhancements for Playbook UI design system - snippets, autocomplete, and hover documentation for Rails and React",
-  "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "version": "1.0.0",
+  "publisher": "mclancy96",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
     "Snippets",
-    "Programming Languages"
+    "Programming Languages",
+    "Linters",
+    "Formatters"
   ],
   "keywords": [
     "playbook",
     "design system",
     "rails",
     "react",
-    "snippets"
+    "snippets",
+    "autocomplete",
+    "intellisense",
+    "erb",
+    "jsx",
+    "tsx",
+    "ui components",
+    "powerhome"
   ],
   "activationEvents": [
     "onLanguage:ruby",
@@ -52,19 +62,35 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "lint": "eslint src --ext ts"
+    "test": "node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts",
+    "sync": "ts-node scripts/sync-playbook.ts"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^18.x",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^6.x",
     "@typescript-eslint/parser": "^6.x",
+    "@vscode/test-electron": "^2.5.2",
     "eslint": "^8.x",
+    "glob": "^8.1.0",
+    "mocha": "^10.8.2",
+    "ts-node": "^10.x",
     "typescript": "^5.x"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/playbook-vscode"
+    "url": "https://github.com/mclancy96/playbook_vscode_extension"
   },
-  "license": "MIT"
+  "bugs": {
+    "url": "https://github.com/mclancy96/playbook_vscode_extension/issues"
+  },
+  "homepage": "https://github.com/mclancy96/playbook_vscode_extension#readme",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#1C1C1C",
+    "theme": "dark"
+  }
 }

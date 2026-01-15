@@ -1,4 +1,8 @@
 import * as vscode from "vscode"
+import { PlaybookHoverProvider } from "./hoverProvider"
+import { PlaybookDefinitionProvider } from "./definitionProvider"
+import { PlaybookDiagnostics } from "./diagnostics"
+import { PlaybookCompletionProvider } from "./completionProvider"
 
 /**
  * Extension activation entry point
@@ -18,49 +22,64 @@ export function activate(context: vscode.ExtensionContext) {
   ]
   console.log("Playbook UI: Activated for languages:", supportedLanguages)
 
-  // TODO: Register autocomplete provider for Playbook components
-  // This will provide intelligent suggestions when typing:
-  // - pb_rails("...") in Ruby/ERB files
-  // - <Component in JSX/TSX files
-  // Should read from data/playbook.json for component metadata
+  // Register Hover Provider
+  const hoverProvider = new PlaybookHoverProvider(context.extensionPath)
+  const hoverDisposable = vscode.languages.registerHoverProvider(supportedLanguages, hoverProvider)
+  context.subscriptions.push(hoverDisposable)
+  console.log("✓ Hover provider registered")
 
-  // Example structure for future implementation:
-  // const railsCompletionProvider = vscode.languages.registerCompletionItemProvider(
-  //     ['ruby', 'erb'],
-  //     {
-  //         provideCompletionItems(document, position) {
-  //             // Parse pb_rails context
-  //             // Return completion items from playbook.json
-  //         }
-  //     },
-  //     '"', '('  // Trigger characters
-  // );
-  // context.subscriptions.push(railsCompletionProvider);
+  // Register Definition Provider (Go to Definition)
+  const definitionProvider = new PlaybookDefinitionProvider(context.extensionPath)
+  const definitionDisposable = vscode.languages.registerDefinitionProvider(
+    supportedLanguages,
+    definitionProvider
+  )
+  context.subscriptions.push(definitionDisposable)
+  console.log("✓ Definition provider registered")
 
-  // TODO: Register hover provider for Playbook components
-  // This will show documentation when hovering over:
-  // - Component names in pb_rails calls
-  // - React component tags
-  // Should display prop information and descriptions from playbook.json
+  // Register Completion Provider (Autocomplete)
+  const completionProvider = new PlaybookCompletionProvider(context.extensionPath)
+  const completionDisposable = vscode.languages.registerCompletionItemProvider(
+    supportedLanguages,
+    completionProvider,
+    '"',
+    "'",
+    "<",
+    " ",
+    ":",
+    "=" // Trigger characters
+  )
+  context.subscriptions.push(completionDisposable)
+  console.log("✓ Completion provider registered")
 
-  // Example structure for future implementation:
-  // const hoverProvider = vscode.languages.registerHoverProvider(
-  //     supportedLanguages,
-  //     {
-  //         provideHover(document, position) {
-  //             // Detect component name at position
-  //             // Look up in playbook.json
-  //             // Return formatted markdown with component info
-  //         }
-  //     }
-  // );
-  // context.subscriptions.push(hoverProvider);
+  // Register Diagnostics (Prop Validation)
+  const diagnostics = new PlaybookDiagnostics(context.extensionPath)
+  context.subscriptions.push(diagnostics)
 
-  // TODO: Consider adding definition provider
-  // Would allow "Go to Definition" to jump to Playbook documentation or source
+  // Update diagnostics on document change
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      diagnostics.updateDiagnostics(event.document)
+    })
+  )
 
-  // TODO: Consider adding prop validation/diagnostics
-  // Could warn about invalid prop names or values based on playbook.json schema
+  // Update diagnostics on document open
+  context.subscriptions.push(
+    vscode.workspace.onDidOpenTextDocument((document) => {
+      diagnostics.updateDiagnostics(document)
+    })
+  )
+
+  // Update diagnostics for all open documents
+  vscode.workspace.textDocuments.forEach((document) => {
+    diagnostics.updateDiagnostics(document)
+  })
+
+  console.log("✓ Prop validation diagnostics registered")
+
+  console.log(
+    "✨ Playbook UI extension fully activated with snippets, autocomplete, hover, validation, and definition support!"
+  )
 }
 
 /**

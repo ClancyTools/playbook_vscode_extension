@@ -9,3 +9,16 @@ src/**
 **/.eslintrc.json
 QUICKSTART.md
 STRUCTURE.md
+scripts/**
+.git/**
+.ruby-lsp/**
+text.html.erb
+node_modules/**
+out/test/**
+src/test/**
+**/*.test.js
+**/*.test.ts
+.github/**
+FEATURES.md
+TEST_*.md
+**/.DS_Store

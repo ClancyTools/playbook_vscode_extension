@@ -1,70 +1,1441 @@
 {
-  "pb_rails button": {
-    "prefix": "pb_button",
+  "Playbook AdvancedTable": {
+    "prefix": "pb_advanced_table",
     "body": [
-      "<%= pb_rails(\"button\", props: {",
-      "\ttext: \"${1:Button Text}\",",
-      "\tvariant: \"${2|primary,secondary,link|}\",",
+      "<%= pb_rails(\"advanced_table\", props: {",
+      "\ttable_data: \"${1:[]}\",",
+      "\tcolumn_definitions: \"${2:[]}\",",
+      "\tcolumn_group_border_color: \"${3|text_lt_default,text_lt_light,text_lt_lighter,text_dk_default,text_dk_light,text_dk_lighter,none|}\",",
+      "\tenable_toggle_expansion: \"${4|all,header,none|}\",",
+      "\tloading: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
-    "description": "Playbook Button component for Rails/ERB"
+    "description": "Playbook AdvancedTable component for Rails/ERB"
   },
-  "pb_rails card": {
-    "prefix": "pb_card",
-    "body": [
-      "<%= pb_rails(\"card\", props: {",
-      "\t$0",
-      "}) do %>",
-      "\t${1:Card content}",
-      "<% end %>"
-    ],
-    "description": "Playbook Card component for Rails/ERB"
-  },
-  "pb_rails flex": {
-    "prefix": "pb_flex",
-    "body": [
-      "<%= pb_rails(\"flex\", props: {",
-      "\talign: \"${1|none,start,end,center,stretch|}\",",
-      "\tjustify: \"${2|none,start,end,center,between,around,evenly|}\"",
-      "\t$0",
-      "}) do %>",
-      "\t${3:Flex content}",
-      "<% end %>"
-    ],
-    "description": "Playbook Flex layout component for Rails/ERB"
-  },
-  "pb_rails body": {
-    "prefix": "pb_body",
-    "body": ["<%= pb_rails(\"body\", props: {", "\ttext: \"${1:Body text}\",", "\t$0", "}) %>"],
-    "description": "Playbook Body text component for Rails/ERB"
-  },
-  "pb_rails title": {
-    "prefix": "pb_title",
-    "body": [
-      "<%= pb_rails(\"title\", props: {",
-      "\ttext: \"${1:Title}\",",
-      "\tsize: ${2|1,2,3,4|},",
-      "\t$0",
-      "}) %>"
-    ],
-    "description": "Playbook Title component for Rails/ERB"
-  },
-  "pb_rails avatar": {
+  "Playbook Avatar": {
     "prefix": "pb_avatar",
     "body": [
       "<%= pb_rails(\"avatar\", props: {",
-      "\tname: \"${1:Name}\",",
-      "\timage_url: \"${2:url}\",",
-      "\tsize: \"${3|sm,md,lg,xl|}\",",
+      "\tsize: \"${1|xxs,xs,sm,md,base,lg,xl|}\",",
+      "\tcomponent_overlay: \"${2}\",",
+      "\tdark: \"${3}\",",
+      "\timage_url: \"${4}\",",
+      "\timage_alt: \"${5:}\",",
       "\t$0",
       "}) %>"
     ],
     "description": "Playbook Avatar component for Rails/ERB"
   },
-  "pb_rails icon": {
+  "Playbook Background": {
+    "prefix": "pb_background",
+    "body": [
+      "<%= pb_rails(\"background\", props: {",
+      "\tbackground_color: \"${1|gradient,dark,light,white,success,warning,error,info,neutral,primary,shadow,category_1,category_2,category_3,category_4,category_5,category_6,category_7,category_8,category_9,category_10,category_11,category_12,category_13,category_14,category_15,category_16,category_17,category_18,category_19,category_20,category_21,success_secondary,error_secondary,info_secondary,warning_secondary,neutral_secondary,primary_secondary,text_lt_default,text_lt_light,text_lt_lighter,text_dk_default,text_dk_light,text_dk_lighter,card_light,card_dark,data_1,data_2,data_3,data_4,data_5,data_6,data_7,data_8,border_light,border_dark,success_subtle,warning_subtle,error_subtle,info_subtle,neutral_subtle|}\",",
+      "\tbackground_position: \"${2}\",",
+      "\tbackground_repeat: \"${3|repeat,repeat-x,repeat-y,no-repeat,space,round,initial,inherit|}\",",
+      "\tbackground_size: \"${4|contain,cover,auto|}\",",
+      "\timage_url: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Background component for Rails/ERB"
+  },
+  "Playbook Badge": {
+    "prefix": "pb_badge",
+    "body": [
+      "<%= pb_rails(\"badge\", props: {",
+      "\ttext: \"${1}\",",
+      "\tvariant: \"${2|success,warning,error,info,neutral,notification,notification_error,primary|}\",",
+      "\trounded: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Badge component for Rails/ERB"
+  },
+  "Playbook BarGraph": {
+    "prefix": "pb_bar_graph",
+    "body": [
+      "<%= pb_rails(\"bar_graph\", props: {",
+      "\talign: \"${1|left,right,center|}\",",
+      "\taxis_title: \"${2}\",",
+      "\taxis_format: \"${3}\",",
+      "\tchart_data: \"${4:[]}\",",
+      "\tcustom_options: \"${5:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook BarGraph component for Rails/ERB"
+  },
+  "Playbook Body": {
+    "prefix": "pb_body",
+    "body": [
+      "<%= pb_rails(\"body\", props: {",
+      "\ttext: \"${1}\",",
+      "\tcolor: \"${2|default,light,lighter,link,success,error|}\",",
+      "\tstatus: \"${3|neutral,positive,negative|}\",",
+      "\ttag: \"${4|h1,h2,h3,h4,h5,h6,p,span,div|}\",",
+      "\thighlighting: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Body component for Rails/ERB"
+  },
+  "Playbook BreadCrumbs": {
+    "prefix": "pb_bread_crumbs",
+    "body": [
+      "<%= pb_rails(\"bread_crumbs\", props: {",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook BreadCrumbs component for Rails/ERB"
+  },
+  "Playbook Button": {
+    "prefix": "pb_button",
+    "body": [
+      "<%= pb_rails(\"button\", props: {",
+      "\tvariant: \"${1|primary,secondary,link,danger,reaction|}\",",
+      "\ttext: \"${2}\",",
+      "\tsize: \"${3|sm,md,lg|}\",",
+      "\tdisabled: \"${4}\",",
+      "\tfull_width: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Button component for Rails/ERB"
+  },
+  "Playbook ButtonToolbar": {
+    "prefix": "pb_button_toolbar",
+    "body": [
+      "<%= pb_rails(\"button_toolbar\", props: {",
+      "\tvariant: \"${1|primary,secondary|}\",",
+      "\ttext: \"${2}\",",
+      "\tconnected: \"${3}\",",
+      "\torientation: \"${4|horizontal,vertical|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook ButtonToolbar component for Rails/ERB"
+  },
+  "Playbook Caption": {
+    "prefix": "pb_caption",
+    "body": [
+      "<%= pb_rails(\"caption\", props: {",
+      "\tsize: \"${1|xs,sm,md,base,lg,xl|}\",",
+      "\ttext: \"${2}\",",
+      "\tvariant: \"${3|link|}\",",
+      "\ttag: \"${4|h1,h2,h3,h4,h5,h6,p,span,div,caption|}\",",
+      "\tcolor: \"${5|default,light,lighter,success,error,link|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Caption component for Rails/ERB"
+  },
+  "Playbook Card": {
+    "prefix": "pb_card",
+    "body": [
+      "<%= pb_rails(\"card\", props: {",
+      "\tselected: \"${1}\",",
+      "\thighlight: \"${2:{}}\",",
+      "\ttag: \"${3|div,section,footer,header,article,aside,main,nav|}\",",
+      "\tborder_none: \"${4}\",",
+      "\tborder_radius: \"${5|xs,sm,md,lg,xl,none,rounded|}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook Card component for Rails/ERB"
+  },
+  "Playbook Checkbox": {
+    "prefix": "pb_checkbox",
+    "body": [
+      "<%= pb_rails(\"checkbox\", props: {",
+      "\ttext: \"${1}\",",
+      "\terror: \"${2}\",",
+      "\tchecked: \"${3}\",",
+      "\tindeterminate_main: \"${4}\",",
+      "\tindeterminate_main_labels: \"${5:[]}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Checkbox component for Rails/ERB"
+  },
+  "Playbook CircleChart": {
+    "prefix": "pb_circle_chart",
+    "body": [
+      "<%= pb_rails(\"circle_chart\", props: {",
+      "\talign: \"${1|left,right,center|}\",",
+      "\tborder_width: \"${2}\",",
+      "\tchart_data: \"${3:[]}\",",
+      "\tcustom_options: \"${4:{}}\",",
+      "\tstyle: \"${5|pie|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook CircleChart component for Rails/ERB"
+  },
+  "Playbook CircleIconButton": {
+    "prefix": "pb_circle_icon_button",
+    "body": [
+      "<%= pb_rails(\"circle_icon_button\", props: {",
+      "\tvariant: \"${1|primary,secondary,link|}\",",
+      "\tsize: \"${2|default,sm|}\",",
+      "\ttype: \"${3|button,submit,reset|}\",",
+      "\tdisabled: \"${4}\",",
+      "\ticon: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook CircleIconButton component for Rails/ERB"
+  },
+  "Playbook Collapsible": {
+    "prefix": "pb_collapsible",
+    "body": [
+      "<%= pb_rails(\"collapsible\", props: {",
+      "\ttag: \"${1|h1,h2,h3,h4,h5,h6,p,div,span,tr,th,td,thead,col|}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${2:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook Collapsible component for Rails/ERB"
+  },
+  "Playbook Contact": {
+    "prefix": "pb_contact",
+    "body": [
+      "<%= pb_rails(\"contact\", props: {",
+      "\tcontact_type: \"${1}\",",
+      "\tcontact_value: \"${2}\",",
+      "\tcontact_detail: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Contact component for Rails/ERB"
+  },
+  "Playbook CopyButton": {
+    "prefix": "pb_copy_button",
+    "body": [
+      "<%= pb_rails(\"copy_button\", props: {",
+      "\ttext: \"${1}\",",
+      "\ttooltip_position: \"${2|top,right,bottom,left|}\",",
+      "\ttooltip_text: \"${3:Copied!}\",",
+      "\tvalue: \"${4}\",",
+      "\tfrom: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook CopyButton component for Rails/ERB"
+  },
+  "Playbook Currency": {
+    "prefix": "pb_currency",
+    "body": [
+      "<%= pb_rails(\"currency\", props: {",
+      "\tsize: \"${1|lg,md,sm|}\",",
+      "\tvariant: \"${2|default,light,bold|}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\tlabel: \"${4:}\",",
+      "\tsymbol: \"${5:$}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Currency component for Rails/ERB"
+  },
+  "Playbook DashboardValue": {
+    "prefix": "pb_dashboard_value",
+    "body": [
+      "<%= pb_rails(\"dashboard_value\", props: {",
+      "\talign: \"${1|left,center,right|}\",",
+      "\tstat_change: \"${2:{}}\",",
+      "\tstat_label: \"${3}\",",
+      "\tstat_value: \"${4:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DashboardValue component for Rails/ERB"
+  },
+  "Playbook Date": {
+    "prefix": "pb_date",
+    "body": [
+      "<%= pb_rails(\"date\", props: {",
+      "\tsize: \"${1|lg,md,sm,xs|}\",",
+      "\tdate: \"${2}\",",
+      "\talignment: \"${3|left,center,right|}\",",
+      "\tshow_icon: \"${4}\",",
+      "\tshow_day_of_week: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Date component for Rails/ERB"
+  },
+  "Playbook DatePicker": {
+    "prefix": "pb_date_picker",
+    "body": [
+      "<%= pb_rails(\"date_picker\", props: {",
+      "\tallow_input: \"${1}\",",
+      "\tcustom_quick_pick_dates: \"${2:{}}\",",
+      "\tdark: \"${3}\",",
+      "\tdefault_date: \"${4:}\",",
+      "\tdisable_date: \"${5:[]}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DatePicker component for Rails/ERB"
+  },
+  "Playbook DateRangeInline": {
+    "prefix": "pb_date_range_inline",
+    "body": [
+      "<%= pb_rails(\"date_range_inline\", props: {",
+      "\tsize: \"${1|xs,sm|}\",",
+      "\tend_date: \"${2}\",",
+      "\tstart_date: \"${3}\",",
+      "\ticon: \"${4}\",",
+      "\tdark: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook DateRangeInline component for Rails/ERB"
+  },
+  "Playbook DateRangeStacked": {
+    "prefix": "pb_date_range_stacked",
+    "body": [
+      "<%= pb_rails(\"date_range_stacked\", props: {",
+      "\tdark: \"${1}\",",
+      "\tend_date: \"${2}\",",
+      "\tstart_date: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DateRangeStacked component for Rails/ERB"
+  },
+  "Playbook DateStacked": {
+    "prefix": "pb_date_stacked",
+    "body": [
+      "<%= pb_rails(\"date_stacked\", props: {",
+      "\tsize: \"${1|sm,md|}\",",
+      "\tdate: \"${2}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\treverse: \"${4}\",",
+      "\tdark: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook DateStacked component for Rails/ERB"
+  },
+  "Playbook DateTime": {
+    "prefix": "pb_date_time",
+    "body": [
+      "<%= pb_rails(\"date_time\", props: {",
+      "\tsize: \"${1|sm,md|}\",",
+      "\tdate: \"${2:::DateTime.current}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\ttimezone: \"${4:America/New_York}\",",
+      "\tdark: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DateTime component for Rails/ERB"
+  },
+  "Playbook DateTimeStacked": {
+    "prefix": "pb_date_time_stacked",
+    "body": [
+      "<%= pb_rails(\"date_time_stacked\", props: {",
+      "\tdate: \"${1}\",",
+      "\tdate_time: \"${2:::DateTime.current}\",",
+      "\tdark: \"${3}\",",
+      "\ttimezone: \"${4:America/New_York}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DateTimeStacked component for Rails/ERB"
+  },
+  "Playbook DateYearStacked": {
+    "prefix": "pb_date_year_stacked",
+    "body": [
+      "<%= pb_rails(\"date_year_stacked\", props: {",
+      "\talign: \"${1|left,center,right|}\",",
+      "\tdark: \"${2}\",",
+      "\tdate: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DateYearStacked component for Rails/ERB"
+  },
+  "Playbook Detail": {
+    "prefix": "pb_detail",
+    "body": [
+      "<%= pb_rails(\"detail\", props: {",
+      "\ttext: \"${1}\",",
+      "\tbold: \"${2}\",",
+      "\tcolor: \"${3|light,default,lighter,link,error,success|}\",",
+      "\ttag: \"${4|h1,h2,h3,h4,h5,h6,p,span,div|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Detail component for Rails/ERB"
+  },
+  "Playbook Dialog": {
+    "prefix": "pb_dialog",
+    "body": [
+      "<%= pb_rails(\"dialog\", props: {",
+      "\tsize: \"${1|sm,md,lg,xl,status_size,content|}\",",
+      "\ttext: \"${2}\",",
+      "\tfull_height: \"${3}\",",
+      "\tplacement: \"${4|left,right,center|}\",",
+      "\tshould_close_on_overlay_click: \"${5:true}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Dialog component for Rails/ERB"
+  },
+  "Playbook DistributionBar": {
+    "prefix": "pb_distribution_bar",
+    "body": [
+      "<%= pb_rails(\"distribution_bar\", props: {",
+      "\tsize: \"${1|lg,sm|}\",",
+      "\twidths: \"${2:[1]}\",",
+      "\tcolors: \"${3:[]}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook DistributionBar component for Rails/ERB"
+  },
+  "Playbook Draggable": {
+    "prefix": "pb_draggable",
+    "body": [
+      "<%= pb_rails(\"draggable\", props: {",
+      "\tinitial_items: \"${1:[]}\",",
+      "\tdrop_zone_type: \"${2|ghost,shadow,outline,line|}\",",
+      "\tdrop_zone_color: \"${3|neutral,primary,purple|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Draggable component for Rails/ERB"
+  },
+  "Playbook Dropdown": {
+    "prefix": "pb_dropdown",
+    "body": [
+      "<%= pb_rails(\"dropdown\", props: {",
+      "\tvariant: \"${1|default,subtle|}\",",
+      "\toptions: \"${2:[]}\",",
+      "\tlabel: \"${3}\",",
+      "\tname: \"${4}\",",
+      "\terror: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Dropdown component for Rails/ERB"
+  },
+  "Playbook EmptyState": {
+    "prefix": "pb_empty_state",
+    "body": [
+      "<%= pb_rails(\"empty_state\", props: {",
+      "\tsize: \"${1|sm,md,lg|}\",",
+      "\talignment: \"${2|center,left,right|}\",",
+      "\tdescription: \"${3}\",",
+      "\theader: \"${4}\",",
+      "\timage: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook EmptyState component for Rails/ERB"
+  },
+  "Playbook FileUpload": {
+    "prefix": "pb_file_upload",
+    "body": [
+      "<%= pb_rails(\"file_upload\", props: {",
+      "\taccept: \"${1:}\",",
+      "\tfiles: \"${2:[]}\",",
+      "\tlabel: \"${3:Upload File}\",",
+      "\tplaceholder: \"${4:No file}\",",
+      "\tfull_width: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook FileUpload component for Rails/ERB"
+  },
+  "Playbook Filter": {
+    "prefix": "pb_filter",
+    "body": [
+      "<%= pb_rails(\"filter\", props: {",
+      "\tfilters: \"${1:[{ name:  }]}\",",
+      "\tsort_menu: \"${2:[{}]}\",",
+      "\tresults: \"${3}\",",
+      "\ttemplate: \"${4|default,single,filter_only,sort_only|}\",",
+      "\tbackground: \"${5:true}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Filter component for Rails/ERB"
+  },
+  "Playbook FixedConfirmationToast": {
+    "prefix": "pb_fixed_confirmation_toast",
+    "body": [
+      "<%= pb_rails(\"fixed_confirmation_toast\", props: {",
+      "\ttext: \"${1}\",",
+      "\tstatus: \"${2|success,error,neutral,tip|}\",",
+      "\tmulti_line: \"${3}\",",
+      "\tcloseable: \"${4}\",",
+      "\thorizontal: \"${5|right,left,center|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook FixedConfirmationToast component for Rails/ERB"
+  },
+  "Playbook Flex": {
+    "prefix": "pb_flex",
+    "body": [
+      "<%= pb_rails(\"flex\", props: {",
+      "\thorizontal: \"${1|left,center,right,stretch,none|}\",",
+      "\tjustify: \"${2|start,center,end,stretch,around,between,evenly,none|}\",",
+      "\tinline: \"${3}\",",
+      "\torientation: \"${4|row,column|}\",",
+      "\tspacing: \"${5|around,between,evenly,none|}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook Flex component for Rails/ERB"
+  },
+  "Playbook Form": {
+    "prefix": "pb_form",
+    "body": [
+      "<%= pb_rails(\"form\", props: {",
+      "\tform_system: \"${1}\",",
+      "\tform_system_options: \"${2}\",",
+      "\tloading: \"${3}\",",
+      "\toptions: \"${4}\",",
+      "\tvalidate: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Form component for Rails/ERB"
+  },
+  "Playbook FormGroup": {
+    "prefix": "pb_form_group",
+    "body": [
+      "<%= pb_rails(\"form_group\", props: {",
+      "\tfull_width: \"${1}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook FormGroup component for Rails/ERB"
+  },
+  "Playbook FormPill": {
+    "prefix": "pb_form_pill",
+    "body": [
+      "<%= pb_rails(\"form_pill\", props: {",
+      "\ttext: \"${1}\",",
+      "\tsize: \"${2}\",",
+      "\tavatar_url: \"${3}\",",
+      "\tname: \"${4}\",",
+      "\ttext_transform: \"${5|none,lowercase|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook FormPill component for Rails/ERB"
+  },
+  "Playbook Gauge": {
+    "prefix": "pb_gauge",
+    "body": [
+      "<%= pb_rails(\"gauge\", props: {",
+      "\tchart_data: \"${1:[{ name: Name}\",",
+      "\tcustom_options: \"${2:{}}\",",
+      "\tstyle: \"${3|solidgauge|}\",",
+      "\ttitle: \"${4:}\",",
+      "\tprefix: \"${5:}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Gauge component for Rails/ERB"
+  },
+  "Playbook Hashtag": {
+    "prefix": "pb_hashtag",
+    "body": [
+      "<%= pb_rails(\"hashtag\", props: {",
+      "\ttext: \"${1}\",",
+      "\tnew_window: \"${2}\",",
+      "\ttype: \"${3|default,project,home,appointment|}\",",
+      "\turl: \"${4}\",",
+      "\ttarget: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Hashtag component for Rails/ERB"
+  },
+  "Playbook Highlight": {
+    "prefix": "pb_highlight",
+    "body": [
+      "<%= pb_rails(\"highlight\", props: {",
+      "\ttext: \"${1}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Highlight component for Rails/ERB"
+  },
+  "Playbook HomeAddressStreet": {
+    "prefix": "pb_home_address_street",
+    "body": [
+      "<%= pb_rails(\"home_address_street\", props: {",
+      "\taddress: \"${1}\",",
+      "\taddress_cont: \"${2}\",",
+      "\tcity: \"${3}\",",
+      "\temphasis: \"${4|street,city,none|}\",",
+      "\thome_id: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook HomeAddressStreet component for Rails/ERB"
+  },
+  "Playbook Icon": {
     "prefix": "pb_icon",
-    "body": ["<%= pb_rails(\"icon\", props: {", "\ticon: \"${1:user}\",", "\t$0", "}) %>"],
+    "body": [
+      "<%= pb_rails(\"icon\", props: {",
+      "\tsize: \"${1|lg,xs,sm,1x,2x,3x,4x,5x,6x,7x,8x,9x,10x|}\",",
+      "\tborder: \"${2}\",",
+      "\tfixed_width: \"${3:true}\",",
+      "\tflip: \"${4|horizontal,vertical,both|}\",",
+      "\ticon: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
     "description": "Playbook Icon component for Rails/ERB"
+  },
+  "Playbook IconButton": {
+    "prefix": "pb_icon_button",
+    "body": [
+      "<%= pb_rails(\"icon_button\", props: {",
+      "\tvariant: \"${1|default,link|}\",",
+      "\tsize: \"${2|1x,2x,3x,4x,5x,6x,7x,8x,9x,10x,xs,sm,lg|}\",",
+      "\ttype: \"${3|button,submit,reset|}\",",
+      "\ticon: \"${4:bars}\",",
+      "\tlink: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook IconButton component for Rails/ERB"
+  },
+  "Playbook IconCircle": {
+    "prefix": "pb_icon_circle",
+    "body": [
+      "<%= pb_rails(\"icon_circle\", props: {",
+      "\tsize: \"${1|xxs,xs,sm,md,base,lg,xl|}\",",
+      "\tvariant: \"${2|default,royal,blue,orange,purple,teal,red,yellow,green,orange,lighter|}\",",
+      "\ticon: \"${3}\",",
+      "\temoji: \"${4:}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook IconCircle component for Rails/ERB"
+  },
+  "Playbook IconStatValue": {
+    "prefix": "pb_icon_stat_value",
+    "body": [
+      "<%= pb_rails(\"icon_stat_value\", props: {",
+      "\tsize: \"${1|sm,md,lg|}\",",
+      "\tvariant: \"${2|default,royal,blue,purple,teal,red,yellow,green,orange|}\",",
+      "\ttext: \"${3:}\",",
+      "\ticon: \"${4}\",",
+      "\torientation: \"${5|vertical,horizontal|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook IconStatValue component for Rails/ERB"
+  },
+  "Playbook IconValue": {
+    "prefix": "pb_icon_value",
+    "body": [
+      "<%= pb_rails(\"icon_value\", props: {",
+      "\ttext: \"${1}\",",
+      "\ticon: \"${2}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook IconValue component for Rails/ERB"
+  },
+  "Playbook Image": {
+    "prefix": "pb_image",
+    "body": [
+      "<%= pb_rails(\"image\", props: {",
+      "\tsize: \"${1|xs,sm,md,lg,xl,none|}\",",
+      "\talt: \"${2}\",",
+      "\ton_error: \"${3}\",",
+      "\trounded: \"${4}\",",
+      "\ttransition: \"${5|blur,fade,scale,none|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Image component for Rails/ERB"
+  },
+  "Playbook LabelPill": {
+    "prefix": "pb_label_pill",
+    "body": [
+      "<%= pb_rails(\"label_pill\", props: {",
+      "\tvariant: \"${1|success,warning,error,info,neutral,primary|}\",",
+      "\tlabel: \"${2}\",",
+      "\tpill_value: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook LabelPill component for Rails/ERB"
+  },
+  "Playbook LabelValue": {
+    "prefix": "pb_label_value",
+    "body": [
+      "<%= pb_rails(\"label_value\", props: {",
+      "\tvariant: \"${1|default,details|}\",",
+      "\tlabel: \"${2}\",",
+      "\tvalue: \"${3}\",",
+      "\ticon: \"${4}\",",
+      "\tdescription: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook LabelValue component for Rails/ERB"
+  },
+  "Playbook Layout": {
+    "prefix": "pb_layout",
+    "body": [
+      "<%= pb_rails(\"layout\", props: {",
+      "\tsize: \"${1|xs,sm,md,lg,xl|}\",",
+      "\tvariant: \"${2|light,dark,gradient|}\",",
+      "\tcollapse: \"${3|xs,sm,md,lg,xl|}\",",
+      "\tfull: \"${4}\",",
+      "\tposition: \"${5|left,right|}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook Layout component for Rails/ERB"
+  },
+  "Playbook Legend": {
+    "prefix": "pb_legend",
+    "body": [
+      "<%= pb_rails(\"legend\", props: {",
+      "\ttext: \"${1}\",",
+      "\tcolor: \"${2:data_1}\",",
+      "\tprefix_text: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Legend component for Rails/ERB"
+  },
+  "Playbook LineGraph": {
+    "prefix": "pb_line_graph",
+    "body": [
+      "<%= pb_rails(\"line_graph\", props: {",
+      "\talign: \"${1|left,right,center|}\",",
+      "\taxis_title: \"${2}\",",
+      "\tchart_data: \"${3:[]}\",",
+      "\tcustom_options: \"${4:{}}\",",
+      "\tgradient: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook LineGraph component for Rails/ERB"
+  },
+  "Playbook Link": {
+    "prefix": "pb_link",
+    "body": [
+      "<%= pb_rails(\"link\", props: {",
+      "\ttext: \"${1}\",",
+      "\tcolor: \"${2|default,body,muted,destructive|}\",",
+      "\tdisabled: \"${3}\",",
+      "\thref: \"${4}\",",
+      "\ticon: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Link component for Rails/ERB"
+  },
+  "Playbook List": {
+    "prefix": "pb_list",
+    "body": [
+      "<%= pb_rails(\"list\", props: {",
+      "\tsize: \"${1}\",",
+      "\tborderless: \"${2}\",",
+      "\tdark: \"${3}\",",
+      "\tenable_drag: \"${4}\",",
+      "\titems: \"${5:[]}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook List component for Rails/ERB"
+  },
+  "Playbook LoadingInline": {
+    "prefix": "pb_loading_inline",
+    "body": [
+      "<%= pb_rails(\"loading_inline\", props: {",
+      "\ttext: \"${1:Loading}\",",
+      "\tvariant: \"${2|dotted,solid|}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\tdark: \"${4}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook LoadingInline component for Rails/ERB"
+  },
+  "Playbook Message": {
+    "prefix": "pb_message",
+    "body": [
+      "<%= pb_rails(\"message\", props: {",
+      "\tavatar_name: \"${1}\",",
+      "\tavatar_status: \"${2}\",",
+      "\tavatar_url: \"${3}\",",
+      "\tavatar_grayscale: \"${4}\",",
+      "\tlabel: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Message component for Rails/ERB"
+  },
+  "Playbook MultiLevelSelect": {
+    "prefix": "pb_multi_level_select",
+    "body": [
+      "<%= pb_rails(\"multi_level_select\", props: {",
+      "\tvariant: \"${1|multi,single|}\",",
+      "\tid: \"${2}\",",
+      "\tname: \"${3}\",",
+      "\ttree_data: \"${4:[]}\",",
+      "\treturn_all_selected: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook MultiLevelSelect component for Rails/ERB"
+  },
+  "Playbook MultipleUsers": {
+    "prefix": "pb_multiple_users",
+    "body": [
+      "<%= pb_rails(\"multiple_users\", props: {",
+      "\tsize: \"${1|xxs,xs|}\",",
+      "\treverse: \"${2}\",",
+      "\tusers: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook MultipleUsers component for Rails/ERB"
+  },
+  "Playbook MultipleUsersStacked": {
+    "prefix": "pb_multiple_users_stacked",
+    "body": [
+      "<%= pb_rails(\"multiple_users_stacked\", props: {",
+      "\tsize: \"${1|sm,md,lg,xl|}\",",
+      "\tvariant: \"${2|default,bubble|}\",",
+      "\tusers: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook MultipleUsersStacked component for Rails/ERB"
+  },
+  "Playbook Nav": {
+    "prefix": "pb_nav",
+    "body": [
+      "<%= pb_rails(\"nav\", props: {",
+      "\tvariant: \"${1|normal,subtle,bold|}\",",
+      "\tlink: \"${2:#}\",",
+      "\ttitle: \"${3}\",",
+      "\torientation: \"${4|vertical,horizontal|}\",",
+      "\thighlight: \"${5:true}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Nav component for Rails/ERB"
+  },
+  "Playbook OnlineStatus": {
+    "prefix": "pb_online_status",
+    "body": [
+      "<%= pb_rails(\"online_status\", props: {",
+      "\tsize: \"${1|sm,md,lg|}\",",
+      "\tstatus: \"${2|online,offline,away,success,warning,error,info,neutral,primary|}\",",
+      "\tno_border: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook OnlineStatus component for Rails/ERB"
+  },
+  "Playbook Overlay": {
+    "prefix": "pb_overlay",
+    "body": [
+      "<%= pb_rails(\"overlay\", props: {",
+      "\tcolor: \"${1|card_light,bg_light,card_dark,bg_dark|}\",",
+      "\tlayout: \"${2:{ bottom: full }}\",",
+      "\tdynamic: \"${3}\",",
+      "\tscroll_bar_none: \"${4}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Overlay component for Rails/ERB"
+  },
+  "Playbook Pagination": {
+    "prefix": "pb_pagination",
+    "body": [
+      "<%= pb_rails(\"pagination\", props: {",
+      "\tmodel: \"${1}\",",
+      "\tview: \"${2}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Pagination component for Rails/ERB"
+  },
+  "Playbook Passphrase": {
+    "prefix": "pb_passphrase",
+    "body": [
+      "<%= pb_rails(\"passphrase\", props: {",
+      "\tconfirmation: \"${1}\",",
+      "\tinput_props: \"${2:{}}\",",
+      "\tlabel: \"${3}\",",
+      "\tshow_tips_below: \"${4|always,xs,sm,md,lg,xl|}\",",
+      "\ttips: \"${5:[]}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Passphrase component for Rails/ERB"
+  },
+  "Playbook PbBarGraph": {
+    "prefix": "pb_pb_bar_graph",
+    "body": [
+      "<%= pb_rails(\"pb_bar_graph\", props: {",
+      "\toptions: \"${1:{}}\",",
+      "\tcontainer_props: \"${2:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook PbBarGraph component for Rails/ERB"
+  },
+  "Playbook PbCircleChart": {
+    "prefix": "pb_pb_circle_chart",
+    "body": [
+      "<%= pb_rails(\"pb_circle_chart\", props: {",
+      "\toptions: \"${1:{}}\",",
+      "\tcontainer_props: \"${2:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook PbCircleChart component for Rails/ERB"
+  },
+  "Playbook Person": {
+    "prefix": "pb_person",
+    "body": [
+      "<%= pb_rails(\"person\", props: {",
+      "\tfirst_name: \"${1}\",",
+      "\tlast_name: \"${2}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Person component for Rails/ERB"
+  },
+  "Playbook PersonContact": {
+    "prefix": "pb_person_contact",
+    "body": [
+      "<%= pb_rails(\"person_contact\", props: {",
+      "\tcontacts: \"${1:[]}\",",
+      "\tfirst_name: \"${2}\",",
+      "\tlast_name: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook PersonContact component for Rails/ERB"
+  },
+  "Playbook PhoneNumberInput": {
+    "prefix": "pb_phone_number_input",
+    "body": [
+      "<%= pb_rails(\"phone_number_input\", props: {",
+      "\tdisabled: \"${1}\",",
+      "\trequired: \"${2}\",",
+      "\tinitial_country: \"${3:}\",",
+      "\tlabel: \"${4:}\",",
+      "\tname: \"${5:}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook PhoneNumberInput component for Rails/ERB"
+  },
+  "Playbook Pill": {
+    "prefix": "pb_pill",
+    "body": [
+      "<%= pb_rails(\"pill\", props: {",
+      "\ttext: \"${1}\",",
+      "\tvariant: \"${2|success,warning,error,info,neutral,primary|}\",",
+      "\ttext_transform: \"${3|none,lowercase|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Pill component for Rails/ERB"
+  },
+  "Playbook Popover": {
+    "prefix": "pb_popover",
+    "body": [
+      "<%= pb_rails(\"popover\", props: {",
+      "\tappend_to: \"${1:body}\",",
+      "\tposition: \"${2|top,bottom,left,right,top-start,top-end,bottom-start,bottom-end,right-start,right-end,left-start,left-end|}\",",
+      "\ttrigger_element_id: \"${3}\",",
+      "\ttooltip_id: \"${4}\",",
+      "\tmax_height: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Popover component for Rails/ERB"
+  },
+  "Playbook ProgressPills": {
+    "prefix": "pb_progress_pills",
+    "body": [
+      "<%= pb_rails(\"progress_pills\", props: {",
+      "\tactive: \"${1:0}\",",
+      "\tvalue: \"${2}\",",
+      "\tsteps: \"${3:3}\",",
+      "\ttitle: \"${4}\",",
+      "\tfull_width_pill: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook ProgressPills component for Rails/ERB"
+  },
+  "Playbook ProgressSimple": {
+    "prefix": "pb_progress_simple",
+    "body": [
+      "<%= pb_rails(\"progress_simple\", props: {",
+      "\tvariant: \"${1|default,positive,negative,warning|}\",",
+      "\talign: \"${2|left,center,right|}\",",
+      "\tvalue: \"${3}\",",
+      "\tmax: \"${4}\",",
+      "\tmuted: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook ProgressSimple component for Rails/ERB"
+  },
+  "Playbook ProgressStep": {
+    "prefix": "pb_progress_step",
+    "body": [
+      "<%= pb_rails(\"progress_step\", props: {",
+      "\tvariant: \"${1|default,tracker|}\",",
+      "\torientation: \"${2|vertical,horizontal|}\",",
+      "\ticon: \"${3}\",",
+      "\tshow_icon: \"${4}\",",
+      "\tcolor: \"${5|primary,info|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook ProgressStep component for Rails/ERB"
+  },
+  "Playbook Radio": {
+    "prefix": "pb_radio",
+    "body": [
+      "<%= pb_rails(\"radio\", props: {",
+      "\ttext: \"${1:Radio Text}\",",
+      "\talignment: \"${2:}\",",
+      "\tchecked: \"${3}\",",
+      "\terror: \"${4}\",",
+      "\tdisabled: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Radio component for Rails/ERB"
+  },
+  "Playbook RichTextEditor": {
+    "prefix": "pb_rich_text_editor",
+    "body": [
+      "<%= pb_rails(\"rich_text_editor\", props: {",
+      "\tfocus: \"${1}\",",
+      "\tinline: \"${2}\",",
+      "\tsimple: \"${3}\",",
+      "\tsticky: \"${4}\",",
+      "\ttoolbar_bottom: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook RichTextEditor component for Rails/ERB"
+  },
+  "Playbook SectionSeparator": {
+    "prefix": "pb_section_separator",
+    "body": [
+      "<%= pb_rails(\"section_separator\", props: {",
+      "\ttext: \"${1}\",",
+      "\tvariant: \"${2|card,background|}\",",
+      "\tcolor: \"${3|default,primary|}\",",
+      "\torientation: \"${4|horizontal,vertical|}\",",
+      "\tdark: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook SectionSeparator component for Rails/ERB"
+  },
+  "Playbook Select": {
+    "prefix": "pb_select",
+    "body": [
+      "<%= pb_rails(\"select\", props: {",
+      "\tattributes: \"${1:{}}\",",
+      "\tblank_selection: \"${2}\",",
+      "\tcompact: \"${3}\",",
+      "\tdisabled: \"${4}\",",
+      "\terror: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Select component for Rails/ERB"
+  },
+  "Playbook SelectableCard": {
+    "prefix": "pb_selectable_card",
+    "body": [
+      "<%= pb_rails(\"selectable_card\", props: {",
+      "\ttext: \"${1}\",",
+      "\tvariant: \"${2:default}\",",
+      "\tchecked: \"${3}\",",
+      "\tdisabled: \"${4}\",",
+      "\terror: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook SelectableCard component for Rails/ERB"
+  },
+  "Playbook SelectableCardIcon": {
+    "prefix": "pb_selectable_card_icon",
+    "body": [
+      "<%= pb_rails(\"selectable_card_icon\", props: {",
+      "\tcustom_icon: \"${1}\",",
+      "\ticon: \"${2}\",",
+      "\ttitle_text: \"${3}\",",
+      "\tbody_text: \"${4}\",",
+      "\tinput_id: \"${5}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook SelectableCardIcon component for Rails/ERB"
+  },
+  "Playbook SelectableIcon": {
+    "prefix": "pb_selectable_icon",
+    "body": [
+      "<%= pb_rails(\"selectable_icon\", props: {",
+      "\ttext: \"${1}\",",
+      "\tcustom_icon: \"${2}\",",
+      "\ticon: \"${3}\",",
+      "\tinput_id: \"${4}\",",
+      "\tname: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook SelectableIcon component for Rails/ERB"
+  },
+  "Playbook SelectableList": {
+    "prefix": "pb_selectable_list",
+    "body": [
+      "<%= pb_rails(\"selectable_list\", props: {",
+      "\tvariant: \"${1|radio,checkbox|}\",",
+      "\ttext: \"${2}\",",
+      "\titems: \"${3:[]}\",",
+      "\tenable_drag: \"${4}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook SelectableList component for Rails/ERB"
+  },
+  "Playbook SkeletonLoading": {
+    "prefix": "pb_skeleton_loading",
+    "body": [
+      "<%= pb_rails(\"skeleton_loading\", props: {",
+      "\theight: \"${1:16px}\",",
+      "\twidth: \"${2:100%}\",",
+      "\tborder_radius: \"${3|none,xs,sm,md,lg,xl,rounded|}\",",
+      "\tgap: \"${4|none,xxs,xs,sm,md,lg,xl,xxl|}\",",
+      "\tstack: \"${5:1}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook SkeletonLoading component for Rails/ERB"
+  },
+  "Playbook Source": {
+    "prefix": "pb_source",
+    "body": [
+      "<%= pb_rails(\"source\", props: {",
+      "\thide_icon: \"${1}\",",
+      "\tsource: \"${2}\",",
+      "\ttype: \"${3|user,retail,inbound,outbound,prospecting,events,referral|}\",",
+      "\tuser: \"${4:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Source component for Rails/ERB"
+  },
+  "Playbook StarRating": {
+    "prefix": "pb_star_rating",
+    "body": [
+      "<%= pb_rails(\"star_rating\", props: {",
+      "\tsize: \"${1|xs,sm,md,lg|}\",",
+      "\tvariant: \"${2|display,interactive|}\",",
+      "\trating: \"${3:0}\",",
+      "\tdenominator: \"${4:5}\",",
+      "\tlayout_option: \"${5|default,onestar,number|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook StarRating component for Rails/ERB"
+  },
+  "Playbook StatChange": {
+    "prefix": "pb_stat_change",
+    "body": [
+      "<%= pb_rails(\"stat_change\", props: {",
+      "\tchange: \"${1|neutral,increase,decrease|}\",",
+      "\ticon: \"${2}\",",
+      "\tvalue: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook StatChange component for Rails/ERB"
+  },
+  "Playbook StatValue": {
+    "prefix": "pb_stat_value",
+    "body": [
+      "<%= pb_rails(\"stat_value\", props: {",
+      "\tunit: \"${1}\",",
+      "\tvalue: \"${2}\",",
+      "\tprecision: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook StatValue component for Rails/ERB"
+  },
+  "Playbook Table": {
+    "prefix": "pb_table",
+    "body": [
+      "<%= pb_rails(\"table\", props: {",
+      "\tsize: \"${1|sm,md,lg|}\",",
+      "\ttext: \"${2}\",",
+      "\tsingle_line: \"${3}\",",
+      "\tdisable_hover: \"${4}\",",
+      "\tdata_table: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Table component for Rails/ERB"
+  },
+  "Playbook TextInput": {
+    "prefix": "pb_text_input",
+    "body": [
+      "<%= pb_rails(\"text_input\", props: {",
+      "\tautocomplete: \"${1:true}\",",
+      "\tdisabled: \"${2}\",",
+      "\terror: \"${3}\",",
+      "\tinline: \"${4}\",",
+      "\tinput_options: \"${5:{}}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook TextInput component for Rails/ERB"
+  },
+  "Playbook Textarea": {
+    "prefix": "pb_textarea",
+    "body": [
+      "<%= pb_rails(\"textarea\", props: {",
+      "\terror: \"${1}\",",
+      "\tinline: \"${2}\",",
+      "\tlabel: \"${3}\",",
+      "\tmethod: \"${4}\",",
+      "\tname: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Textarea component for Rails/ERB"
+  },
+  "Playbook Time": {
+    "prefix": "pb_time",
+    "body": [
+      "<%= pb_rails(\"time\", props: {",
+      "\tsize: \"${1|xs,sm,md,lg|}\",",
+      "\ttime: \"${2}\",",
+      "\talign: \"${3|left,center,right|}\",",
+      "\ttimezone: \"${4:America/New_York}\",",
+      "\tshow_icon: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Time component for Rails/ERB"
+  },
+  "Playbook TimeRangeInline": {
+    "prefix": "pb_time_range_inline",
+    "body": [
+      "<%= pb_rails(\"time_range_inline\", props: {",
+      "\tsize: \"${1|sm,xs|}\",",
+      "\tstart_time: \"${2}\",",
+      "\tend_time: \"${3}\",",
+      "\talignment: \"${4|left,center,right|}\",",
+      "\tdark: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook TimeRangeInline component for Rails/ERB"
+  },
+  "Playbook TimeStacked": {
+    "prefix": "pb_time_stacked",
+    "body": [
+      "<%= pb_rails(\"time_stacked\", props: {",
+      "\ttime: \"${1}\",",
+      "\talign: \"${2|left,center,right|}\",",
+      "\ttimezone: \"${3:America/New_York}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook TimeStacked component for Rails/ERB"
+  },
+  "Playbook Timeline": {
+    "prefix": "pb_timeline",
+    "body": [
+      "<%= pb_rails(\"timeline\", props: {",
+      "\torientation: \"${1|vertical,horizontal|}\",",
+      "\tshow_date: \"${2}\",",
+      "\titem_gap: \"${3|xs,sm,md,lg,none|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Timeline component for Rails/ERB"
+  },
+  "Playbook Timestamp": {
+    "prefix": "pb_timestamp",
+    "body": [
+      "<%= pb_rails(\"timestamp\", props: {",
+      "\ttext: \"${1}\",",
+      "\tvariant: \"${2|default,elapsed,updated|}\",",
+      "\ttimestamp: \"${3}\",",
+      "\tdark: \"${4}\",",
+      "\talign: \"${5|left,center,right|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Timestamp component for Rails/ERB"
+  },
+  "Playbook Title": {
+    "prefix": "pb_title",
+    "body": [
+      "<%= pb_rails(\"title\", props: {",
+      "\tsize: \"${1:3}\",",
+      "\ttext: \"${2}\",",
+      "\tvariant: \"${3|link|}\",",
+      "\tcolor: \"${4|default,light,lighter,success,error,link|}\",",
+      "\ttag: \"${5|h1,h2,h3,h4,h5,h6,p,div,span|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Title component for Rails/ERB"
+  },
+  "Playbook TitleCount": {
+    "prefix": "pb_title_count",
+    "body": [
+      "<%= pb_rails(\"title_count\", props: {",
+      "\tsize: \"${1|lg,sm|}\",",
+      "\talign: \"${2|left,center,right|}\",",
+      "\ttitle: \"${3}\",",
+      "\tcount: \"${4}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook TitleCount component for Rails/ERB"
+  },
+  "Playbook TitleDetail": {
+    "prefix": "pb_title_detail",
+    "body": [
+      "<%= pb_rails(\"title_detail\", props: {",
+      "\talign: \"${1|left,center,right|}\",",
+      "\tdetail: \"${2}\",",
+      "\ttitle: \"${3}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook TitleDetail component for Rails/ERB"
+  },
+  "Playbook Toggle": {
+    "prefix": "pb_toggle",
+    "body": [
+      "<%= pb_rails(\"toggle\", props: {",
+      "\tsize: \"${1|sm,md|}\",",
+      "\tinput_options: \"${2:{}}\",",
+      "\tchecked: \"${3}\",",
+      "\tname: \"${4}\",",
+      "\tvalue: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Toggle component for Rails/ERB"
+  },
+  "Playbook Tooltip": {
+    "prefix": "pb_tooltip",
+    "body": [
+      "<%= pb_rails(\"tooltip\", props: {",
+      "\tdark: \"${1}\",",
+      "\tdelay_open: \"${2}\",",
+      "\tdelay_close: \"${3}\",",
+      "\theight: \"${4}\",",
+      "\tinteraction: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Tooltip component for Rails/ERB"
+  },
+  "Playbook Typeahead": {
+    "prefix": "pb_typeahead",
+    "body": [
+      "<%= pb_rails(\"typeahead\", props: {",
+      "\tasync: \"${1}\",",
+      "\tdefault_options: \"${2:[]}\",",
+      "\terror: \"${3:}\",",
+      "\tget_option_label: \"${4}\",",
+      "\tget_option_value: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook Typeahead component for Rails/ERB"
+  },
+  "Playbook User": {
+    "prefix": "pb_user",
+    "body": [
+      "<%= pb_rails(\"user\", props: {",
+      "\tsize: \"${1|lg,md,sm|}\",",
+      "\talign: \"${2|left,center,right|}\",",
+      "\tavatar: \"${3}\",",
+      "\tavatar_grayscale: \"${4}\",",
+      "\tavatar_url: \"${5}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook User component for Rails/ERB"
+  },
+  "Playbook UserBadge": {
+    "prefix": "pb_user_badge",
+    "body": [
+      "<%= pb_rails(\"user_badge\", props: {",
+      "\tsize: \"${1|sm,md,lg|}\",",
+      "\tbadge: \"${2|million-dollar,veteran|}\",",
+      "\t$0",
+      "}) %>"
+    ],
+    "description": "Playbook UserBadge component for Rails/ERB"
+  },
+  "Playbook WeekdayStacked": {
+    "prefix": "pb_weekday_stacked",
+    "body": [
+      "<%= pb_rails(\"weekday_stacked\", props: {",
+      "\tvariant: \"${1|day_only,expanded,month_day|}\",",
+      "\talign: \"${2|left,center,right|}\",",
+      "\tdate: \"${3:::Date.current}\",",
+      "\tcompact: \"${4}\",",
+      "\t$0",
+      "}) do %>",
+      "\t${5:Content}",
+      "<% end %>"
+    ],
+    "description": "Playbook WeekdayStacked component for Rails/ERB"
   }
 }

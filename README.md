@@ -2,6 +2,30 @@
 
 Developer experience enhancements for the [Playbook UI](https://github.com/powerhome/playbook) design system.
 
+## Installation
+
+### From VS Code Marketplace
+
+1. Open VS Code
+2. Press `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows/Linux) to open Extensions
+3. Search for "Playbook UI"
+4. Click "Install"
+
+**OR**
+
+Install from the command line:
+
+```bash
+code --install-extension mclancy96.playbook-vscode
+```
+
+The extension will automatically activate when you open files with these languages:
+
+- Ruby (`.rb`)
+- ERB (`.erb`, `.html.erb`)
+- JavaScript React (`.jsx`)
+- TypeScript React (`.tsx`)
+
 ## Overview
 
 Playbook UI is an open-source design system built and maintained internally, used primarily in our Ruby on Rails monolith for both Rails views (ERB/Ruby) and React components (JSX/TSX). This VS Code extension improves the authoring experience by providing intelligent snippets, autocomplete, and documentation.
@@ -10,39 +34,101 @@ Playbook UI is an open-source design system built and maintained internally, use
 
 ### ✅ Implemented
 
-#### Snippets
+#### Dynamic Snippets (107 Components!)
 
-Intelligent code snippets for common Playbook components:
+**Automatically generated from the Playbook UI repository**
 
-**Rails/ERB:**
+The extension now syncs with the actual Playbook UI codebase and generates snippets for all 107+ components, including:
 
-- `pb_button` → Button component
+**Rails/ERB** - All components available with `pb_<component_name>` prefix:
+
+- `pb_button` → Button with variant, size, and prop suggestions
 - `pb_card` → Card component
 - `pb_flex` → Flex layout
-- `pb_body` → Body text
-- `pb_title` → Title/heading
-- `pb_avatar` → Avatar
-- `pb_icon` → Icon
+- `pb_avatar` → Avatar component
+- `pb_advanced_table` → Advanced Table
+- `pb_date_picker` → Date Picker
+- ...and 100+ more!
 
-**React (JSX/TSX):**
+**React (JSX/TSX)** - All components available with `pb<ComponentName>` prefix:
 
 - `pbButton` → Button component
 - `pbCard` → Card component
 - `pbFlex` → Flex layout
-- `pbBody` → Body text
-- `pbTitle` → Title/heading
-- `pbAvatar` → Avatar
-- `pbIcon` → Icon
+- `pbAvatar` → Avatar component
+- `pbAdvancedTable` → Advanced Table
+- `pbDatePicker` → Date Picker
 - `pbImport` → Import statement
+- ...and 100+ more!
 
-All snippets include tab stops and IntelliSense-friendly prop suggestions.
+**Smart Features:**
 
-### 🚧 Planned Features
+- ✅ Enum prop values with IntelliSense (e.g., `variant: primary|secondary|link`)
+- ✅ Boolean props with true/false suggestions
+- ✅ Default values pre-filled when available
+- ✅ Automatic detection of block/children components
+- ✅ Tab stops for easy navigation
 
-- **Autocomplete**: Intelligent component and prop suggestions based on context
-- **Hover Documentation**: Inline documentation for components and props
-- **Prop Validation**: Warnings for invalid prop names or values
-- **Go to Definition**: Jump to Playbook documentation
+All snippets are **automatically updated** when you run `npm run sync` to match the latest Playbook UI repository.
+
+#### Hover Documentation
+
+**Intelligent inline documentation**
+
+Hover over any Playbook component or prop to see:
+
+- Component description and usage examples
+- Available props with types and valid values
+- Default values and required props
+- Both Rails and React syntax examples
+
+Works for:
+
+- Component names in `pb_rails("button", ...)` calls
+- React component tags `<Button />`
+- Prop names in both Rails and React
+
+#### Intelligent Autocomplete
+
+**Context-aware suggestions as you type**
+
+Get intelligent autocomplete for:
+
+- **Component Names**: All 107 Playbook components with documentation
+  - Rails: Type `pb_rails("bu...`)` → See button, button_toolbar
+  - React: Type `<Bu...` → See Button, ButtonToolbar with snippets
+- **Prop Names**: Context-aware props based on the component
+  - Rails: Type `variant: ...` inside props → See valid values
+  - React: Type `variant=...` → See enum choices with defaults first
+- **Enum Values**: Automatic suggestions with default values prioritized
+- **Boolean Values**: Quick true/false completion
+
+Autocomplete triggers:
+
+- Component names: After `pb_rails("` or `<`
+- Prop names: After `:` in Rails or inside component tags in React
+- Prop values: After `=` or `"`
+
+#### Prop Validation
+
+**Real-time error detection**
+
+Get instant feedback on:
+
+- Unknown component names
+- Invalid prop names
+- Invalid enum values (e.g., using `variant: "invalid"` when only `primary|secondary|link` are valid)
+- Type mismatches
+
+Errors appear as warnings in VS Code's Problems panel and inline squiggly underlines.
+
+#### Go to Definition
+
+**Jump to documentation**
+
+- Cmd+Click (Mac) or Ctrl+Click (Windows) on any component name
+- Or use F12 / "Go to Definition"
+- Opens Playbook documentation in your browser
 
 ## Supported Languages
 
@@ -51,7 +137,21 @@ All snippets include tab stops and IntelliSense-friendly prop suggestions.
 - JavaScript React (`.jsx`)
 - TypeScript React (`.tsx`)
 
-## Installation & Development
+## Quick Start
+
+Once installed, the extension works automatically:
+
+1. **Open a Rails view** (`.erb` file) or **React component** (`.jsx`/`.tsx` file)
+2. **Type a snippet prefix**:
+   - Rails: `pb_button` then press Tab
+   - React: `pbButton` then press Tab
+3. **Hover over components** to see documentation
+4. **Cmd/Ctrl+Click** on component names to open docs
+5. **Get autocomplete** suggestions as you type
+
+That's it! No configuration needed.
+
+## Development & Contributing
 
 ### Prerequisites
 
@@ -88,6 +188,42 @@ All snippets include tab stops and IntelliSense-friendly prop suggestions.
    - Type a snippet prefix (e.g., `pb_button` or `pbButton`)
    - Press Tab to expand
 
+### Syncing with Playbook UI
+
+The extension generates snippets dynamically from the Playbook UI repository. To update snippets with the latest components:
+
+1. **Ensure Playbook repo is cloned:**
+
+   ```bash
+   # The sync script expects the Playbook repo at:
+   # ../playbook/playbook/app/pb_kits/playbook
+
+   # Or set a custom path:
+   export PLAYBOOK_REPO_PATH="/path/to/playbook/playbook/app/pb_kits/playbook"
+   ```
+
+2. **Run the sync command:**
+
+   ```bash
+   npm run sync
+   ```
+
+This will:
+
+- Scan all pb_* directories in the Playbook repo
+- Parse Ruby component files to extract props and metadata
+- Generate snippets for both Rails/ERB and React
+- Update `data/playbook.json` with component metadata
+- Create 107+ snippets automatically!
+
+**When to sync:**
+
+- After pulling latest changes from Playbook UI
+- When new components are added to Playbook
+- When component props change
+
+The sync process is safe and can be run anytime. Generated files can be committed to version control.
+
 ## Architecture
 
 ### Directory Structure
@@ -96,11 +232,13 @@ All snippets include tab stops and IntelliSense-friendly prop suggestions.
 playbook_extension/
 ├── src/
 │   └── extension.ts        # Extension entry point
+├── scripts/
+│   └── sync-playbook.ts    # Sync script to generate snippets from Playbook repo
 ├── snippets/
-│   ├── rails.json          # Rails/ERB snippets
-│   └── react.json          # React (JSX/TSX) snippets
+│   ├── rails.json          # Generated Rails/ERB snippets (107+ components)
+│   └── react.json          # Generated React snippets (107+ components)
 ├── data/
-│   └── playbook.json       # Component metadata (for future autocomplete/hover)
+│   └── playbook.json       # Generated component metadata
 ├── .vscode/
 │   └── launch.json         # Debug configuration
 ├── package.json            # Extension manifest
@@ -110,7 +248,7 @@ playbook_extension/
 
 ### Design Principles
 
-1. **Static metadata over dynamic parsing**: No attempt to parse Playbook source code or introspect at runtime
+1. **Dynamic generation from source**: Snippets auto-generated from Playbook repo Ruby files
 2. **Incremental development**: Snippets first, then autocomplete and hover
 3. **Simplicity**: Minimal dependencies, straightforward implementation
 4. **Maintainability**: Clear code structure, extensive TODO comments for future work
@@ -204,11 +342,18 @@ This metadata will be used for future autocomplete and hover features.
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) file for details
+
+## Links
+
+- [GitHub Repository](https://github.com/mclancy96/playbook_vscode_extension)
+- [Issue Tracker](https://github.com/mclancy96/playbook_vscode_extension/issues)
+- [Playbook UI Documentation](https://playbook.powerhrg.com/)
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=mclancy96.playbook-vscode)
 
 ## Support
 
 For issues or questions:
 
+- [GitHub Issues](https://github.com/mclancy96/playbook_vscode_extension/issues)
 - Internal Slack: #playbook-ui
-- GitHub Issues: (repository URL when published)
