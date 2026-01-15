@@ -32,7 +32,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
     if (railsComponent) {
       const component = findComponentByRailsName(metadata, railsComponent.componentName)
       if (component) {
-        const docs = generateComponentDocs(railsComponent.componentName, component)
+        const docs = generateComponentDocs(railsComponent.componentName, component, metadata)
         return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range)
       }
     }
@@ -41,7 +41,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
     if (reactComponent) {
       const component = findComponentByReactName(metadata, reactComponent.componentName)
       if (component) {
-        const docs = generateComponentDocs(reactComponent.componentName, component)
+        const docs = generateComponentDocs(reactComponent.componentName, component, metadata)
         return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range)
       }
     }

@@ -72,7 +72,11 @@ export function findComponentByReactName(
 /**
  * Generate markdown documentation for a component
  */
-export function generateComponentDocs(componentName: string, component: ComponentMetadata): string {
+export function generateComponentDocs(
+  componentName: string,
+  component: ComponentMetadata,
+  metadata: PlaybookMetadata
+): string {
   const lines: string[] = []
 
   lines.push(`# ${componentName}`)
@@ -106,7 +110,7 @@ export function generateComponentDocs(componentName: string, component: Componen
   lines.push("```")
   lines.push("")
 
-  // Props
+  // Component-specific Props
   if (Object.keys(component.props).length > 0) {
     lines.push("## Props")
     lines.push("")
@@ -130,6 +134,40 @@ export function generateComponentDocs(componentName: string, component: Componen
 
       lines.push("")
     }
+  }
+
+  // Global Props
+  if (metadata.globalProps && Object.keys(metadata.globalProps).length > 0) {
+    lines.push("## Global Props")
+    lines.push("")
+    lines.push("*These props are available on all Playbook components:*")
+    lines.push("")
+
+    const globalPropsList: string[] = []
+    for (const [propName, prop] of Object.entries(metadata.globalProps)) {
+      const camelCaseProp = propName.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+      let propDesc = `**${propName}** (${camelCaseProp})`
+
+      if (prop.values && prop.values.length > 0) {
+        // For props with many values, show type and first few values
+        if (prop.values.length > 5) {
+          propDesc += ` - \`${prop.type}\`: ${prop.values
+            .slice(0, 5)
+            .map((v) => `\`${v}\``)
+            .join(", ")}...`
+        } else {
+          propDesc += ` - ${prop.values.map((v) => `\`${v}\``).join(", ")}`
+        }
+      } else {
+        propDesc += ` - \`${prop.type}\``
+      }
+
+      globalPropsList.push(propDesc)
+    }
+
+    // Display in columns for better readability
+    lines.push(globalPropsList.join("  \n"))
+    lines.push("")
   }
 
   return lines.join("\n")

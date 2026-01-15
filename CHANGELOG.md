@@ -5,6 +5,40 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-01-15
+
+### Added
+
+- **Global Props in Hover Documentation** 📚
+  - Hover documentation now includes a dedicated "Global Props" section
+  - Shows all 40+ global props with their available values when hovering over any component
+  - Helps developers remember available global props without leaving the editor
+  - Values are displayed (limited to first 5 for props with many options)
+  - Appears below component-specific props for easy reference
+
+## [1.0.4] - 2026-01-15
+
+### Fixed
+
+- **Multi-line Tag Support** 🔧
+  - Fixed autocomplete and prop suggestions for multi-line `pb_rails` calls
+  - Completion provider now searches backwards through up to 20 lines to find props context
+  - Properly detects when cursor is inside a props block across multiple lines
+  - Brace matching logic ensures completions work even with nested objects (e.g., `data: {}`)
+
+- **Prop Value Completions Inside Strings** 🎯
+  - Fixed prop value suggestions to work when cursor is inside a string (`variant: "primary"`)
+  - Previously only worked immediately after colon (`variant:`)
+  - Now works at any position: `variant:`, `variant: "`, `variant: "pri"`
+  - Automatically inserts quotes when not already inside a string
+  - Inserts plain value when already inside quotes
+
+### Added
+
+- New `findPropsContext()` method to intelligently detect multi-line props blocks
+- Improved regex matching for prop value detection
+- Enhanced parser with backwards regex search for better component context detection
+
 ## [1.0.3] - 2026-01-15
 
 ### Added
