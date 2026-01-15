@@ -2,55 +2,21 @@
 
 Developer experience enhancements for the [Playbook UI](https://github.com/powerhome/playbook) design system.
 
-## Installation
-
-### From VS Code Marketplace
-
-1. Open VS Code
-2. Press `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows/Linux) to open Extensions
-3. Search for "Playbook UI Helper"
-4. Click "Install"
-
-**OR**
-
-Install from the command line:
-
-```bash
-code --install-extension clancytools.playbook-vscode
-```
-
-The extension will automatically activate when you open files with these languages:
-
-- Ruby (`.rb`)
-- ERB (`.erb`, `.html.erb`)
-- JavaScript React (`.jsx`)
-- TypeScript React (`.tsx`)
-
-## Overview
-
-Playbook UI is an open-source design system built and maintained internally, used primarily in our Ruby on Rails monolith for both Rails views (ERB/Ruby) and React components (JSX/TSX). This VS Code extension improves the authoring experience by providing intelligent snippets, autocomplete, and documentation.
-
 ## Features
 
-### ✅ Implemented
+### ✨ Smart Snippets for 150+ Components
 
-#### Dynamic Snippets (107 Components!)
-
-**Automatically generated from the Playbook UI repository**
-
-The extension now syncs with the actual Playbook UI codebase and generates snippets for all 107+ components, including:
-
-**Rails/ERB** - All components available with `pb_<component_name>` prefix:
+**Rails/ERB Components** - Type `pb_<component_name>` and press Tab:
 
 - `pb_button` → Button with variant, size, and prop suggestions
-- `pb_card` → Card component
-- `pb_flex` → Flex layout
+- `pb_card` → Card component with padding and spacing
+- `pb_flex` → Flex layout with alignment options
 - `pb_avatar` → Avatar component
 - `pb_advanced_table` → Advanced Table
 - `pb_date_picker` → Date Picker
-- ...and 100+ more!
+- ...and 140+ more!
 
-**React (JSX/TSX)** - All components available with `pb<ComponentName>` prefix:
+**React Components** - Type `pb<ComponentName>` and press Tab:
 
 - `pbButton` → Button component
 - `pbCard` → Card component
@@ -58,8 +24,8 @@ The extension now syncs with the actual Playbook UI codebase and generates snipp
 - `pbAvatar` → Avatar component
 - `pbAdvancedTable` → Advanced Table
 - `pbDatePicker` → Date Picker
-- `pbImport` → Import statement
-- ...and 100+ more!
+- `pbImport` → Import statement for any component
+- ...and 140+ more!
 
 **Smart Features:**
 
@@ -67,13 +33,11 @@ The extension now syncs with the actual Playbook UI codebase and generates snipp
 - ✅ Boolean props with true/false suggestions
 - ✅ Default values pre-filled when available
 - ✅ Automatic detection of block/children components
-- ✅ Tab stops for easy navigation
+- ✅ Tab stops for easy navigation between props
 
-All snippets are **automatically updated** when you run `npm run sync` to match the latest Playbook UI repository.
+### 📚 Hover Documentation
 
-#### Hover Documentation
-
-**Intelligent inline documentation**
+**Inline documentation as you code**
 
 Hover over any Playbook component or prop to see:
 
@@ -84,87 +48,204 @@ Hover over any Playbook component or prop to see:
 
 Works for:
 
-- Component names in `pb_rails("button", ...)` calls
-- React component tags `<Button />`
-- Prop names in both Rails and React
+- Component names: `pb_rails("button", ...)` or `<Button />`
+- Prop names in both Rails and React syntax
+- Global props like padding, margin, display, etc.
 
-#### Intelligent Autocomplete
+### 🎯 Intelligent Autocomplete
 
 **Context-aware suggestions as you type**
 
 Get intelligent autocomplete for:
 
-- **Component Names**: All 107 Playbook components with documentation
-  - Rails: Type `pb_rails("bu...`)` → See button, button_toolbar
-  - React: Type `<Bu...` → See Button, ButtonToolbar with snippets
-- **Prop Names**: Context-aware props based on the component
-  - Rails: Type `variant: ...` inside props → See valid values
-  - React: Type `variant=...` → See enum choices with defaults first
-- **Enum Values**: Automatic suggestions with default values prioritized
-- **Boolean Values**: Quick true/false completion
+**Component Names**
 
-Autocomplete triggers:
+- Rails: Type `pb_rails("bu...)` → See button, button_toolbar with descriptions
+- React: Type `<Bu...` → See Button, ButtonToolbar with snippets
 
-- Component names: After `pb_rails("` or `<`
-- Prop names: After `:` in Rails or inside component tags in React
-- Prop values: After `=` or `"`
+**Prop Names**
 
-#### Prop Validation
+- Rails: Type inside `props: {` → See all available props for that component
+- React: Type inside component tags → See component-specific and global props
+- Includes 60+ global props: padding, margin, dark, display, position, etc.
 
-**Real-time error detection**
+**Prop Values**
+
+- Automatic suggestions for enum values
+- Default values prioritized first
+- Shows all valid options with documentation
+
+**Global Props Available Everywhere:**
+
+- Spacing: padding, margin (with all directional variants)
+- Layout: display, position, vertical_align, text_align
+- Flexbox: flex_direction, align_items, justify_content
+- Styling: dark, shadow, border_radius, cursor
+- And 50+ more!
+
+### ⚠️ Real-Time Validation
+
+**Catch errors before you run your code**
 
 Get instant feedback on:
 
 - Unknown component names
 - Invalid prop names
-- Invalid enum values (e.g., using `variant: "invalid"` when only `primary|secondary|link` are valid)
-- Type mismatches
+- Invalid enum values (e.g., `variant: "invalid"` when only `primary`, `secondary`, `link` are valid)
+- Works across single-line and multi-line props
 
-Errors appear as warnings in VS Code's Problems panel and inline squiggly underlines.
+Errors appear as:
 
-#### Go to Definition
+- Yellow squiggly underlines in your code
+- Problems panel entries with helpful messages
+- Suggestions for valid values
 
-**Jump to documentation**
+### 🔗 Jump to Documentation
 
-- Cmd+Click (Mac) or Ctrl+Click (Windows) on any component name
-- Or use F12 / "Go to Definition"
-- Opens Playbook documentation in your browser
+**Quick access to component docs**
 
-## Supported Languages
+- **Cmd+Click** (Mac) or **Ctrl+Click** (Windows) on any component name
+- Or press **F12** / use "Go to Definition"
+- Opens the official Playbook documentation in your browser
 
-- Ruby (`.rb`)
-- ERB (`.erb`)
+## Installation
+
+### From VS Code Marketplace
+
+1. Open VS Code
+2. Press `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows/Linux)
+3. Search for **"Playbook UI Helper"**
+4. Click **Install**
+
+### From Command Line
+
+```bash
+code --install-extension clancytools.playbook-vscode
+```
+
+### Auto-Activation
+
+The extension automatically activates when you open:
+
+- Ruby files (`.rb`)
+- ERB files (`.erb`, `.html.erb`)
 - JavaScript React (`.jsx`)
 - TypeScript React (`.tsx`)
 
 ## Quick Start
 
-Once installed, the extension works automatically:
+### Rails/ERB Example
 
-1. **Open a Rails view** (`.erb` file) or **React component** (`.jsx`/`.tsx` file)
-2. **Type a snippet prefix**:
-   - Rails: `pb_button` then press Tab
-   - React: `pbButton` then press Tab
-3. **Hover over components** to see documentation
-4. **Cmd/Ctrl+Click** on component names to open docs
-5. **Get autocomplete** suggestions as you type
+```erb
+<!-- Type 'pb_button' and press Tab -->
+<%= pb_rails("button", props: {
+  text: "Click Me",
+  variant: "primary",    <!-- Autocomplete shows: primary, secondary, link -->
+  size: "md"             <!-- Autocomplete shows: sm, md, lg -->
+}) %>
+```
 
-That's it! No configuration needed.
+### React/JSX Example
 
-## License
+```jsx
+// Type 'pbButton' and press Tab
+<Button
+  text="Click Me"
+  variant="primary"      // Autocomplete shows valid variants
+  size="md"             // Autocomplete shows valid sizes
+/>
+```
 
-MIT - See [LICENSE](LICENSE) file for details
+### Using Autocomplete
+
+1. **Start typing** a component name or prop
+2. **Press Ctrl+Space** to trigger suggestions (or they appear automatically)
+3. **Use arrow keys** to navigate options
+4. **Press Enter or Tab** to insert
+
+### Viewing Documentation
+
+1. **Hover** over any component or prop name
+2. **Read the popup** showing types, values, and examples
+3. **Cmd/Ctrl+Click** to open full docs in browser
+
+## Supported Languages
+
+- Ruby (`.rb`)
+- ERB (`.erb`, `.html.erb`)
+- JavaScript React (`.jsx`)
+- TypeScript React (`.tsx`)
+
+## Tips & Tricks
+
+### Multi-line Props
+
+The extension works seamlessly with multi-line prop declarations:
+
+```erb
+<%= pb_rails("card", props: {
+  padding: "md",
+  margin_top: "lg",
+  dark: true,
+  border_radius: "md"
+}) %>
+```
+
+### Global Props
+
+These props work on **every** component:
+
+- **Spacing**: `padding`, `margin`, `padding_top`, `margin_bottom`, etc.
+- **Layout**: `display`, `position`, `vertical_align`, `text_align`
+- **Flexbox**: `flex_direction`, `align_items`, `justify_content`, `gap`
+- **Styling**: `dark`, `shadow`, `border_radius`, `cursor`, `background`
+- **Responsive**: All spacing and layout props support responsive breakpoints
+
+### Special Props
+
+Some props accept any value and won't show validation errors:
+
+- `id` - Element IDs
+- `data` - Data attributes
+- `aria` - ARIA attributes
+- `html_options` - Additional HTML options
+- `children` - Component children
+- `style` - Inline styles
+
+## Troubleshooting
+
+### Autocomplete Not Showing?
+
+- Press `Ctrl+Space` to manually trigger
+- Make sure you're inside a Playbook component
+- Check that file extension is `.erb`, `.rb`, `.jsx`, or `.tsx`
+
+### Validation Warnings?
+
+- Check the spelling of prop names
+- Verify enum values match valid options (hover to see them)
+- Variables and method calls won't trigger warnings, only quoted strings
+
+### Snippets Not Working?
+
+- Make sure you're typing the full prefix (e.g., `pb_button` not just `button`)
+- Press Tab after typing the prefix
+- Check that IntelliSense is enabled in VS Code settings
 
 ## Links
 
-- [GitHub Repository](https://github.com/mclancy96/playbook_vscode_extension)
-- [Issue Tracker](https://github.com/mclancy96/playbook_vscode_extension/issues)
 - [Playbook UI Documentation](https://playbook.powerhrg.com/)
+- [GitHub Repository](https://github.com/mclancy96/playbook_vscode_extension)
 - [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=clancytools.playbook-vscode)
+- [Report an Issue](https://github.com/mclancy96/playbook_vscode_extension/issues)
 
 ## Support
 
-For issues or questions:
+For questions or issues:
 
 - [GitHub Issues](https://github.com/mclancy96/playbook_vscode_extension/issues)
-- Internal Slack: #playbook-ui
+- Internal Slack: **#playbook-ui**
+
+## License
+
+MIT License - See [LICENSE](LICENSE) for details
