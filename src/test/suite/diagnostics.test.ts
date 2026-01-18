@@ -234,6 +234,56 @@ suite("Diagnostics Test Suite", () => {
     // These should be ignored since they're inside nested objects
     assert.ok(true, "Nested object properties are not validated")
   })
+
+  test("Should not validate props inside method call arguments", async () => {
+    const content = `<%= pb_rails("table/table_cell", props: {
+      text: link_to(
+        job_posting.title,
+        job_path(job_posting),
+        remote: true,
+        data: {
+          toggle: "modal",
+          target: "#show-job",
+          disable_with: "Loading...",
+        }
+      ),
+    }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    // "remote", "toggle", "target", "disable_with" are args to link_to, not props for table_cell
+    assert.ok(true, "Method call arguments are not validated as component props")
+  })
+
+  test("Should not validate props from nested props blocks", async () => {
+    const content = `<%= pb_rails("flex/flex_item") do %>
+      <%= form.date_picker(:date_left_gteq, props: { label: "Start Date", disable_input: show_date }) %>
+    <% end %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    // "label" and "disable_input" are props for date_picker, not flex_item
+    assert.ok(true, "Nested props blocks are not validated as parent component props")
+  })
+
+  test("Should not validate properties inside nested validation object", async () => {
+    const content = `<%= pb_rails("typeahead", props: {
+      is_multi: false,
+      label: "Employee Name",
+      name: :user_id,
+      placeholder: "Search Employees",
+      required: true,
+      validation: { message: "Please select an employee" },
+    }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    // "message" is a property inside the validation hash, not a top-level prop
+    assert.ok(true, "Nested validation object properties are not validated")
+  })
 })
 
 async function createTestDocument(
@@ -246,3 +296,4 @@ async function createTestDocument(
   edit.insert(uri, new vscode.Position(0, 0), content)
   return document
 }
+

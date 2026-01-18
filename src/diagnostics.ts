@@ -118,9 +118,6 @@ export class PlaybookDiagnostics {
       const propsBlock = this.extractPropsBlock(document, startLineIndex)
       if (!propsBlock) return
 
-      // Props that accept nested objects - we should skip validating their contents
-      const propsWithNestedObjects = ["aria", "data", "html_options"]
-
       const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+)|\{)/g
       let match
 
@@ -134,8 +131,19 @@ export class PlaybookDiagnostics {
         const singleQuotedValue = match[4]
         const unquotedValue = match[5]
 
-        // If this prop has a nested object (ends with {), skip to the end of that object
-        if (fullValue === "{" && propsWithNestedObjects.includes(propName)) {
+        // Skip "props:" as it's likely a nested component/method call with its own props
+        if (propName === "props") {
+          continue
+        }
+
+        // Skip reserved keywords
+        if (["do", "end", "if", "unless"].includes(propName)) {
+          continue
+        }
+
+        // If ANY prop has a nested object (value is {), skip to the end of that object
+        // This handles nested hashes for any prop (validation: {}, data: {}, etc.)
+        if (fullValue === "{") {
           let braceCount = 1
           let searchIndex = propRegex.lastIndex
 
@@ -156,10 +164,6 @@ export class PlaybookDiagnostics {
             : singleQuotedValue !== undefined
               ? `'${singleQuotedValue}'`
               : unquotedValue
-
-        if (["props", "do", "end", "if", "unless"].includes(propName)) {
-          continue
-        }
 
         const position = this.getPositionInPropsBlock(propsBlock, match.index)
 

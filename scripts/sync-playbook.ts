@@ -163,7 +163,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   if (!globalProps.position)
     globalProps.position = {
       type: "string",
-      values: ["relative", "absolute", "fixed", "sticky", "static"]
+      values: ["relative", "absolute", "fixed", "sticky"]
     }
   if (!globalProps.z_index)
     globalProps.z_index = {
