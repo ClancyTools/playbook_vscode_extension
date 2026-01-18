@@ -120,37 +120,53 @@ export class PlaybookDiagnostics {
 
       const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+)|\{)/g
       let match
+      let parenDepth = 0
+      let braceDepth = 0
+      let lastIndex = 0
 
       while (
         (match = propRegex.exec(propRegex.lastIndex > 0 ? propsBlock.text : propsBlock.text)) !==
         null
       ) {
+        const betweenText = propsBlock.text.substring(lastIndex, match.index)
+        for (const char of betweenText) {
+          if (char === "(") parenDepth++
+          if (char === ")") parenDepth--
+          if (char === "{") braceDepth++
+          if (char === "}") braceDepth--
+        }
+        lastIndex = match.index
+
         const propName = match[1]
         const fullValue = match[2]
         const doubleQuotedValue = match[3]
         const singleQuotedValue = match[4]
         const unquotedValue = match[5]
 
-        // Skip "props:" as it's likely a nested component/method call with its own props
+        if (parenDepth > 0) {
+          continue
+        }
+
+        if (braceDepth > 0) {
+          continue
+        }
+
         if (propName === "props") {
           continue
         }
 
-        // Skip reserved keywords
         if (["do", "end", "if", "unless"].includes(propName)) {
           continue
         }
 
-        // If ANY prop has a nested object (value is {), skip to the end of that object
-        // This handles nested hashes for any prop (validation: {}, data: {}, etc.)
         if (fullValue === "{") {
-          let braceCount = 1
+          let nestedBraceCount = 1
           let searchIndex = propRegex.lastIndex
 
-          while (braceCount > 0 && searchIndex < propsBlock.text.length) {
+          while (nestedBraceCount > 0 && searchIndex < propsBlock.text.length) {
             const char = propsBlock.text[searchIndex]
-            if (char === "{") braceCount++
-            if (char === "}") braceCount--
+            if (char === "{") nestedBraceCount++
+            if (char === "}") nestedBraceCount--
             searchIndex++
           }
 
@@ -257,8 +273,6 @@ export class PlaybookDiagnostics {
       const isQuotedString = propValue.startsWith('"') || propValue.startsWith("'")
 
       if (isQuotedString && cleanValue && !prop.values.includes(cleanValue)) {
-        // Find where the value starts within the full match (propName: "value")
-        // We want to highlight just the quoted value
         const valueMatch = fullMatch.match(/("([^"]*)"|'([^']*)')/)
         const valueStartOffset = valueMatch ? fullMatch.indexOf(valueMatch[0]) : 0
         const valueLength = valueMatch ? valueMatch[0].length : propValue.length
@@ -374,5 +388,9 @@ export class PlaybookDiagnostics {
 
   public dispose(): void {
     this.diagnosticCollection.dispose()
+  }
+
+  public getDiagnostics(uri: vscode.Uri): readonly vscode.Diagnostic[] {
+    return this.diagnosticCollection.get(uri) || []
   }
 }

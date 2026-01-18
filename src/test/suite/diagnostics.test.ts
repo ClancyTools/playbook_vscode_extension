@@ -252,8 +252,25 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    // "remote", "toggle", "target", "disable_with" are args to link_to, not props for table_cell
-    assert.ok(true, "Method call arguments are not validated as component props")
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const remoteWarning = diagnostics.find((d) => d.message.includes("remote"))
+    const toggleWarning = diagnostics.find((d) => d.message.includes("toggle"))
+    const targetWarning = diagnostics.find((d) => d.message.includes("target"))
+    const disableWithWarning = diagnostics.find((d) => d.message.includes("disable_with"))
+
+    assert.ok(!remoteWarning, "Should not warn about 'remote' (it's in link_to args)")
+    assert.ok(
+      !toggleWarning,
+      "Should not warn about 'toggle' (it's in nested data hash inside link_to)"
+    )
+    assert.ok(
+      !targetWarning,
+      "Should not warn about 'target' (it's in nested data hash inside link_to)"
+    )
+    assert.ok(
+      !disableWithWarning,
+      "Should not warn about 'disable_with' (it's in nested data hash inside link_to)"
+    )
   })
 
   test("Should not validate props from nested props blocks", async () => {
@@ -264,8 +281,15 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    // "label" and "disable_input" are props for date_picker, not flex_item
-    assert.ok(true, "Nested props blocks are not validated as parent component props")
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const labelWarning = diagnostics.find((d) => d.message.includes("label"))
+    const disableInputWarning = diagnostics.find((d) => d.message.includes("disable_input"))
+
+    assert.ok(!labelWarning, "Should not warn about 'label' (it's in nested date_picker props)")
+    assert.ok(
+      !disableInputWarning,
+      "Should not warn about 'disable_input' (it's in nested date_picker props)"
+    )
   })
 
   test("Should not validate properties inside nested validation object", async () => {
@@ -281,8 +305,10 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    // "message" is a property inside the validation hash, not a top-level prop
-    assert.ok(true, "Nested validation object properties are not validated")
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const messageWarning = diagnostics.find((d) => d.message.includes("message"))
+
+    assert.ok(!messageWarning, "Should not warn about 'message' (it's in nested validation hash)")
   })
 })
 
@@ -296,4 +322,3 @@ async function createTestDocument(
   edit.insert(uri, new vscode.Position(0, 0), content)
   return document
 }
-
