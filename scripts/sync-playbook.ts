@@ -128,7 +128,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
     }
   }
 
-  const spacingValues = ["none", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
+  const spacingValues = ["none", "xxs", "xs", "sm", "md", "lg", "xl"]
   const spacingProps = [
     "padding",
     "padding_top",
@@ -147,9 +147,14 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   ]
 
   spacingProps.forEach((prop) => {
-    if (!globalProps[prop]) {
-      globalProps[prop] = { type: "string", values: spacingValues }
-    }
+    globalProps[prop] = { type: "string", values: spacingValues }
+  })
+
+  const positioningValues = ["0", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
+  const positioningProps = ["top", "right", "bottom", "left"]
+
+  positioningProps.forEach((prop) => {
+    globalProps[prop] = { type: "string", values: positioningValues }
   })
 
   if (!globalProps.dark) globalProps.dark = { type: "boolean" }
@@ -173,35 +178,183 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   if (!globalProps.group_hover) globalProps.group_hover = { type: "boolean" }
   if (!globalProps.truncate)
     globalProps.truncate = { type: "string", values: ["none", "1", "2", "3", "4", "5"] }
-  if (!globalProps.width) globalProps.width = { type: "string" }
-  if (!globalProps.min_width) globalProps.min_width = { type: "string" }
-  if (!globalProps.max_width) globalProps.max_width = { type: "string" }
-  if (!globalProps.height) globalProps.height = { type: "string" }
-  if (!globalProps.min_height) globalProps.min_height = { type: "string" }
-  if (!globalProps.max_height) globalProps.max_height = { type: "string" }
-  if (!globalProps.gap)
-    globalProps.gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
-  if (!globalProps.column_gap)
-    globalProps.column_gap = {
-      type: "string",
-      values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"]
-    }
-  if (!globalProps.row_gap)
-    globalProps.row_gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
+
+  globalProps.width = {
+    type: "string",
+    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
+  }
+  globalProps.min_width = {
+    type: "string",
+    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
+  }
+  globalProps.max_width = {
+    type: "string",
+    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
+  }
+  globalProps.height = {
+    type: "string",
+    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
+  }
+  globalProps.min_height = {
+    type: "string",
+    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
+  }
+  globalProps.max_height = {
+    type: "string",
+    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
+  }
+  globalProps.gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
+  if (!globalProps.column_gap) globalProps.column_gap = { type: "string" }
+  if (!globalProps.row_gap) globalProps.row_gap = { type: "string" }
   if (!globalProps.order)
     globalProps.order = {
       type: "string",
-      values: ["none", "first", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+      values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
     }
-  if (!globalProps.top) globalProps.top = { type: "string" }
-  if (!globalProps.right) globalProps.right = { type: "string" }
-  if (!globalProps.bottom) globalProps.bottom = { type: "string" }
-  if (!globalProps.left) globalProps.left = { type: "string" }
   if (!globalProps.hover) globalProps.hover = { type: "string" }
+  if (!globalProps.border_radius)
+    globalProps.border_radius = {
+      type: "string",
+      values: ["none", "xs", "sm", "md", "lg", "xl", "rounded"]
+    }
+  if (!globalProps.text_align)
+    globalProps.text_align = {
+      type: "string",
+      values: ["start", "end", "left", "right", "center", "justify", "justify-all", "match-parent"]
+    }
+  if (!globalProps.overflow)
+    globalProps.overflow = {
+      type: "string",
+      values: ["visible", "hidden", "scroll", "auto"]
+    }
+  if (!globalProps.overflow_x)
+    globalProps.overflow_x = {
+      type: "string",
+      values: ["visible", "hidden", "scroll", "auto"]
+    }
+  if (!globalProps.overflow_y)
+    globalProps.overflow_y = {
+      type: "string",
+      values: ["visible", "hidden", "scroll", "auto"]
+    }
+  if (!globalProps.flex_direction)
+    globalProps.flex_direction = {
+      type: "string",
+      values: ["row", "column", "rowReverse", "columnReverse"]
+    }
+  if (!globalProps.flex_wrap)
+    globalProps.flex_wrap = {
+      type: "string",
+      values: ["wrap", "nowrap", "wrapReverse"]
+    }
+  if (!globalProps.justify_content)
+    globalProps.justify_content = {
+      type: "string",
+      values: ["start", "end", "center", "spaceBetween", "spaceAround", "spaceEvenly"]
+    }
+  if (!globalProps.justify_self)
+    globalProps.justify_self = {
+      type: "string",
+      values: ["auto", "start", "end", "center", "stretch"]
+    }
+  if (!globalProps.align_items)
+    globalProps.align_items = {
+      type: "string",
+      values: ["flexStart", "flexEnd", "start", "end", "center", "baseline", "stretch"]
+    }
+  if (!globalProps.align_content)
+    globalProps.align_content = {
+      type: "string",
+      values: ["start", "end", "center", "spaceBetween", "spaceAround", "spaceEvenly"]
+    }
+  if (!globalProps.align_self)
+    globalProps.align_self = {
+      type: "string",
+      values: ["auto", "start", "end", "center", "stretch", "baseline"]
+    }
+  if (!globalProps.flex)
+    globalProps.flex = {
+      type: "string",
+      values: [
+        "auto",
+        "initial",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "none"
+      ]
+    }
+  if (!globalProps.flex_grow) globalProps.flex_grow = { type: "string", values: ["1", "0"] }
+  if (!globalProps.flex_shrink) globalProps.flex_shrink = { type: "string", values: ["1", "0"] }
+  if (!globalProps.cursor)
+    globalProps.cursor = {
+      type: "string",
+      values: [
+        "auto",
+        "default",
+        "none",
+        "contextMenu",
+        "help",
+        "pointer",
+        "progress",
+        "wait",
+        "cell",
+        "crosshair",
+        "text",
+        "verticalText",
+        "alias",
+        "copy",
+        "move",
+        "noDrop",
+        "notAllowed",
+        "grab",
+        "grabbing",
+        "eResize",
+        "nResize",
+        "neResize",
+        "nwResize",
+        "sResize",
+        "seResize",
+        "swResize",
+        "wResize",
+        "ewResize",
+        "nsResize",
+        "neswResize",
+        "nwseResize",
+        "colResize",
+        "rowResize",
+        "allScroll",
+        "zoomIn",
+        "zoomOut"
+      ]
+    }
+  if (!globalProps.vertical_align)
+    globalProps.vertical_align = {
+      type: "string",
+      values: ["baseline", "super", "top", "middle", "bottom", "sub", "text-top", "text-bottom"]
+    }
+  if (!globalProps.line_height)
+    globalProps.line_height = {
+      type: "string",
+      values: ["tightest", "tighter", "tight", "normal", "loose", "looser", "loosest"]
+    }
+  if (!globalProps.number_spacing)
+    globalProps.number_spacing = { type: "string", values: ["tabular"] }
 
   if (!globalProps.aria) globalProps.aria = { type: "string" }
   if (!globalProps.children) globalProps.children = { type: "string" }
   if (!globalProps.classname) globalProps.classname = { type: "string" }
+  if (!globalProps.class_name) globalProps.class_name = { type: "string" }
   if (!globalProps.data) globalProps.data = { type: "string" }
   if (!globalProps.html_options) globalProps.html_options = { type: "string" }
   if (!globalProps.id) globalProps.id = { type: "string" }

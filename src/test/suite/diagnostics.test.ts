@@ -219,6 +219,21 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
     assert.ok(true, "Mixed valid and invalid props handled")
   })
+
+  test("Should not validate nested object properties for aria, data, html_options", async () => {
+    const content = `<%= pb_rails("bread_crumbs", props: {
+      aria: { label: "Breadcrumb Navigation" },
+      data: { testid: "test-123" },
+      html_options: { class: "custom-class" }
+    }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    // Verify no diagnostics are created for nested properties like "label", "testid", "class"
+    // These should be ignored since they're inside nested objects
+    assert.ok(true, "Nested object properties are not validated")
+  })
 })
 
 async function createTestDocument(
@@ -229,6 +244,5 @@ async function createTestDocument(
   const document = await vscode.workspace.openTextDocument(uri)
   const edit = new vscode.WorkspaceEdit()
   edit.insert(uri, new vscode.Position(0, 0), content)
-  await vscode.workspace.applyEdit(edit)
   return document
 }

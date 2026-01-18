@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-01-16T02:40:58.520Z",
+  "generatedAt": "2026-01-17T16:05:57.973Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -148,70 +148,143 @@
     "margin_right": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin_left": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin_top": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin_bottom": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin_x": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin_y": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "margin": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "width": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0%",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "0",
+        "none",
+        "100%"
+      ]
     },
     "max_width": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0%",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "0",
+        "none",
+        "100%"
+      ]
     },
     "min_width": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0%",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "0",
+        "none",
+        "100%"
+      ]
     },
     "gap": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ]
     },
     "column_gap": {
       "type": "string"
@@ -234,57 +307,85 @@
     "padding_right": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding_left": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding_top": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding_bottom": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding_x": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding_y": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "padding": {
       "type": "string",
       "values": [
-        "auto",
-        "initial",
-        "inherit"
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
       ]
     },
     "position": {
@@ -298,16 +399,64 @@
       ]
     },
     "top": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "auto",
+        "initial",
+        "inherit"
+      ]
     },
     "right": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "auto",
+        "initial",
+        "inherit"
+      ]
     },
     "bottom": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "auto",
+        "initial",
+        "inherit"
+      ]
     },
     "left": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "0",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "auto",
+        "initial",
+        "inherit"
+      ]
     },
     "shadow": {
       "type": "string",
@@ -378,13 +527,43 @@
       "type": "string"
     },
     "height": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "auto",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "xxxl"
+      ]
     },
     "max_height": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "auto",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "xxxl"
+      ]
     },
     "min_height": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "auto",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "xxxl"
+      ]
     },
     "display": {
       "type": "string",
@@ -407,6 +586,9 @@
       "type": "string"
     },
     "classname": {
+      "type": "string"
+    },
+    "class_name": {
       "type": "string"
     },
     "data": {

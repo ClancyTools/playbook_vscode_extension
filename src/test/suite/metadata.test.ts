@@ -200,16 +200,37 @@ suite("Metadata Test Suite", () => {
     })
   })
 
-  test("Should not have enum values for width/height props (flexible string props)", () => {
+  test("Should have sizing props with correct enum values", () => {
     assert.ok(metadata.globalProps, "Metadata should have globalProps")
 
-    const flexibleProps = ["width", "height", "min_width", "max_width"]
-
-    flexibleProps.forEach((propName) => {
+    // Width/height/max-width should have enum values
+    const widthProps = ["width", "min_width", "max_width"]
+    widthProps.forEach((propName) => {
       const prop = metadata.globalProps[propName]
       assert.ok(prop, `Should have ${propName}`)
       assert.strictEqual(prop.type, "string", `${propName} should be string type`)
-      assert.ok(!prop.values || prop.values.length === 0, `${propName} should not restrict values`)
+      assert.ok(prop.values && prop.values.length > 0, `${propName} should have enum values`)
     })
+
+    // Height props should have enum values
+    const heightProps = ["height", "min_height", "max_height"]
+    heightProps.forEach((propName) => {
+      const prop = metadata.globalProps[propName]
+      assert.ok(prop, `Should have ${propName}`)
+      assert.strictEqual(prop.type, "string", `${propName} should be string type`)
+      assert.ok(prop.values && prop.values.length > 0, `${propName} should have enum values`)
+    })
+
+    // Verify width has correct values
+    const widthValues = metadata.globalProps.width.values
+    assert.ok(widthValues.includes("xs"), "width should include 'xs'")
+    assert.ok(widthValues.includes("100%"), "width should include '100%'")
+    assert.ok(widthValues.includes("none"), "width should include 'none'")
+
+    // Verify height has correct values
+    const heightValues = metadata.globalProps.height.values
+    assert.ok(heightValues.includes("xs"), "height should include 'xs'")
+    assert.ok(heightValues.includes("auto"), "height should include 'auto'")
+    assert.ok(heightValues.includes("xxxl"), "height should include 'xxxl'")
   })
 })

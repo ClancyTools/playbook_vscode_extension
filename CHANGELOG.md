@@ -5,6 +5,38 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.13] - 2026-01-17
+
+### Fixed
+
+- **Nested Object Properties Validation** ✅
+  - Global props that accept nested objects (aria, data, html_options) no longer validate their nested properties
+  - Fixed false positive warnings like "Unknown prop 'label' for component 'bread_crumbs'"
+  - Example: `aria: { label: "Breadcrumb Navigation" }` no longer warns about `label` being unknown
+  - Diagnostics now skip brace-enclosed content for these three props, treating them as opaque objects
+
+- **Spacing and Sizing Prop Values** ✅
+  - Fixed incorrect enum values for spacing props (margin*, padding*, gap)
+  - Spacing props now correctly show: `"none", "xxs", "xs", "sm", "md", "lg", "xl"`
+  - Removed incorrect values: `"auto"`, `"initial"`, `"inherit"` from spacing props
+  - Positioning props (top, right, bottom, left) now correctly show: `"0", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"`
+  - Fixed: `margin_bottom: "sm"` no longer warns about invalid value
+  - Separated spacing values from positioning values in sync script
+
+- **Sizing Props Hardcoded Values** ✅
+  - Added comprehensive hardcoded values for all sizing-related global props
+  - width/min_width/max_width: `["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]`
+  - height/min_height/max_height: `["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]`
+  - Flex-related props: flex_direction, flex_wrap, justify_content, align_items, align_content, etc.
+  - Layout props: cursor, border_radius, text_align, overflow, display, position, z_index
+  - All values match official Playbook documentation
+  - Ensures sizing props always have correct values regardless of TypeScript extraction
+
+### Changed
+
+- Updated sync script to override spacing and positioning values instead of conditionally adding them
+- Improved test for sizing props to verify correct enum values are present
+
 ## [1.0.12] - 2026-01-15
 
 ### Fixed

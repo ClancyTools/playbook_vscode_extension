@@ -118,15 +118,37 @@ export class PlaybookDiagnostics {
       const propsBlock = this.extractPropsBlock(document, startLineIndex)
       if (!propsBlock) return
 
-      const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+))/g
+      // Props that accept nested objects - we should skip validating their contents
+      const propsWithNestedObjects = ["aria", "data", "html_options"]
+
+      const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+)|\{)/g
       let match
 
-      while ((match = propRegex.exec(propsBlock.text)) !== null) {
+      while (
+        (match = propRegex.exec(propRegex.lastIndex > 0 ? propsBlock.text : propsBlock.text)) !==
+        null
+      ) {
         const propName = match[1]
         const fullValue = match[2]
         const doubleQuotedValue = match[3]
         const singleQuotedValue = match[4]
         const unquotedValue = match[5]
+
+        // If this prop has a nested object (ends with {), skip to the end of that object
+        if (fullValue === "{" && propsWithNestedObjects.includes(propName)) {
+          let braceCount = 1
+          let searchIndex = propRegex.lastIndex
+
+          while (braceCount > 0 && searchIndex < propsBlock.text.length) {
+            const char = propsBlock.text[searchIndex]
+            if (char === "{") braceCount++
+            if (char === "}") braceCount--
+            searchIndex++
+          }
+
+          propRegex.lastIndex = searchIndex
+          continue
+        }
 
         const propValue =
           doubleQuotedValue !== undefined
