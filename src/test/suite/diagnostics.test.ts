@@ -310,6 +310,60 @@ suite("Diagnostics Test Suite", () => {
 
     assert.ok(!messageWarning, "Should not warn about 'message' (it's in nested validation hash)")
   })
+
+  test("Should not attribute render_app props to previous pb_rails component", async () => {
+    const content = `<%= pb_rails("user", props: user_props) %>
+    <% else %>
+      <%= top_level_view_context.render_app("UserAsyncMultiselectApp", props: { defaultSelected: [],
+                                                                                label: "employee" }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const defaultSelectedWarning = diagnostics.find((d) => d.message.includes("defaultSelected"))
+    const labelWarning = diagnostics.find((d) => d.message.includes("label"))
+
+    assert.ok(
+      !defaultSelectedWarning,
+      "Should not warn about 'defaultSelected' (it belongs to render_app, not pb_rails)"
+    )
+    assert.ok(
+      !labelWarning,
+      "Should not warn about 'label' from render_app (it belongs to render_app, not pb_rails)"
+    )
+  })
+
+  test("Should validate prop names with nested object values", async () => {
+    const content = `<%= pb_rails("button", props: { invalid_prop: { nested: "value" } }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const invalidPropWarning = diagnostics.find((d) => d.message.includes("invalid_prop"))
+
+    assert.ok(
+      invalidPropWarning,
+      "Should warn about 'invalid_prop' even though it has nested value"
+    )
+  })
+
+  test("Should not warn for global props with nested object values", async () => {
+    const content = `<%= pb_rails("button", props: {
+      variant: "primary",
+      data: { "close-dialog": "123", "toggle": "modal" },
+      id: "my-button"
+    }) %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const dataWarning = diagnostics.find((d) => d.message.includes('"data"'))
+
+    assert.ok(!dataWarning, "Should not warn about 'data' (it's a valid global prop)")
+  })
 })
 
 async function createTestDocument(
@@ -320,5 +374,6 @@ async function createTestDocument(
   const document = await vscode.workspace.openTextDocument(uri)
   const edit = new vscode.WorkspaceEdit()
   edit.insert(uri, new vscode.Position(0, 0), content)
+  await vscode.workspace.applyEdit(edit)
   return document
 }

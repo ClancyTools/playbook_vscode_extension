@@ -116,7 +116,9 @@ export class PlaybookDiagnostics {
   ): void {
     if (type === "rails") {
       const propsBlock = this.extractPropsBlock(document, startLineIndex)
-      if (!propsBlock) return
+      if (!propsBlock) {
+        return
+      }
 
       const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+)|\{)/g
       let match
@@ -130,10 +132,18 @@ export class PlaybookDiagnostics {
       ) {
         const betweenText = propsBlock.text.substring(lastIndex, match.index)
         for (const char of betweenText) {
-          if (char === "(") parenDepth++
-          if (char === ")") parenDepth--
-          if (char === "{") braceDepth++
-          if (char === "}") braceDepth--
+          if (char === "(") {
+            parenDepth++
+          }
+          if (char === ")") {
+            parenDepth--
+          }
+          if (char === "{") {
+            braceDepth++
+          }
+          if (char === "}") {
+            braceDepth--
+          }
         }
         lastIndex = match.index
 
@@ -160,13 +170,40 @@ export class PlaybookDiagnostics {
         }
 
         if (fullValue === "{") {
+          // This prop has a nested object value - validate the prop name first
+          // before skipping the nested contents
+          const isValidProp = component.props[propName] || metadata.globalProps?.[propName]
+
+          if (!isValidProp) {
+            const position = this.getPositionInPropsBlock(propsBlock, match.index)
+            const range = new vscode.Range(
+              position.line,
+              position.character,
+              position.line,
+              position.character + propName.length
+            )
+
+            const diagnostic = new vscode.Diagnostic(
+              range,
+              `Unknown prop "${propName}" for component "${component.rails}"`,
+              vscode.DiagnosticSeverity.Warning
+            )
+            diagnostic.source = "Playbook"
+            diagnostics.push(diagnostic)
+          }
+
+          // Now skip the nested object contents
           let nestedBraceCount = 1
           let searchIndex = propRegex.lastIndex
 
           while (nestedBraceCount > 0 && searchIndex < propsBlock.text.length) {
             const char = propsBlock.text[searchIndex]
-            if (char === "{") nestedBraceCount++
-            if (char === "}") nestedBraceCount--
+            if (char === "{") {
+              nestedBraceCount++
+            }
+            if (char === "}") {
+              nestedBraceCount--
+            }
             searchIndex++
           }
 
@@ -312,13 +349,25 @@ export class PlaybookDiagnostics {
 
       const propsMatch = line.match(/props:\s*\{/)
       if (propsMatch) {
+        // Check if this props block belongs to a different method call (like render_app)
+        const beforeProps = line.substring(0, propsMatch.index!)
+        // If we're on a line AFTER the pb_rails line and there's another method call, skip it
+        if (i > startLineIndex) {
+          // Check if there's a method call that's NOT pb_rails before the props
+          const otherMethodMatch = beforeProps.match(/\w+\(/)
+          if (otherMethodMatch && !beforeProps.includes("pb_rails(")) {
+            continue
+          }
+        }
         propsStartLine = i
         propsStartChar = propsMatch.index! + propsMatch[0].length
         break
       }
     }
 
-    if (propsStartLine === -1) return null
+    if (propsStartLine === -1) {
+      return null
+    }
 
     let braceCount = 1
     let endLine = propsStartLine
@@ -330,7 +379,9 @@ export class PlaybookDiagnostics {
       const startChar = i === propsStartLine ? propsStartChar : 0
 
       for (let j = startChar; j < line.length; j++) {
-        if (line[j] === "{") braceCount++
+        if (line[j] === "{") {
+          braceCount++
+        }
         if (line[j] === "}") {
           braceCount--
           if (braceCount === 0) {
@@ -365,7 +416,7 @@ export class PlaybookDiagnostics {
     matchIndex: number
   ): { line: number; character: number } {
     let currentIndex = 0
-    let currentLine = propsBlock.startLine
+    const currentLine = propsBlock.startLine
 
     for (let i = 0; i < propsBlock.lines.length; i++) {
       const lineLength = propsBlock.lines[i].length
