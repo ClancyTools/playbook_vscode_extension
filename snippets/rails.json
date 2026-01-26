@@ -35,7 +35,9 @@
       "\tenable_toggle_expansion: \"${4|all,header,none|}\",",
       "\tsubrow_headers: \"${5:[]}\",",
       "\t$0",
-      "}) %>"
+      "}) do %>",
+      "\t${6:Content}",
+      "<% end %>"
     ],
     "description": "Playbook TableBody component for Rails/ERB"
   },
@@ -86,10 +88,10 @@
     "body": [
       "<%= pb_rails(\"avatar\", props: {",
       "\tsize: \"${1|xxs,xs,sm,md,base,lg,xl|}\",",
-      "\tcomponent_overlay: \"${2}\",",
-      "\tdark: \"${3}\",",
-      "\timage_url: \"${4}\",",
-      "\timage_alt: \"${5:}\",",
+      "\ttext: \"${2}\",",
+      "\tvariant: \"${3}\",",
+      "\tcomponent_overlay: \"${4}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -116,6 +118,8 @@
       "\ttext: \"${1}\",",
       "\tvariant: \"${2|success,warning,error,info,neutral,notification,notification_error,primary|}\",",
       "\trounded: \"${3}\",",
+      "\tclose_props: \"${4}\",",
+      "\ton_click: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -126,10 +130,10 @@
     "body": [
       "<%= pb_rails(\"body\", props: {",
       "\ttext: \"${1}\",",
-      "\tcolor: \"${2|default,light,lighter,link,success,error|}\",",
-      "\tstatus: \"${3|neutral,positive,negative|}\",",
-      "\ttag: \"${4|h1,h2,h3,h4,h5,h6,p,span,div|}\",",
-      "\thighlighting: \"${5}\",",
+      "\tvariant: \"${2|link|}\",",
+      "\tcolor: \"${3|default,light,lighter,link,success,error|}\",",
+      "\tstatus: \"${4|neutral,positive,negative|}\",",
+      "\ttag: \"${5|h1,h2,h3,h4,h5,h6,p,span,div|}\",",
       "\t$0",
       "}) %>"
     ],
@@ -139,6 +143,8 @@
     "prefix": "pb_bread_crumbs",
     "body": [
       "<%= pb_rails(\"bread_crumbs\", props: {",
+      "\ttext: \"${1}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -149,6 +155,8 @@
     "body": [
       "<%= pb_rails(\"bread_crumbs/bread_crumb_item\", props: {",
       "\tlink: \"${1}\",",
+      "\tid: \"${2}\",",
+      "\tcomponent: \"${3|a,span|}\",",
       "\t$0",
       "}) %>"
     ],
@@ -176,6 +184,7 @@
       "\ttext: \"${2}\",",
       "\tconnected: \"${3}\",",
       "\torientation: \"${4|horizontal,vertical|}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -268,9 +277,13 @@
     "body": [
       "<%= pb_rails(\"collapsible\", props: {",
       "\ttag: \"${1|h1,h2,h3,h4,h5,h6,p,div,span,tr,th,td,thead,col|}\",",
+      "\tcollapsed: \"${2}\",",
+      "\ticon: \"${3}\",",
+      "\ticon_color: \"${4|default,light,lighter,link,error,success|}\",",
+      "\ticon_size: \"${5}\",",
       "\t$0",
       "}) do %>",
-      "\t${2:Content}",
+      "\t${6:Content}",
       "<% end %>"
     ],
     "description": "Playbook Collapsible component for Rails/ERB"
@@ -366,6 +379,7 @@
       "\tstat_change: \"${2:{}}\",",
       "\tstat_label: \"${3}\",",
       "\tstat_value: \"${4:{}}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -422,6 +436,7 @@
       "\tdark: \"${1}\",",
       "\tend_date: \"${2}\",",
       "\tstart_date: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -478,6 +493,7 @@
       "\talign: \"${1|left,center,right|}\",",
       "\tdark: \"${2}\",",
       "\tdate: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -491,6 +507,7 @@
       "\tbold: \"${2}\",",
       "\tcolor: \"${3|light,default,lighter,link,error,success|}\",",
       "\ttag: \"${4|h1,h2,h3,h4,h5,h6,p,span,div|}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -552,6 +569,7 @@
       "\tsize: \"${1|lg,sm|}\",",
       "\twidths: \"${2:[1]}\",",
       "\tcolors: \"${3:[]}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -564,6 +582,8 @@
       "\tinitial_items: \"${1:[]}\",",
       "\tdrop_zone_type: \"${2|ghost,shadow,outline,line|}\",",
       "\tdrop_zone_color: \"${3|neutral,primary,purple|}\",",
+      "\tdrop_zone: \"${4|ghost,outline,shadow,line|}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -759,6 +779,7 @@
     "body": [
       "<%= pb_rails(\"form_group\", props: {",
       "\tfull_width: \"${1}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -797,6 +818,8 @@
     "body": [
       "<%= pb_rails(\"highlight\", props: {",
       "\ttext: \"${1}\",",
+      "\tid: \"${2}\",",
+      "\thighlighted_text: \"${3}\",",
       "\t$0",
       "}) %>"
     ],
@@ -894,6 +917,7 @@
       "\tvariant: \"${2|default,royal,blue,orange,purple,teal,red,yellow,green,orange,lighter|}\",",
       "\ticon: \"${3}\",",
       "\temoji: \"${4:}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -920,6 +944,8 @@
       "\ttext: \"${1}\",",
       "\ticon: \"${2}\",",
       "\talign: \"${3|left,center,right|}\",",
+      "\tdark: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -946,6 +972,7 @@
       "\tvariant: \"${1|success,warning,error,info,neutral,primary|}\",",
       "\tlabel: \"${2}\",",
       "\tpill_value: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1047,6 +1074,8 @@
       "\ttext: \"${1}\",",
       "\tcolor: \"${2:data_1}\",",
       "\tprefix_text: \"${3}\",",
+      "\tdark: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1071,10 +1100,10 @@
     "body": [
       "<%= pb_rails(\"list\", props: {",
       "\tsize: \"${1}\",",
-      "\tborderless: \"${2}\",",
-      "\tdark: \"${3}\",",
-      "\tenable_drag: \"${4}\",",
-      "\titems: \"${5:[]}\",",
+      "\ttext: \"${2}\",",
+      "\tvariant: \"${3}\",",
+      "\tborderless: \"${4}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1100,6 +1129,7 @@
       "\tvariant: \"${2|dotted,solid|}\",",
       "\talign: \"${3|left,center,right|}\",",
       "\tdark: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1124,6 +1154,7 @@
     "body": [
       "<%= pb_rails(\"message/message_mention\", props: {",
       "\tvariant: \"${1|user,self|}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1151,6 +1182,7 @@
       "\treverse: \"${2}\",",
       "\tusers: \"${3}\",",
       "\twith_tooltip: \"${4}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1163,6 +1195,8 @@
       "\tsize: \"${1|sm,md,lg,xl|}\",",
       "\tvariant: \"${2|default,bubble|}\",",
       "\tusers: \"${3}\",",
+      "\tdark: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1203,6 +1237,7 @@
       "\tsize: \"${1|sm,md,lg|}\",",
       "\tstatus: \"${2|online,offline,away,success,warning,error,info,neutral,primary|}\",",
       "\tno_border: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1216,6 +1251,7 @@
       "\tlayout: \"${2:{ bottom: full }}\",",
       "\tdynamic: \"${3}\",",
       "\tscroll_bar_none: \"${4}\",",
+      "\tfull_screen: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1227,6 +1263,9 @@
       "<%= pb_rails(\"pagination\", props: {",
       "\tmodel: \"${1}\",",
       "\tview: \"${2}\",",
+      "\tid: \"${3}\",",
+      "\tcurrent: \"${4}\",",
+      "\ton_change: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1251,6 +1290,7 @@
     "body": [
       "<%= pb_rails(\"pb_bar_graph\", props: {",
       "\toptions: \"${1:{}}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1261,6 +1301,7 @@
     "body": [
       "<%= pb_rails(\"pb_circle_chart\", props: {",
       "\toptions: \"${1:{}}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1271,6 +1312,8 @@
     "body": [
       "<%= pb_rails(\"pb_gauge_chart\", props: {",
       "\toptions: \"${1:{}}\",",
+      "\tid: \"${2}\",",
+      "\tref: \"${3}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1281,6 +1324,7 @@
     "body": [
       "<%= pb_rails(\"pb_line_graph\", props: {",
       "\toptions: \"${1:{}}\",",
+      "\tid: \"${2}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1292,6 +1336,7 @@
       "<%= pb_rails(\"person\", props: {",
       "\tfirst_name: \"${1}\",",
       "\tlast_name: \"${2}\",",
+      "\tid: \"${3}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1304,6 +1349,7 @@
       "\tcontacts: \"${1:[]}\",",
       "\tfirst_name: \"${2}\",",
       "\tlast_name: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1330,6 +1376,7 @@
       "\ttext: \"${1}\",",
       "\tvariant: \"${2|success,warning,error,info,neutral,primary|}\",",
       "\ttext_transform: \"${3|none,lowercase|}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1519,6 +1566,7 @@
       "\ttext: \"${2}\",",
       "\titems: \"${3:[]}\",",
       "\tenable_drag: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1560,6 +1608,7 @@
       "\tsource: \"${2}\",",
       "\ttype: \"${3|user,retail,inbound,outbound,prospecting,events,referral|}\",",
       "\tuser: \"${4:{}}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1586,6 +1635,8 @@
       "\tchange: \"${1|neutral,increase,decrease|}\",",
       "\ticon: \"${2}\",",
       "\tvalue: \"${3}\",",
+      "\tdark: \"${4}\",",
+      "\tid: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1598,6 +1649,7 @@
       "\tunit: \"${1}\",",
       "\tvalue: \"${2}\",",
       "\tprecision: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1710,8 +1762,8 @@
       "\temoji_mask: \"${1}\",",
       "\terror: \"${2}\",",
       "\tinline: \"${3}\",",
-      "\tlabel: \"${4}\",",
-      "\tmethod: \"${5}\",",
+      "\tinput_options: \"${4:{}}\",",
+      "\tlabel: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1766,6 +1818,8 @@
       "\ttime: \"${1}\",",
       "\talign: \"${2|left,center,right|}\",",
       "\ttimezone: \"${3:America/New_York}\",",
+      "\tdark: \"${4}\",",
+      "\tdate: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1778,6 +1832,7 @@
       "\torientation: \"${1|vertical,horizontal|}\",",
       "\tshow_date: \"${2}\",",
       "\titem_gap: \"${3|xs,sm,md,lg,none|}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1864,6 +1919,7 @@
       "\talign: \"${2|left,center,right|}\",",
       "\ttitle: \"${3}\",",
       "\tcount: \"${4}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1876,6 +1932,7 @@
       "\talign: \"${1|left,center,right|}\",",
       "\tdetail: \"${2}\",",
       "\ttitle: \"${3}\",",
+      "\tid: \"${4}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1899,11 +1956,11 @@
     "prefix": "pb_tooltip",
     "body": [
       "<%= pb_rails(\"tooltip\", props: {",
-      "\tdark: \"${1}\",",
-      "\tdelay_open: \"${2}\",",
-      "\tdelay_close: \"${3}\",",
-      "\theight: \"${4}\",",
-      "\tinteraction: \"${5}\",",
+      "\ttext: \"${1}\",",
+      "\tdark: \"${2}\",",
+      "\tdelay_open: \"${3}\",",
+      "\tdelay_close: \"${4}\",",
+      "\theight: \"${5}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1943,6 +2000,7 @@
       "<%= pb_rails(\"user_badge\", props: {",
       "\tsize: \"${1|sm,md,lg|}\",",
       "\tbadge: \"${2|million-dollar,veteran|}\",",
+      "\tid: \"${3}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1956,9 +2014,10 @@
       "\talign: \"${2|left,center,right|}\",",
       "\tdate: \"${3:::Date.current}\",",
       "\tcompact: \"${4}\",",
+      "\tdark: \"${5}\",",
       "\t$0",
       "}) do %>",
-      "\t${5:Content}",
+      "\t${6:Content}",
       "<% end %>"
     ],
     "description": "Playbook WeekdayStacked component for Rails/ERB"

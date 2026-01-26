@@ -30,3 +30,8 @@ npm-debug.log*
 *.swp
 *.swo
 *~
+PUBLISHING.md
+QUICKSTART.md
+SETUP_CHECKLIST.md
+MARKETPLACE_READY.md
+AUTOMATED_SYNC_SETUP.md

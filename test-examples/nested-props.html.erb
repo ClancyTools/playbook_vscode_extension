@@ -1,0 +1,31 @@
+<!-- Test file for nested props validation -->
+
+<!-- Test 1: Method call arguments should not be validated -->
+<%= pb_rails("table/table_cell", props: {
+  text: link_to(
+    job_posting.official_posting_job_title,
+    open_position_path(job_posting),
+    remote: true,
+    data: {
+      toggle: "modal",
+      target: "#show-job-posting",
+      disable_with: "Loading...",
+    }
+  ),
+}) %>
+
+<!-- Test 2: Nested props blocks should not be validated as parent props -->
+<%= pb_rails("flex/flex_item") do %>
+  <%= form.date_picker(:date_left_gteq, props: { label: "Start Date (Left Date)", disable_input: show_date_left }) %>
+<% end %>
+
+<!-- Test 3: Nested validation object -->
+<%= pb_rails("typeahead", props: {
+  is_multi: false,
+  label: "Employee Name",
+  name: :user_id,
+  options: employee_options,
+  placeholder: "Search Employees",
+  required: true,
+  validation: { message: "Please select an employee" },
+}) %>

@@ -364,6 +364,62 @@ suite("Diagnostics Test Suite", () => {
 
     assert.ok(!dataWarning, "Should not warn about 'data' (it's a valid global prop)")
   })
+
+  test("Should allow React-specific props in React components", async () => {
+    const content = `<Tooltip placement="top" text="Save to My Favorites" zIndex={10}>
+      <IconButton icon="heart" size="md" variant="link" />
+    </Tooltip>`
+
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const textWarning = diagnostics.find((d) => d.message.includes('"text"'))
+    const placementWarning = diagnostics.find((d) => d.message.includes('"placement"'))
+
+    assert.ok(!textWarning, "Should not warn about 'text' (it's a valid React prop)")
+    assert.ok(!placementWarning, "Should not warn about 'placement' (it's a valid React prop)")
+  })
+
+  test("Should allow Rails-specific props in Rails components", async () => {
+    const content = `<%= pb_rails("tooltip", props: {
+      delay_open: 1000,
+      trigger_element_id: "my-btn",
+      position: "top"
+    }) do %>
+      Save to My Favorites
+    <% end %>`
+
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const delayOpenWarning = diagnostics.find((d) => d.message.includes('"delay_open"'))
+    const triggerWarning = diagnostics.find((d) => d.message.includes('"trigger_element_id"'))
+
+    assert.ok(!delayOpenWarning, "Should not warn about 'delay_open' (it's a valid Rails prop)")
+    assert.ok(
+      !triggerWarning,
+      "Should not warn about 'trigger_element_id' (it's a valid Rails prop)"
+    )
+  })
+
+  test("Should allow both React and Rails props for same component", async () => {
+    // Test that a React component can use props from either the React or Rails version
+    const reactContent = `<Tooltip delay_open={1000} text="Hello">
+      <Button>Click me</Button>
+    </Tooltip>`
+
+    const reactDoc = await createTestDocument("typescriptreact", reactContent)
+    diagnosticsInstance.updateDiagnostics(reactDoc)
+
+    const reactDiagnostics = diagnosticsInstance.getDiagnostics(reactDoc.uri)
+    const delayOpenWarning = reactDiagnostics.find((d) => d.message.includes('"delay_open"'))
+    const textWarning = reactDiagnostics.find((d) => d.message.includes('"text"'))
+
+    assert.ok(!delayOpenWarning, "Should allow Rails prop 'delay_open' in React component")
+    assert.ok(!textWarning, "Should allow React prop 'text' in React component")
+  })
 })
 
 async function createTestDocument(

@@ -5,8 +5,8 @@
       "<AdvancedTable",
       "\ttableData=\"${1:[]}\"",
       "\tcolumnDefinitions=\"${2:[]}\"",
-      "\tcolumnGroupBorderColor={${3|\\\"text_lt_default\\\",\\\"text_lt_light\\\",\\\"text_lt_lighter\\\",\\\"text_dk_default\\\",\\\"text_dk_light\\\",\\\"text_dk_lighter\\\",\\\"none\\\"|}}",
-      "\tenableToggleExpansion={${4|\\\"all\\\",\\\"header\\\",\\\"none\\\"|}}",
+      "\tcolumnGroupBorderColor={${3|\"text_lt_default\",\"text_lt_light\",\"text_lt_lighter\",\"text_dk_default\",\"text_dk_light\",\"text_dk_lighter\",\"none\"|}}",
+      "\tenableToggleExpansion={${4|\"all\",\"header\",\"none\"|}}",
       "\tloading={${5|true,false|}}",
       "\t$0",
       "/>"
@@ -29,7 +29,7 @@
     "prefix": "pbTableBody",
     "body": [
       "<TableBody",
-      "\ttag={${1|\\\"table\\\",\\\"div\\\"|}}",
+      "\ttag={${1|\"table\",\"div\"|}}",
       "\tdraggableContainer={${2|true,false|}}",
       "\t$0",
       "/>"
@@ -41,9 +41,9 @@
     "body": [
       "<TableHeader",
       "\ttext=\"${1:}\"",
-      "\talign={${2|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"baseline\\\",\\\"none\\\"|}}",
-      "\talignContent={${3|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"baseline\\\",\\\"none\\\"|}}",
-      "\tjustifySortIcon={${4|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"around\\\",\\\"between\\\",\\\"evenly\\\",\\\"none\\\"|}}",
+      "\talign={${2|\"start\",\"center\",\"end\",\"stretch\",\"baseline\",\"none\"|}}",
+      "\talignContent={${3|\"start\",\"center\",\"end\",\"stretch\",\"baseline\",\"none\"|}}",
+      "\tjustifySortIcon={${4|\"start\",\"center\",\"end\",\"stretch\",\"around\",\"between\",\"evenly\",\"none\"|}}",
       "\tcolspan=\"${5:1}\"",
       "\t$0",
       "/>"
@@ -55,7 +55,7 @@
     "body": [
       "<TableRow",
       "\tsideHighlightColor=\"${1:none}\"",
-      "\ttag={${2|\\\"table\\\",\\\"div\\\"|}}",
+      "\ttag={${2|\"table\",\"div\"|}}",
       "\tcollapsible={${3|true,false|}}",
       "\tcollapsibleContent=\"${4}\"",
       "\tcollapsibleSideHighlight={${5|true,false|}}",
@@ -71,7 +71,7 @@
       "\tcolumnDefinitions=\"${1:[]}\"",
       "\tdepth=\"${2}\"",
       "\trow=\"${3}\"",
-      "\tenableToggleExpansion={${4|\\\"all\\\",\\\"header\\\",\\\"none\\\"|}}",
+      "\tenableToggleExpansion={${4|\"all\",\"header\",\"none\"|}}",
       "\tsubrowHeader=\"${5:}\"",
       "\t$0",
       "/>"
@@ -82,11 +82,11 @@
     "prefix": "pbAvatar",
     "body": [
       "<Avatar",
-      "\tsize={${1|\\\"xxs\\\",\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"base\\\",\\\"lg\\\",\\\"xl\\\"|}}",
-      "\tcomponentOverlay=\"${2}\"",
-      "\tdark={${3|true,false|}}",
-      "\timageUrl=\"${4}\"",
-      "\timageAlt=\"${5:}\"",
+      "\tsize={${1|\"xxs\",\"xs\",\"sm\",\"md\",\"base\",\"lg\",\"xl\"|}}",
+      "\ttext=\"${2}\"",
+      "\tvariant=\"${3}\"",
+      "\tcomponentOverlay=\"${4}\"",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -96,10 +96,10 @@
     "prefix": "pbBackground",
     "body": [
       "<Background",
-      "\tbackgroundColor={${1|\\\"gradient\\\",\\\"dark\\\",\\\"light\\\",\\\"white\\\",\\\"success\\\",\\\"warning\\\",\\\"error\\\",\\\"info\\\",\\\"neutral\\\",\\\"primary\\\",\\\"shadow\\\",\\\"category_1\\\",\\\"category_2\\\",\\\"category_3\\\",\\\"category_4\\\",\\\"category_5\\\",\\\"category_6\\\",\\\"category_7\\\",\\\"category_8\\\",\\\"category_9\\\",\\\"category_10\\\",\\\"category_11\\\",\\\"category_12\\\",\\\"category_13\\\",\\\"category_14\\\",\\\"category_15\\\",\\\"category_16\\\",\\\"category_17\\\",\\\"category_18\\\",\\\"category_19\\\",\\\"category_20\\\",\\\"category_21\\\",\\\"success_secondary\\\",\\\"error_secondary\\\",\\\"info_secondary\\\",\\\"warning_secondary\\\",\\\"neutral_secondary\\\",\\\"primary_secondary\\\",\\\"text_lt_default\\\",\\\"text_lt_light\\\",\\\"text_lt_lighter\\\",\\\"text_dk_default\\\",\\\"text_dk_light\\\",\\\"text_dk_lighter\\\",\\\"card_light\\\",\\\"card_dark\\\",\\\"data_1\\\",\\\"data_2\\\",\\\"data_3\\\",\\\"data_4\\\",\\\"data_5\\\",\\\"data_6\\\",\\\"data_7\\\",\\\"data_8\\\",\\\"border_light\\\",\\\"border_dark\\\",\\\"success_subtle\\\",\\\"warning_subtle\\\",\\\"error_subtle\\\",\\\"info_subtle\\\",\\\"neutral_subtle\\\"|}}",
+      "\tbackgroundColor={${1|\"gradient\",\"dark\",\"light\",\"white\",\"success\",\"warning\",\"error\",\"info\",\"neutral\",\"primary\",\"shadow\",\"category_1\",\"category_2\",\"category_3\",\"category_4\",\"category_5\",\"category_6\",\"category_7\",\"category_8\",\"category_9\",\"category_10\",\"category_11\",\"category_12\",\"category_13\",\"category_14\",\"category_15\",\"category_16\",\"category_17\",\"category_18\",\"category_19\",\"category_20\",\"category_21\",\"success_secondary\",\"error_secondary\",\"info_secondary\",\"warning_secondary\",\"neutral_secondary\",\"primary_secondary\",\"text_lt_default\",\"text_lt_light\",\"text_lt_lighter\",\"text_dk_default\",\"text_dk_light\",\"text_dk_lighter\",\"card_light\",\"card_dark\",\"data_1\",\"data_2\",\"data_3\",\"data_4\",\"data_5\",\"data_6\",\"data_7\",\"data_8\",\"border_light\",\"border_dark\",\"success_subtle\",\"warning_subtle\",\"error_subtle\",\"info_subtle\",\"neutral_subtle\"|}}",
       "\tbackgroundPosition=\"${2}\"",
-      "\tbackgroundRepeat={${3|\\\"repeat\\\",\\\"repeat-x\\\",\\\"repeat-y\\\",\\\"no-repeat\\\",\\\"space\\\",\\\"round\\\",\\\"initial\\\",\\\"inherit\\\"|}}",
-      "\tbackgroundSize={${4|\\\"contain\\\",\\\"cover\\\",\\\"auto\\\"|}}",
+      "\tbackgroundRepeat={${3|\"repeat\",\"repeat-x\",\"repeat-y\",\"no-repeat\",\"space\",\"round\",\"initial\",\"inherit\"|}}",
+      "\tbackgroundSize={${4|\"contain\",\"cover\",\"auto\"|}}",
       "\timageUrl=\"${5}\"",
       "\t$0",
       "/>"
@@ -111,8 +111,10 @@
     "body": [
       "<Badge",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"success\\\",\\\"warning\\\",\\\"error\\\",\\\"info\\\",\\\"neutral\\\",\\\"notification\\\",\\\"notification_error\\\",\\\"primary\\\"|}}",
+      "\tvariant={${2|\"success\",\"warning\",\"error\",\"info\",\"neutral\",\"notification\",\"notification_error\",\"primary\"|}}",
       "\trounded={${3|true,false|}}",
+      "\tcloseProps=\"${4}\"",
+      "\tonClick=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -122,7 +124,7 @@
     "prefix": "pbBody",
     "body": [
       "<Body",
-      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
+      "\ttag={${1|\"ul\",\"li\",\"span\",\"div\"|}}",
       "\t$0",
       ">",
       "\t${2:Content}",
@@ -134,6 +136,8 @@
     "prefix": "pbBreadCrumbs",
     "body": [
       "<BreadCrumbs",
+      "\ttext=\"${1}\"",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -144,6 +148,8 @@
     "body": [
       "<BreadCrumbItem",
       "\tlink=\"${1}\"",
+      "\tid=\"${2}\"",
+      "\tcomponent={${3|\"a\",\"span\"|}}",
       "\t$0",
       "/>"
     ],
@@ -153,9 +159,9 @@
     "prefix": "pbButton",
     "body": [
       "<Button",
-      "\tvariant={${1|\\\"primary\\\",\\\"secondary\\\",\\\"link\\\",\\\"danger\\\",\\\"reaction\\\"|}}",
+      "\tvariant={${1|\"primary\",\"secondary\",\"link\",\"danger\",\"reaction\"|}}",
       "\ttext=\"${2}\"",
-      "\tsize={${3|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
+      "\tsize={${3|\"sm\",\"md\",\"lg\"|}}",
       "\tdisabled={${4|true,false|}}",
       "\tfullWidth={${5|true,false|}}",
       "\t$0",
@@ -167,10 +173,11 @@
     "prefix": "pbButtonToolbar",
     "body": [
       "<ButtonToolbar",
-      "\tvariant={${1|\\\"primary\\\",\\\"secondary\\\"|}}",
+      "\tvariant={${1|\"primary\",\"secondary\"|}}",
       "\ttext=\"${2}\"",
       "\tconnected={${3|true,false|}}",
-      "\torientation={${4|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\torientation={${4|\"horizontal\",\"vertical\"|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -180,11 +187,11 @@
     "prefix": "pbCaption",
     "body": [
       "<Caption",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"base\\\",\\\"lg\\\",\\\"xl\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\",\"md\",\"base\",\"lg\",\"xl\"|}}",
       "\ttext=\"${2}\"",
-      "\tvariant={${3|\\\"link\\\"|}}",
-      "\ttag={${4|\\\"h1\\\",\\\"h2\\\",\\\"h3\\\",\\\"h4\\\",\\\"h5\\\",\\\"h6\\\",\\\"p\\\",\\\"span\\\",\\\"div\\\",\\\"caption\\\"|}}",
-      "\tcolor={${5|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"success\\\",\\\"error\\\",\\\"link\\\"|}}",
+      "\tvariant={${3|\"link\"|}}",
+      "\ttag={${4|\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\",\"p\",\"span\",\"div\",\"caption\"|}}",
+      "\tcolor={${5|\"default\",\"light\",\"lighter\",\"success\",\"error\",\"link\"|}}",
       "\t$0",
       "/>"
     ],
@@ -196,9 +203,9 @@
       "<Card",
       "\tselected={${1|true,false|}}",
       "\thighlight=\"${2:{}}\"",
-      "\ttag={${3|\\\"div\\\",\\\"section\\\",\\\"footer\\\",\\\"header\\\",\\\"article\\\",\\\"aside\\\",\\\"main\\\",\\\"nav\\\"|}}",
+      "\ttag={${3|\"div\",\"section\",\"footer\",\"header\",\"article\",\"aside\",\"main\",\"nav\"|}}",
       "\tborderNone={${4|true,false|}}",
-      "\tborderRadius={${5|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\",\\\"none\\\",\\\"rounded\\\"|}}",
+      "\tborderRadius={${5|\"xs\",\"sm\",\"md\",\"lg\",\"xl\",\"none\",\"rounded\"|}}",
       "\t$0",
       ">",
       "\t${6:Content}",
@@ -248,9 +255,9 @@
     "prefix": "pbCircleIconButton",
     "body": [
       "<CircleIconButton",
-      "\tvariant={${1|\\\"primary\\\",\\\"secondary\\\",\\\"link\\\"|}}",
-      "\tsize={${2|\\\"default\\\",\\\"sm\\\"|}}",
-      "\ttype={${3|\\\"button\\\",\\\"submit\\\",\\\"reset\\\"|}}",
+      "\tvariant={${1|\"primary\",\"secondary\",\"link\"|}}",
+      "\tsize={${2|\"default\",\"sm\"|}}",
+      "\ttype={${3|\"button\",\"submit\",\"reset\"|}}",
       "\tdisabled={${4|true,false|}}",
       "\ticon=\"${5}\"",
       "\t$0",
@@ -262,10 +269,14 @@
     "prefix": "pbCollapsible",
     "body": [
       "<Collapsible",
-      "\ttag={${1|\\\"h1\\\",\\\"h2\\\",\\\"h3\\\",\\\"h4\\\",\\\"h5\\\",\\\"h6\\\",\\\"p\\\",\\\"div\\\",\\\"span\\\",\\\"tr\\\",\\\"th\\\",\\\"td\\\",\\\"thead\\\",\\\"col\\\"|}}",
+      "\ttag={${1|\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\",\"p\",\"div\",\"span\",\"tr\",\"th\",\"td\",\"thead\",\"col\"|}}",
+      "\tcollapsed={${2|true,false|}}",
+      "\ticon=\"${3}\"",
+      "\ticonColor={${4|\"default\",\"light\",\"lighter\",\"link\",\"error\",\"success\"|}}",
+      "\ticonSize=\"${5}\"",
       "\t$0",
       ">",
-      "\t${2:Content}",
+      "\t${6:Content}",
       "</Collapsible>"
     ],
     "description": "Playbook Collapsible component for React"
@@ -286,9 +297,9 @@
     "prefix": "pbCollapsibleIcon",
     "body": [
       "<CollapsibleIcon",
-      "\tsize={${1|\\\"lg\\\",\\\"xs\\\",\\\"sm\\\",\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\"|}}",
+      "\tsize={${1|\"lg\",\"xs\",\"sm\",\"1x\",\"2x\",\"3x\",\"4x\",\"5x\",\"6x\",\"7x\",\"8x\",\"9x\",\"10x\"|}}",
       "\tcollapsed={${2|true,false|}}",
-      "\tcolor={${3|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"link\\\",\\\"success\\\",\\\"error\\\"|}}",
+      "\tcolor={${3|\"default\",\"light\",\"lighter\",\"link\",\"success\",\"error\"|}}",
       "\ticon=\"${4}\"",
       "\t$0",
       ">",
@@ -301,8 +312,8 @@
     "prefix": "pbCollapsibleMain",
     "body": [
       "<CollapsibleMain",
-      "\tsize={${1|\\\"lg\\\",\\\"xs\\\",\\\"sm\\\",\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\"|}}",
-      "\tcolor={${2|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"link\\\",\\\"success\\\",\\\"error\\\"|}}",
+      "\tsize={${1|\"lg\",\"xs\",\"sm\",\"1x\",\"2x\",\"3x\",\"4x\",\"5x\",\"6x\",\"7x\",\"8x\",\"9x\",\"10x\"|}}",
+      "\tcolor={${2|\"default\",\"light\",\"lighter\",\"link\",\"success\",\"error\"|}}",
       "\ticon=\"${3}\"",
       "\t$0",
       ">",
@@ -330,8 +341,8 @@
     "body": [
       "<CopyButton",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"button\\\",\\\"icon\\\"|}}",
-      "\ttooltipPosition={${3|\\\"top\\\",\\\"right\\\",\\\"bottom\\\",\\\"left\\\"|}}",
+      "\tvariant={${2|\"button\",\"icon\"|}}",
+      "\ttooltipPosition={${3|\"top\",\"right\",\"bottom\",\"left\"|}}",
       "\ttooltipText=\"${4:Copied!}\"",
       "\tvalue=\"${5}\"",
       "\t$0",
@@ -343,9 +354,9 @@
     "prefix": "pbCurrency",
     "body": [
       "<Currency",
-      "\tsize={${1|\\\"lg\\\",\\\"md\\\",\\\"sm\\\"|}}",
-      "\tvariant={${2|\\\"default\\\",\\\"light\\\",\\\"bold\\\"|}}",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tsize={${1|\"lg\",\"md\",\"sm\"|}}",
+      "\tvariant={${2|\"default\",\"light\",\"bold\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
       "\tlabel=\"${4:}\"",
       "\tsymbol=\"${5:$}\"",
       "\t$0",
@@ -357,10 +368,11 @@
     "prefix": "pbDashboardValue",
     "body": [
       "<DashboardValue",
-      "\talign={${1|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${1|\"left\",\"center\",\"right\"|}}",
       "\tstatChange=\"${2:{}}\"",
       "\tstatLabel=\"${3}\"",
       "\tstatValue=\"${4:{}}\"",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -370,9 +382,9 @@
     "prefix": "pbDate",
     "body": [
       "<Date",
-      "\tsize={${1|\\\"lg\\\",\\\"md\\\",\\\"sm\\\",\\\"xs\\\"|}}",
+      "\tsize={${1|\"lg\",\"md\",\"sm\",\"xs\"|}}",
       "\tdate=\"${2}\"",
-      "\talignment={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talignment={${3|\"left\",\"center\",\"right\"|}}",
       "\tshowIcon={${4|true,false|}}",
       "\tshowDayOfWeek={${5|true,false|}}",
       "\t$0",
@@ -398,7 +410,7 @@
     "prefix": "pbDateRangeInline",
     "body": [
       "<DateRangeInline",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\"|}}",
       "\tendDate=\"${2}\"",
       "\tstartDate=\"${3}\"",
       "\ticon=\"${4}\"",
@@ -417,6 +429,7 @@
       "\tdark={${1|true,false|}}",
       "\tendDate=\"${2}\"",
       "\tstartDate=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -426,9 +439,9 @@
     "prefix": "pbDateStacked",
     "body": [
       "<DateStacked",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\"|}}",
       "\tdate=\"${2}\"",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
       "\treverse={${4|true,false|}}",
       "\tdark={${5|true,false|}}",
       "\t$0",
@@ -442,9 +455,9 @@
     "prefix": "pbDateTime",
     "body": [
       "<DateTime",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\"|}}",
       "\tdate=\"${2:::DateTime.current}\"",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
       "\ttimezone=\"${4:America/New_York}\"",
       "\tdark={${5|true,false|}}",
       "\t$0",
@@ -470,9 +483,10 @@
     "prefix": "pbDateYearStacked",
     "body": [
       "<DateYearStacked",
-      "\talign={${1|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${1|\"left\",\"center\",\"right\"|}}",
       "\tdark={${2|true,false|}}",
       "\tdate=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -491,10 +505,10 @@
     "prefix": "pbDialog",
     "body": [
       "<Dialog",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\",\\\"status_size\\\",\\\"content\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\",\"xl\",\"status_size\",\"content\"|}}",
       "\ttext=\"${2}\"",
       "\tfullHeight={${3|true,false|}}",
-      "\tplacement={${4|\\\"left\\\",\\\"right\\\",\\\"center\\\"|}}",
+      "\tplacement={${4|\"left\",\"right\",\"center\"|}}",
       "\tshouldCloseOnOverlayClick={${5|true,false|}}",
       "\t$0",
       "/>"
@@ -540,9 +554,10 @@
     "prefix": "pbDistributionBar",
     "body": [
       "<DistributionBar",
-      "\tsize={${1|\\\"lg\\\",\\\"sm\\\"|}}",
+      "\tsize={${1|\"lg\",\"sm\"|}}",
       "\twidths=\"${2:[1]}\"",
       "\tcolors=\"${3:[]}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -553,8 +568,10 @@
     "body": [
       "<Draggable",
       "\tinitialItems=\"${1:[]}\"",
-      "\tdropZoneType={${2|\\\"ghost\\\",\\\"shadow\\\",\\\"outline\\\",\\\"line\\\"|}}",
-      "\tdropZoneColor={${3|\\\"neutral\\\",\\\"primary\\\",\\\"purple\\\"|}}",
+      "\tdropZoneType={${2|\"ghost\",\"shadow\",\"outline\",\"line\"|}}",
+      "\tdropZoneColor={${3|\"neutral\",\"primary\",\"purple\"|}}",
+      "\tdropZone={${4|\"ghost\",\"outline\",\"shadow\",\"line\"|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -566,7 +583,7 @@
       "<DraggableContainer",
       "\ttag=\"${1:div}\"",
       "\tcontainer=\"${2:}\"",
-      "\tdropZoneDirection={${3|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\tdropZoneDirection={${3|\"horizontal\",\"vertical\"|}}",
       "\t$0",
       "/>"
     ],
@@ -579,7 +596,7 @@
       "\tdragId=\"${1:}\"",
       "\ttag=\"${2:div}\"",
       "\tcontainer=\"${3:}\"",
-      "\tdropZoneLineColor={${4|\\\"primary\\\",\\\"purple\\\"|}}",
+      "\tdropZoneLineColor={${4|\"primary\",\"purple\"|}}",
       "\t$0",
       "/>"
     ],
@@ -589,7 +606,7 @@
     "prefix": "pbDropdown",
     "body": [
       "<Dropdown",
-      "\tvariant={${1|\\\"default\\\",\\\"subtle\\\",\\\"quickpick\\\"|}}",
+      "\tvariant={${1|\"default\",\"subtle\",\"quickpick\"|}}",
       "\toptions=\"${2:[]}\"",
       "\tlabel=\"${3}\"",
       "\tname=\"${4}\"",
@@ -647,8 +664,8 @@
     "prefix": "pbEmptyState",
     "body": [
       "<EmptyState",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
-      "\talignment={${2|\\\"center\\\",\\\"left\\\",\\\"right\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\"|}}",
+      "\talignment={${2|\"center\",\"left\",\"right\"|}}",
       "\tdescription=\"${3}\"",
       "\theader=\"${4}\"",
       "\timage=\"${5}\"",
@@ -678,7 +695,7 @@
       "\tfilters=\"${1:[{ name:  }]}\"",
       "\tsortMenu=\"${2:[{}]}\"",
       "\tresults=\"${3}\"",
-      "\ttemplate={${4|\\\"default\\\",\\\"single\\\",\\\"filter_only\\\",\\\"sort_only\\\"|}}",
+      "\ttemplate={${4|\"default\",\"single\",\"filter_only\",\"sort_only\"|}}",
       "\tbackground={${5|true,false|}}",
       "\t$0",
       "/>"
@@ -690,10 +707,10 @@
     "body": [
       "<FixedConfirmationToast",
       "\ttext=\"${1}\"",
-      "\tstatus={${2|\\\"success\\\",\\\"error\\\",\\\"neutral\\\",\\\"tip\\\"|}}",
+      "\tstatus={${2|\"success\",\"error\",\"neutral\",\"tip\"|}}",
       "\tmultiLine={${3|true,false|}}",
       "\tcloseable={${4|true,false|}}",
-      "\thorizontal={${5|\\\"right\\\",\\\"left\\\",\\\"center\\\"|}}",
+      "\thorizontal={${5|\"right\",\"left\",\"center\"|}}",
       "\t$0",
       "/>"
     ],
@@ -703,11 +720,11 @@
     "prefix": "pbFlex",
     "body": [
       "<Flex",
-      "\thorizontal={${1|\\\"left\\\",\\\"center\\\",\\\"right\\\",\\\"stretch\\\",\\\"none\\\"|}}",
-      "\tjustify={${2|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\",\\\"around\\\",\\\"between\\\",\\\"evenly\\\",\\\"none\\\"|}}",
+      "\thorizontal={${1|\"left\",\"center\",\"right\",\"stretch\",\"none\"|}}",
+      "\tjustify={${2|\"start\",\"center\",\"end\",\"stretch\",\"around\",\"between\",\"evenly\",\"none\"|}}",
       "\tinline={${3|true,false|}}",
-      "\torientation={${4|\\\"row\\\",\\\"column\\\"|}}",
-      "\tspacing={${5|\\\"around\\\",\\\"between\\\",\\\"evenly\\\",\\\"none\\\"|}}",
+      "\torientation={${4|\"row\",\"column\"|}}",
+      "\tspacing={${5|\"around\",\"between\",\"evenly\",\"none\"|}}",
       "\t$0",
       ">",
       "\t${6:Content}",
@@ -722,7 +739,7 @@
       "\tfixedSize=\"${1}\"",
       "\tgrow={${2|true,false|}}",
       "\tshrink={${3|true,false|}}",
-      "\talignSelf={${4|\\\"start\\\",\\\"center\\\",\\\"end\\\",\\\"stretch\\\"|}}",
+      "\talignSelf={${4|\"start\",\"center\",\"end\",\"stretch\"|}}",
       "\tdisplayFlex={${5|true,false|}}",
       "\t$0",
       ">",
@@ -750,6 +767,7 @@
     "body": [
       "<FormGroup",
       "\tfullWidth={${1|true,false|}}",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -763,7 +781,7 @@
       "\tsize=\"${2}\"",
       "\tavatarUrl=\"${3}\"",
       "\tname=\"${4}\"",
-      "\ttextTransform={${5|\\\"none\\\",\\\"lowercase\\\"|}}",
+      "\ttextTransform={${5|\"none\",\"lowercase\"|}}",
       "\t$0",
       "/>"
     ],
@@ -775,7 +793,7 @@
       "<Hashtag",
       "\ttext=\"${1}\"",
       "\tnewWindow={${2|true,false|}}",
-      "\ttype={${3|\\\"default\\\",\\\"project\\\",\\\"home\\\",\\\"appointment\\\"|}}",
+      "\ttype={${3|\"default\",\"project\",\"home\",\"appointment\"|}}",
       "\turl=\"${4}\"",
       "\ttarget=\"${5}\"",
       "\t$0",
@@ -788,6 +806,8 @@
     "body": [
       "<Highlight",
       "\ttext=\"${1}\"",
+      "\tid=\"${2}\"",
+      "\thighlightedText=\"${3}\"",
       "\t$0",
       "/>"
     ],
@@ -800,7 +820,7 @@
       "\taddress=\"${1}\"",
       "\taddressCont=\"${2}\"",
       "\tcity=\"${3}\"",
-      "\temphasis={${4|\\\"street\\\",\\\"city\\\",\\\"none\\\"|}}",
+      "\temphasis={${4|\"street\",\"city\",\"none\"|}}",
       "\thomeId=\"${5}\"",
       "\t$0",
       "/>"
@@ -853,10 +873,10 @@
     "prefix": "pbIcon",
     "body": [
       "<Icon",
-      "\tsize={${1|\\\"lg\\\",\\\"xs\\\",\\\"sm\\\",\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\"|}}",
+      "\tsize={${1|\"lg\",\"xs\",\"sm\",\"1x\",\"2x\",\"3x\",\"4x\",\"5x\",\"6x\",\"7x\",\"8x\",\"9x\",\"10x\"|}}",
       "\tborder={${2|true,false|}}",
       "\tfixedWidth={${3|true,false|}}",
-      "\tflip={${4|\\\"horizontal\\\",\\\"vertical\\\",\\\"both\\\"|}}",
+      "\tflip={${4|\"horizontal\",\"vertical\",\"both\"|}}",
       "\ticon=\"${5}\"",
       "\t$0",
       "/>"
@@ -867,9 +887,9 @@
     "prefix": "pbIconButton",
     "body": [
       "<IconButton",
-      "\tvariant={${1|\\\"default\\\",\\\"link\\\"|}}",
-      "\tsize={${2|\\\"1x\\\",\\\"2x\\\",\\\"3x\\\",\\\"4x\\\",\\\"5x\\\",\\\"6x\\\",\\\"7x\\\",\\\"8x\\\",\\\"9x\\\",\\\"10x\\\",\\\"xs\\\",\\\"sm\\\",\\\"lg\\\"|}}",
-      "\ttype={${3|\\\"button\\\",\\\"submit\\\",\\\"reset\\\"|}}",
+      "\tvariant={${1|\"default\",\"link\"|}}",
+      "\tsize={${2|\"1x\",\"2x\",\"3x\",\"4x\",\"5x\",\"6x\",\"7x\",\"8x\",\"9x\",\"10x\",\"xs\",\"sm\",\"lg\"|}}",
+      "\ttype={${3|\"button\",\"submit\",\"reset\"|}}",
       "\ticon=\"${4:bars}\"",
       "\tlink=\"${5}\"",
       "\t$0",
@@ -881,10 +901,11 @@
     "prefix": "pbIconCircle",
     "body": [
       "<IconCircle",
-      "\tsize={${1|\\\"xxs\\\",\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"base\\\",\\\"lg\\\",\\\"xl\\\"|}}",
-      "\tvariant={${2|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"orange\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\",\\\"orange\\\",\\\"lighter\\\"|}}",
+      "\tsize={${1|\"xxs\",\"xs\",\"sm\",\"md\",\"base\",\"lg\",\"xl\"|}}",
+      "\tvariant={${2|\"default\",\"royal\",\"blue\",\"orange\",\"purple\",\"teal\",\"red\",\"yellow\",\"green\",\"orange\",\"lighter\"|}}",
       "\ticon=\"${3}\"",
       "\temoji=\"${4:}\"",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -894,11 +915,11 @@
     "prefix": "pbIconStatValue",
     "body": [
       "<IconStatValue",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
-      "\tvariant={${2|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\",\\\"orange\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\"|}}",
+      "\tvariant={${2|\"default\",\"royal\",\"blue\",\"purple\",\"teal\",\"red\",\"yellow\",\"green\",\"orange\"|}}",
       "\ttext=\"${3:}\"",
       "\ticon=\"${4}\"",
-      "\torientation={${5|\\\"vertical\\\",\\\"horizontal\\\"|}}",
+      "\torientation={${5|\"vertical\",\"horizontal\"|}}",
       "\t$0",
       "/>"
     ],
@@ -910,7 +931,9 @@
       "<IconValue",
       "\ttext=\"${1}\"",
       "\ticon=\"${2}\"",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
+      "\tdark={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -920,11 +943,11 @@
     "prefix": "pbImage",
     "body": [
       "<Image",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\",\\\"none\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\",\"md\",\"lg\",\"xl\",\"none\"|}}",
       "\talt=\"${2}\"",
       "\tonError=\"${3}\"",
       "\trounded={${4|true,false|}}",
-      "\ttransition={${5|\\\"blur\\\",\\\"fade\\\",\\\"scale\\\",\\\"none\\\"|}}",
+      "\ttransition={${5|\"blur\",\"fade\",\"scale\",\"none\"|}}",
       "\t$0",
       "/>"
     ],
@@ -934,9 +957,10 @@
     "prefix": "pbLabelPill",
     "body": [
       "<LabelPill",
-      "\tvariant={${1|\\\"success\\\",\\\"warning\\\",\\\"error\\\",\\\"info\\\",\\\"neutral\\\",\\\"primary\\\"|}}",
+      "\tvariant={${1|\"success\",\"warning\",\"error\",\"info\",\"neutral\",\"primary\"|}}",
       "\tlabel=\"${2}\"",
       "\tpillValue=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -946,7 +970,7 @@
     "prefix": "pbLabelValue",
     "body": [
       "<LabelValue",
-      "\tvariant={${1|\\\"default\\\",\\\"details\\\"|}}",
+      "\tvariant={${1|\"default\",\"details\"|}}",
       "\tlabel=\"${2}\"",
       "\tvalue=\"${3}\"",
       "\ticon=\"${4}\"",
@@ -960,11 +984,11 @@
     "prefix": "pbLayout",
     "body": [
       "<Layout",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\"|}}",
-      "\tvariant={${2|\\\"light\\\",\\\"dark\\\",\\\"gradient\\\"|}}",
-      "\tcollapse={${3|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\",\"md\",\"lg\",\"xl\"|}}",
+      "\tvariant={${2|\"light\",\"dark\",\"gradient\"|}}",
+      "\tcollapse={${3|\"xs\",\"sm\",\"md\",\"lg\",\"xl\"|}}",
       "\tfull={${4|true,false|}}",
-      "\tposition={${5|\\\"left\\\",\\\"right\\\"|}}",
+      "\tposition={${5|\"left\",\"right\"|}}",
       "\t$0",
       ">",
       "\t${6:Content}",
@@ -976,7 +1000,7 @@
     "prefix": "pbFooter",
     "body": [
       "<Footer",
-      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
+      "\ttag={${1|\"ul\",\"li\",\"span\",\"div\"|}}",
       "\t$0",
       ">",
       "\t${2:Content}",
@@ -988,7 +1012,7 @@
     "prefix": "pbHeader",
     "body": [
       "<Header",
-      "\ttag={${1|\\\"ul\\\",\\\"li\\\",\\\"span\\\",\\\"div\\\"|}}",
+      "\ttag={${1|\"ul\",\"li\",\"span\",\"div\"|}}",
       "\t$0",
       ">",
       "\t${2:Content}",
@@ -1002,8 +1026,8 @@
       "<Item",
       "\tdate=\"${1}\"",
       "\ticon=\"${2:user}\"",
-      "\ticonColor={${3|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\"|}}",
-      "\tlineStyle={${4|\\\"solid\\\",\\\"dotted\\\"|}}",
+      "\ticonColor={${3|\"default\",\"royal\",\"blue\",\"purple\",\"teal\",\"red\",\"yellow\",\"green\"|}}",
+      "\tlineStyle={${4|\"solid\",\"dotted\"|}}",
       "\tshowCurrentYear={${5|true,false|}}",
       "\t$0",
       "/>"
@@ -1028,6 +1052,8 @@
       "\ttext=\"${1}\"",
       "\tcolor=\"${2:data_1}\"",
       "\tprefixText=\"${3}\"",
+      "\tdark={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1038,7 +1064,7 @@
     "body": [
       "<Link",
       "\ttext=\"${1}\"",
-      "\tcolor={${2|\\\"default\\\",\\\"body\\\",\\\"muted\\\",\\\"destructive\\\"|}}",
+      "\tcolor={${2|\"default\",\"body\",\"muted\",\"destructive\"|}}",
       "\tdisabled={${3|true,false|}}",
       "\thref=\"${4}\"",
       "\ticon=\"${5}\"",
@@ -1052,10 +1078,10 @@
     "body": [
       "<List",
       "\tsize=\"${1}\"",
-      "\tborderless={${2|true,false|}}",
-      "\tdark={${3|true,false|}}",
-      "\tenableDrag={${4|true,false|}}",
-      "\titems=\"${5:[]}\"",
+      "\ttext=\"${2}\"",
+      "\tvariant=\"${3}\"",
+      "\tborderless={${4|true,false|}}",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -1066,9 +1092,10 @@
     "body": [
       "<LoadingInline",
       "\ttext=\"${1:Loading}\"",
-      "\tvariant={${2|\\\"dotted\\\",\\\"solid\\\"|}}",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tvariant={${2|\"dotted\",\"solid\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
       "\tdark={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1092,7 +1119,8 @@
     "prefix": "pbMessageMention",
     "body": [
       "<MessageMention",
-      "\tvariant={${1|\\\"user\\\",\\\"self\\\"|}}",
+      "\tvariant={${1|\"user\",\"self\"|}}",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -1102,7 +1130,7 @@
     "prefix": "pbMultiLevelSelect",
     "body": [
       "<MultiLevelSelect",
-      "\tvariant={${1|\\\"multi\\\",\\\"single\\\"|}}",
+      "\tvariant={${1|\"multi\",\"single\"|}}",
       "\tid=\"${2}\"",
       "\tname=\"${3}\"",
       "\ttreeData=\"${4:[]}\"",
@@ -1116,10 +1144,11 @@
     "prefix": "pbMultipleUsers",
     "body": [
       "<MultipleUsers",
-      "\tsize={${1|\\\"xxs\\\",\\\"xs\\\"|}}",
+      "\tsize={${1|\"xxs\",\"xs\"|}}",
       "\treverse={${2|true,false|}}",
       "\tusers=\"${3}\"",
       "\twithTooltip={${4|true,false|}}",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -1129,9 +1158,11 @@
     "prefix": "pbMultipleUsersStacked",
     "body": [
       "<MultipleUsersStacked",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\"|}}",
-      "\tvariant={${2|\\\"default\\\",\\\"bubble\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\",\"xl\"|}}",
+      "\tvariant={${2|\"default\",\"bubble\"|}}",
       "\tusers=\"${3}\"",
+      "\tdark={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1141,10 +1172,10 @@
     "prefix": "pbNav",
     "body": [
       "<Nav",
-      "\tvariant={${1|\\\"normal\\\",\\\"subtle\\\",\\\"bold\\\"|}}",
+      "\tvariant={${1|\"normal\",\"subtle\",\"bold\"|}}",
       "\tlink=\"${2:#}\"",
       "\ttitle=\"${3}\"",
-      "\torientation={${4|\\\"vertical\\\",\\\"horizontal\\\"|}}",
+      "\torientation={${4|\"vertical\",\"horizontal\"|}}",
       "\thighlight={${5|true,false|}}",
       "\t$0",
       "/>"
@@ -1155,9 +1186,10 @@
     "prefix": "pbOnlineStatus",
     "body": [
       "<OnlineStatus",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
-      "\tstatus={${2|\\\"online\\\",\\\"offline\\\",\\\"away\\\",\\\"success\\\",\\\"warning\\\",\\\"error\\\",\\\"info\\\",\\\"neutral\\\",\\\"primary\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\"|}}",
+      "\tstatus={${2|\"online\",\"offline\",\"away\",\"success\",\"warning\",\"error\",\"info\",\"neutral\",\"primary\"|}}",
       "\tnoBorder={${3|true,false|}}",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1167,10 +1199,11 @@
     "prefix": "pbOverlay",
     "body": [
       "<Overlay",
-      "\tcolor={${1|\\\"card_light\\\",\\\"bg_light\\\",\\\"card_dark\\\",\\\"bg_dark\\\"|}}",
+      "\tcolor={${1|\"card_light\",\"bg_light\",\"card_dark\",\"bg_dark\"|}}",
       "\tlayout=\"${2:{ bottom: full }}\"",
       "\tdynamic={${3|true,false|}}",
       "\tscrollBarNone={${4|true,false|}}",
+      "\tfullScreen={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -1182,6 +1215,9 @@
       "<Pagination",
       "\tmodel=\"${1}\"",
       "\tview=\"${2}\"",
+      "\tid=\"${3}\"",
+      "\tcurrent=\"${4}\"",
+      "\tonChange=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1194,7 +1230,7 @@
       "\tconfirmation={${1|true,false|}}",
       "\tinputProps=\"${2:{}}\"",
       "\tlabel=\"${3}\"",
-      "\tshowTipsBelow={${4|\\\"always\\\",\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\"|}}",
+      "\tshowTipsBelow={${4|\"always\",\"xs\",\"sm\",\"md\",\"lg\",\"xl\"|}}",
       "\ttips=\"${5:[]}\"",
       "\t$0",
       "/>"
@@ -1206,6 +1242,7 @@
     "body": [
       "<PbBarGraph",
       "\toptions=\"${1:{}}\"",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -1216,6 +1253,7 @@
     "body": [
       "<PbCircleChart",
       "\toptions=\"${1:{}}\"",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -1226,6 +1264,8 @@
     "body": [
       "<PbGaugeChart",
       "\toptions=\"${1:{}}\"",
+      "\tid=\"${2}\"",
+      "\tref=\"${3}\"",
       "\t$0",
       "/>"
     ],
@@ -1236,6 +1276,7 @@
     "body": [
       "<PbLineGraph",
       "\toptions=\"${1:{}}\"",
+      "\tid=\"${2}\"",
       "\t$0",
       "/>"
     ],
@@ -1247,6 +1288,7 @@
       "<Person",
       "\tfirstName=\"${1}\"",
       "\tlastName=\"${2}\"",
+      "\tid=\"${3}\"",
       "\t$0",
       "/>"
     ],
@@ -1259,6 +1301,7 @@
       "\tcontacts=\"${1:[]}\"",
       "\tfirstName=\"${2}\"",
       "\tlastName=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1283,8 +1326,9 @@
     "body": [
       "<Pill",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"success\\\",\\\"warning\\\",\\\"error\\\",\\\"info\\\",\\\"neutral\\\",\\\"primary\\\"|}}",
-      "\ttextTransform={${3|\\\"none\\\",\\\"lowercase\\\"|}}",
+      "\tvariant={${2|\"success\",\"warning\",\"error\",\"info\",\"neutral\",\"primary\"|}}",
+      "\ttextTransform={${3|\"none\",\"lowercase\"|}}",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1295,7 +1339,7 @@
     "body": [
       "<Popover",
       "\tappendTo=\"${1:body}\"",
-      "\tposition={${2|\\\"top\\\",\\\"bottom\\\",\\\"left\\\",\\\"right\\\",\\\"top-start\\\",\\\"top-end\\\",\\\"bottom-start\\\",\\\"bottom-end\\\",\\\"right-start\\\",\\\"right-end\\\",\\\"left-start\\\",\\\"left-end\\\"|}}",
+      "\tposition={${2|\"top\",\"bottom\",\"left\",\"right\",\"top-start\",\"top-end\",\"bottom-start\",\"bottom-end\",\"right-start\",\"right-end\",\"left-start\",\"left-end\"|}}",
       "\ttriggerElementId=\"${3}\"",
       "\ttooltipId=\"${4}\"",
       "\tmaxHeight=\"${5}\"",
@@ -1324,8 +1368,8 @@
     "prefix": "pbProgressSimple",
     "body": [
       "<ProgressSimple",
-      "\tvariant={${1|\\\"default\\\",\\\"positive\\\",\\\"negative\\\",\\\"warning\\\"|}}",
-      "\talign={${2|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tvariant={${1|\"default\",\"positive\",\"negative\",\"warning\"|}}",
+      "\talign={${2|\"left\",\"center\",\"right\"|}}",
       "\tvalue=\"${3}\"",
       "\tmax=\"${4}\"",
       "\tmuted={${5|true,false|}}",
@@ -1338,11 +1382,11 @@
     "prefix": "pbProgressStep",
     "body": [
       "<ProgressStep",
-      "\tvariant={${1|\\\"default\\\",\\\"tracker\\\"|}}",
-      "\torientation={${2|\\\"vertical\\\",\\\"horizontal\\\"|}}",
+      "\tvariant={${1|\"default\",\"tracker\"|}}",
+      "\torientation={${2|\"vertical\",\"horizontal\"|}}",
       "\ticon={${3|true,false|}}",
       "\tshowIcon={${4|true,false|}}",
-      "\tcolor={${5|\\\"primary\\\",\\\"info\\\"|}}",
+      "\tcolor={${5|\"primary\",\"info\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1352,11 +1396,11 @@
     "prefix": "pbProgressStepItem",
     "body": [
       "<ProgressStepItem",
-      "\tstatus={${1|\\\"complete\\\",\\\"active\\\",\\\"inactive\\\",\\\"hidden\\\"|}}",
+      "\tstatus={${1|\"complete\",\"active\",\"inactive\",\"hidden\"|}}",
       "\ticon=\"${2:check}\"",
       "\ttooltip=\"${3}\"",
       "\ttooltipPosition=\"${4}\"",
-      "\tstepDirection={${5|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\tstepDirection={${5|\"horizontal\",\"vertical\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1395,9 +1439,9 @@
     "body": [
       "<SectionSeparator",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"card\\\",\\\"background\\\"|}}",
-      "\tcolor={${3|\\\"default\\\",\\\"primary\\\"|}}",
-      "\torientation={${4|\\\"horizontal\\\",\\\"vertical\\\"|}}",
+      "\tvariant={${2|\"card\",\"background\"|}}",
+      "\tcolor={${3|\"default\",\"primary\"|}}",
+      "\torientation={${4|\"horizontal\",\"vertical\"|}}",
       "\tdark={${5|true,false|}}",
       "\t$0",
       ">",
@@ -1470,10 +1514,11 @@
     "prefix": "pbSelectableList",
     "body": [
       "<SelectableList",
-      "\tvariant={${1|\\\"radio\\\",\\\"checkbox\\\"|}}",
+      "\tvariant={${1|\"radio\",\"checkbox\"|}}",
       "\ttext=\"${2}\"",
       "\titems=\"${3:[]}\"",
       "\tenableDrag={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1484,7 +1529,7 @@
     "body": [
       "<SelectableListItem",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"radio\\\",\\\"checkbox\\\"|}}",
+      "\tvariant={${2|\"radio\",\"checkbox\"|}}",
       "\ttabindex=\"${3}\"",
       "\tchecked={${4|true,false|}}",
       "\tdragHandle={${5|true,false|}}",
@@ -1499,8 +1544,8 @@
       "<SkeletonLoading",
       "\theight=\"${1:16px}\"",
       "\twidth=\"${2:100%}\"",
-      "\tborderRadius={${3|\\\"none\\\",\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\",\\\"rounded\\\"|}}",
-      "\tgap={${4|\\\"none\\\",\\\"xxs\\\",\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"xl\\\",\\\"xxl\\\"|}}",
+      "\tborderRadius={${3|\"none\",\"xs\",\"sm\",\"md\",\"lg\",\"xl\",\"rounded\"|}}",
+      "\tgap={${4|\"none\",\"xxs\",\"xs\",\"sm\",\"md\",\"lg\",\"xl\",\"xxl\"|}}",
       "\tstack=\"${5:1}\"",
       "\t$0",
       "/>"
@@ -1513,8 +1558,9 @@
       "<Source",
       "\thideIcon={${1|true,false|}}",
       "\tsource=\"${2}\"",
-      "\ttype={${3|\\\"user\\\",\\\"retail\\\",\\\"inbound\\\",\\\"outbound\\\",\\\"prospecting\\\",\\\"events\\\",\\\"referral\\\"|}}",
+      "\ttype={${3|\"user\",\"retail\",\"inbound\",\"outbound\",\"prospecting\",\"events\",\"referral\"|}}",
       "\tuser=\"${4:{}}\"",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1524,11 +1570,11 @@
     "prefix": "pbStarRating",
     "body": [
       "<StarRating",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
-      "\tvariant={${2|\\\"display\\\",\\\"interactive\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\",\"md\",\"lg\"|}}",
+      "\tvariant={${2|\"display\",\"interactive\"|}}",
       "\trating=\"${3:0}\"",
       "\tdenominator=\"${4:5}\"",
-      "\tlayoutOption={${5|\\\"default\\\",\\\"onestar\\\",\\\"number\\\"|}}",
+      "\tlayoutOption={${5|\"default\",\"onestar\",\"number\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1538,9 +1584,11 @@
     "prefix": "pbStatChange",
     "body": [
       "<StatChange",
-      "\tchange={${1|\\\"neutral\\\",\\\"increase\\\",\\\"decrease\\\"|}}",
+      "\tchange={${1|\"neutral\",\"increase\",\"decrease\"|}}",
       "\ticon=\"${2}\"",
       "\tvalue=\"${3}\"",
+      "\tdark={${4|true,false|}}",
+      "\tid=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1553,6 +1601,7 @@
       "\tunit=\"${1}\"",
       "\tvalue=\"${2}\"",
       "\tprecision=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1562,9 +1611,9 @@
     "prefix": "pbTable",
     "body": [
       "<Table",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\"|}}",
       "\ttext=\"${2}\"",
-      "\tvariant={${3|\\\"default\\\",\\\"with_filter\\\"|}}",
+      "\tvariant={${3|\"default\",\"with_filter\"|}}",
       "\tsingleLine={${4|true,false|}}",
       "\tdisableHover={${5|true,false|}}",
       "\t$0",
@@ -1577,7 +1626,7 @@
     "body": [
       "<TableCell",
       "\ttext=\"${1:}\"",
-      "\ttag={${2|\\\"table\\\",\\\"div\\\"|}}",
+      "\ttag={${2|\"table\",\"div\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1587,7 +1636,7 @@
     "prefix": "pbTableHead",
     "body": [
       "<TableHead",
-      "\ttag={${1|\\\"table\\\",\\\"div\\\"|}}",
+      "\ttag={${1|\"table\",\"div\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1612,7 +1661,7 @@
     "body": [
       "<AddOn",
       "\ticon=\"${1}\"",
-      "\talignment={${2|\\\"right\\\",\\\"left\\\"|}}",
+      "\talignment={${2|\"right\",\"left\"|}}",
       "\tborder={${3|true,false|}}",
       "\t$0",
       "/>"
@@ -1626,8 +1675,8 @@
       "\temojiMask={${1|true,false|}}",
       "\terror=\"${2}\"",
       "\tinline={${3|true,false|}}",
-      "\tlabel=\"${4}\"",
-      "\tmethod=\"${5}\"",
+      "\tinputOptions=\"${4:{}}\"",
+      "\tlabel=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1637,9 +1686,9 @@
     "prefix": "pbTime",
     "body": [
       "<Time",
-      "\tsize={${1|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
+      "\tsize={${1|\"xs\",\"sm\",\"md\",\"lg\"|}}",
       "\ttime=\"${2}\"",
-      "\talign={${3|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${3|\"left\",\"center\",\"right\"|}}",
       "\ttimezone=\"${4:America/New_York}\"",
       "\tshowIcon={${5|true,false|}}",
       "\t$0",
@@ -1665,10 +1714,10 @@
     "prefix": "pbTimeRangeInline",
     "body": [
       "<TimeRangeInline",
-      "\tsize={${1|\\\"sm\\\",\\\"xs\\\"|}}",
+      "\tsize={${1|\"sm\",\"xs\"|}}",
       "\tstartTime=\"${2}\"",
       "\tendTime=\"${3}\"",
-      "\talignment={${4|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talignment={${4|\"left\",\"center\",\"right\"|}}",
       "\tdark=\"${5}\"",
       "\t$0",
       "/>"
@@ -1680,8 +1729,10 @@
     "body": [
       "<TimeStacked",
       "\ttime=\"${1}\"",
-      "\talign={${2|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${2|\"left\",\"center\",\"right\"|}}",
       "\ttimezone=\"${3:America/New_York}\"",
+      "\tdark={${4|true,false|}}",
+      "\tdate=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1691,9 +1742,10 @@
     "prefix": "pbTimeline",
     "body": [
       "<Timeline",
-      "\torientation={${1|\\\"vertical\\\",\\\"horizontal\\\"|}}",
+      "\torientation={${1|\"vertical\",\"horizontal\"|}}",
       "\tshowDate={${2|true,false|}}",
-      "\titemGap={${3|\\\"xs\\\",\\\"sm\\\",\\\"md\\\",\\\"lg\\\",\\\"none\\\"|}}",
+      "\titemGap={${3|\"xs\",\"sm\",\"md\",\"lg\",\"none\"|}}",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1715,7 +1767,7 @@
     "body": [
       "<Step",
       "\ticon=\"${1}\"",
-      "\ticonColor={${2|\\\"default\\\",\\\"royal\\\",\\\"blue\\\",\\\"purple\\\",\\\"teal\\\",\\\"red\\\",\\\"yellow\\\",\\\"green\\\"|}}",
+      "\ticonColor={${2|\"default\",\"royal\",\"blue\",\"purple\",\"teal\",\"red\",\"yellow\",\"green\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1726,10 +1778,10 @@
     "body": [
       "<Timestamp",
       "\ttext=\"${1}\"",
-      "\tvariant={${2|\\\"default\\\",\\\"elapsed\\\",\\\"updated\\\"|}}",
+      "\tvariant={${2|\"default\",\"elapsed\",\"updated\"|}}",
       "\ttimestamp=\"${3}\"",
       "\tdark={${4|true,false|}}",
-      "\talign={${5|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${5|\"left\",\"center\",\"right\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1741,9 +1793,9 @@
       "<Title",
       "\tsize=\"${1:3}\"",
       "\ttext=\"${2}\"",
-      "\tvariant={${3|\\\"link\\\"|}}",
-      "\tcolor={${4|\\\"default\\\",\\\"light\\\",\\\"lighter\\\",\\\"success\\\",\\\"error\\\",\\\"link\\\"|}}",
-      "\ttag={${5|\\\"h1\\\",\\\"h2\\\",\\\"h3\\\",\\\"h4\\\",\\\"h5\\\",\\\"h6\\\",\\\"p\\\",\\\"div\\\",\\\"span\\\"|}}",
+      "\tvariant={${3|\"link\"|}}",
+      "\tcolor={${4|\"default\",\"light\",\"lighter\",\"success\",\"error\",\"link\"|}}",
+      "\ttag={${5|\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\",\"p\",\"div\",\"span\"|}}",
       "\t$0",
       "/>"
     ],
@@ -1753,10 +1805,11 @@
     "prefix": "pbTitleCount",
     "body": [
       "<TitleCount",
-      "\tsize={${1|\\\"lg\\\",\\\"sm\\\"|}}",
-      "\talign={${2|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tsize={${1|\"lg\",\"sm\"|}}",
+      "\talign={${2|\"left\",\"center\",\"right\"|}}",
       "\ttitle=\"${3}\"",
       "\tcount=\"${4}\"",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       "/>"
     ],
@@ -1766,9 +1819,10 @@
     "prefix": "pbTitleDetail",
     "body": [
       "<TitleDetail",
-      "\talign={${1|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\talign={${1|\"left\",\"center\",\"right\"|}}",
       "\tdetail=\"${2}\"",
       "\ttitle=\"${3}\"",
+      "\tid=\"${4}\"",
       "\t$0",
       "/>"
     ],
@@ -1778,7 +1832,7 @@
     "prefix": "pbToggle",
     "body": [
       "<Toggle",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\"|}}",
       "\tinputOptions=\"${2:{}}\"",
       "\tchecked={${3|true,false|}}",
       "\tname=\"${4}\"",
@@ -1792,11 +1846,11 @@
     "prefix": "pbTooltip",
     "body": [
       "<Tooltip",
-      "\tdark={${1|true,false|}}",
-      "\tdelayOpen=\"${2}\"",
-      "\tdelayClose=\"${3}\"",
-      "\theight=\"${4}\"",
-      "\tinteraction={${5|true,false|}}",
+      "\ttext=\"${1}\"",
+      "\tdark={${2|true,false|}}",
+      "\tdelayOpen=\"${3}\"",
+      "\tdelayClose=\"${4}\"",
+      "\theight=\"${5}\"",
       "\t$0",
       "/>"
     ],
@@ -1820,8 +1874,8 @@
     "prefix": "pbUser",
     "body": [
       "<User",
-      "\tsize={${1|\\\"lg\\\",\\\"md\\\",\\\"sm\\\"|}}",
-      "\talign={${2|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tsize={${1|\"lg\",\"md\",\"sm\"|}}",
+      "\talign={${2|\"left\",\"center\",\"right\"|}}",
       "\tavatar={${3|true,false|}}",
       "\tavatarGrayscale={${4|true,false|}}",
       "\tavatarUrl=\"${5}\"",
@@ -1834,8 +1888,9 @@
     "prefix": "pbUserBadge",
     "body": [
       "<UserBadge",
-      "\tsize={${1|\\\"sm\\\",\\\"md\\\",\\\"lg\\\"|}}",
-      "\tbadge={${2|\\\"million-dollar\\\",\\\"veteran\\\"|}}",
+      "\tsize={${1|\"sm\",\"md\",\"lg\"|}}",
+      "\tbadge={${2|\"million-dollar\",\"veteran\"|}}",
+      "\tid=\"${3}\"",
       "\t$0",
       "/>"
     ],
@@ -1845,13 +1900,14 @@
     "prefix": "pbWeekdayStacked",
     "body": [
       "<WeekdayStacked",
-      "\tvariant={${1|\\\"day_only\\\",\\\"expanded\\\",\\\"month_day\\\"|}}",
-      "\talign={${2|\\\"left\\\",\\\"center\\\",\\\"right\\\"|}}",
+      "\tvariant={${1|\"day_only\",\"expanded\",\"month_day\"|}}",
+      "\talign={${2|\"left\",\"center\",\"right\"|}}",
       "\tdate=\"${3:::Date.current}\"",
       "\tcompact={${4|true,false|}}",
+      "\tdark={${5|true,false|}}",
       "\t$0",
       ">",
-      "\t${5:Content}",
+      "\t${6:Content}",
       "</WeekdayStacked>"
     ],
     "description": "Playbook WeekdayStacked component for React"

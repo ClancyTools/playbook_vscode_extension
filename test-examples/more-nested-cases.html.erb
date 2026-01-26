@@ -1,0 +1,14 @@
+<!-- Test Case 1: render_app props being attributed to previous pb_rails component -->
+<%= pb_rails("user", props: user_props) %>
+<% else %>
+  <%= top_level_view_context.render_app("UserAsyncMultiselectApp", props: { defaultSelected: [],
+                                                                            label: "employee",
+                                                                            optionsRansack: options_ransack,
+                                                                            placeholder: "Search Employee",
+                                                                            userRansack: "user_id_in" }) %>
+<% end %>
+
+<!-- Test Case 2: data prop with hash value -->
+<%= pb_rails("button", props: { type: "button", data: {"close-dialog": "#{object.id}", "disable_cancel_with": cancel_loading }, id: object.cancel_button_id, variant: "link" }) do %>
+  Cancel
+<% end %>
