@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-02-10T19:49:39.672Z",
+  "generatedAt": "2026-02-11T15:12:03.511Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -59,7 +59,34 @@
         "pointer",
         "progress",
         "wait",
-        "cell"
+        "cell",
+        "crosshair",
+        "text",
+        "verticalText",
+        "alias",
+        "copy",
+        "move",
+        "noDrop",
+        "notAllowed",
+        "grab",
+        "grabbing",
+        "eResize",
+        "nResize",
+        "neResize",
+        "nwResize",
+        "sResize",
+        "seResize",
+        "swResize",
+        "wResize",
+        "ewResize",
+        "nsResize",
+        "neswResize",
+        "nwseResize",
+        "colResize",
+        "rowResize",
+        "allScroll",
+        "zoomIn",
+        "zoomOut"
       ]
     },
     "dark": {
@@ -148,85 +175,113 @@
     "margin_right": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin_left": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin_top": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin_bottom": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin_x": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin_y": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "margin": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "width": {
@@ -301,91 +356,132 @@
     "order": {
       "type": "number",
       "values": [
-        "first"
+        "first",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "none"
       ]
     },
     "padding_right": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding_left": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding_top": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding_bottom": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding_x": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding_y": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "padding": {
       "type": "string",
       "values": [
+        "auto",
+        "initial",
+        "inherit",
         "none",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
-        "xl"
+        "xl",
+        "xxl"
       ]
     },
     "position": {
@@ -401,61 +497,49 @@
     "top": {
       "type": "string",
       "values": [
-        "0",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
         "xl",
-        "auto",
-        "initial",
-        "inherit"
+        "xxl"
       ]
     },
     "right": {
       "type": "string",
       "values": [
-        "0",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
         "xl",
-        "auto",
-        "initial",
-        "inherit"
+        "xxl"
       ]
     },
     "bottom": {
       "type": "string",
       "values": [
-        "0",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
         "xl",
-        "auto",
-        "initial",
-        "inherit"
+        "xxl"
       ]
     },
     "left": {
       "type": "string",
       "values": [
-        "0",
         "xxs",
         "xs",
         "sm",
         "md",
         "lg",
         "xl",
-        "auto",
-        "initial",
-        "inherit"
+        "xxl"
       ]
     },
     "shadow": {
@@ -508,7 +592,15 @@
       ]
     },
     "truncate": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "none"
+      ]
     },
     "vertical_align": {
       "type": "string",
@@ -524,7 +616,19 @@
       ]
     },
     "z_index": {
-      "type": "string"
+      "type": "string",
+      "values": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ]
     },
     "height": {
       "type": "string",
@@ -565,6 +669,39 @@
         "xxxl"
       ]
     },
+    "spacing": {
+      "type": "string",
+      "values": [
+        "none",
+        "xxs",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "auto",
+        "initial",
+        "inherit"
+      ]
+    },
+    "screen_size": {
+      "type": "string",
+      "values": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "default"
+      ]
+    },
+    "break_method": {
+      "type": "string",
+      "values": [
+        "on",
+        "at"
+      ]
+    },
     "display": {
       "type": "string",
       "values": [
@@ -575,9 +712,6 @@
         "inline_flex",
         "none"
       ]
-    },
-    "hover": {
-      "type": "string"
     },
     "aria": {
       "type": "string"

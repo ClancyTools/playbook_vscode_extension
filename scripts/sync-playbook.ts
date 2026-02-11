@@ -40,12 +40,44 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   const globalProps: Record<string, any> = {}
 
   const typeAliases: Record<string, string[]> = {}
-  const typeAliasRegex = /type\s+(\w+)\s*=\s*([^;\n]+)/g
+
+  const typesDir = path.join(playbookRoot, "app/pb_kits/playbook/types")
+  const typeFiles = ["sizes.ts", "display.ts", "base.ts", "spacing.ts"]
+
+  typeFiles.forEach(typeFile => {
+    const typePath = path.join(typesDir, typeFile)
+    if (fs.existsSync(typePath)) {
+      const typeContent = fs.readFileSync(typePath, "utf-8")
+      const exportTypeRegex = /export\s+type\s+(\w+)\s*=\s*([^;\n]+)/g
+      let match
+
+      while ((match = exportTypeRegex.exec(typeContent)) !== null) {
+        const typeName = match[1]
+        const typeDef = match[2].trim()
+
+        const values: string[] = []
+        const quotedValuesRegex = /"([^"]+)"/g
+        let valueMatch
+
+        while ((valueMatch = quotedValuesRegex.exec(typeDef)) !== null) {
+          values.push(valueMatch[1])
+        }
+
+        if (values.length > 0) {
+          typeAliases[typeName] = values
+        }
+      }
+    }
+  })
+
+  const simpleTypeRegex = /type\s+(\w+)\s*=\s*([^{][^;\n]+)/g
   let aliasMatch
 
-  while ((aliasMatch = typeAliasRegex.exec(content)) !== null) {
+  while ((aliasMatch = simpleTypeRegex.exec(content)) !== null) {
     const typeName = aliasMatch[1]
     const typeDef = aliasMatch[2].trim()
+
+    if (typeDef.includes('{')) continue
 
     const values: string[] = []
     const quotedValuesRegex = /"([^"]+)"/g
@@ -55,8 +87,23 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       values.push(valueMatch[1])
     }
 
+    const numericRegex = /\b(\d+)\b/g
+    let numMatch
+    while ((numMatch = numericRegex.exec(typeDef)) !== null) {
+      values.push(numMatch[1])
+    }
+
+    const typeRefRegex = /\b([A-Z]\w+)\b/g
+    let typeMatch
+    while ((typeMatch = typeRefRegex.exec(typeDef)) !== null) {
+      const refType = typeMatch[1]
+      if (typeAliases[refType]) {
+        values.push(...typeAliases[refType])
+      }
+    }
+
     if (values.length > 0) {
-      typeAliases[typeName] = values
+      typeAliases[typeName] = [...new Set(values)] // Remove duplicates
     }
   }
 
@@ -69,6 +116,14 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       enumValues.push(valueMatch[1])
     }
 
+    const numericRegex = /\b(\d+)\b/g
+    let numMatch
+    while ((numMatch = numericRegex.exec(valuesDef)) !== null) {
+      if (!enumValues.includes(numMatch[1])) {
+        enumValues.push(numMatch[1])
+      }
+    }
+
     const typeRefRegex = /\b([A-Z]\w+)\b/g
     let typeMatch
     while ((typeMatch = typeRefRegex.exec(valuesDef)) !== null) {
@@ -78,25 +133,32 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       }
     }
 
-    return enumValues
+    return [...new Set(enumValues)] // Remove duplicates
   }
 
-  const typeDefRegex = /type\s+\w+\s*=\s*\{([^}]+)\}/g
+  const typeDefRegex = /type\s+(\w+)\s*=\s*\{([^}]+)\}/gs
   let typeMatch
 
   while ((typeMatch = typeDefRegex.exec(content)) !== null) {
-    const typeBody = typeMatch[1]
+    const typeName = typeMatch[1]
+    const typeBody = typeMatch[2]
 
-    const propRegex = /(\w+)\?:\s*([^,\n]+)/g
+    if (typeName === 'GlobalProps') continue
+
+    const propRegex = /(\w+)\?:\s*([^,}]+(?:,\s*)?)/gs
     let propMatch
 
     while ((propMatch = propRegex.exec(typeBody)) !== null) {
       const propNameCamelCase = propMatch[1]
-      const valuesDef = propMatch[2].trim()
+      let valuesDef = propMatch[2].trim()
+
+      valuesDef = valuesDef.replace(/,\s*$/, '').trim()
 
       if (
         propNameCamelCase === "break" ||
         propNameCamelCase === "default" ||
+        propNameCamelCase === "value" ||
+        propNameCamelCase === "inset" ||
         propNameCamelCase.length <= 1
       ) {
         continue
@@ -115,7 +177,8 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
         propType = "boolean"
       } else if (
         valuesDef.includes("Binary") ||
-        valuesDef.match(/\b[0-9]\s*\|/) ||
+        valuesDef.includes("number") ||
+        valuesDef.match(/\b\d+\s*\|/) ||
         valuesDef.match(/^\d/)
       ) {
         propType = "number"
@@ -128,7 +191,9 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
     }
   }
 
-  const spacingValues = ["none", "xxs", "xs", "sm", "md", "lg", "xl"]
+  const spacingValues = typeAliases['Sizes'] || typeAliases['AllSizes'] ||
+    ["none", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
+
   const spacingProps = [
     "padding",
     "padding_top",
@@ -147,15 +212,25 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   ]
 
   spacingProps.forEach((prop) => {
-    globalProps[prop] = { type: "string", values: spacingValues }
+    if (!globalProps[prop]) {
+      globalProps[prop] = { type: "string", values: spacingValues.filter(v => v !== "none") }
+    }
   })
 
-  const positioningValues = ["0", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
+  const positioningValues = typeAliases['Sizes'] ||
+    ["xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
   const positioningProps = ["top", "right", "bottom", "left"]
 
   positioningProps.forEach((prop) => {
-    globalProps[prop] = { type: "string", values: positioningValues }
+    if (!globalProps[prop] || !globalProps[prop].values) {
+      globalProps[prop] = { type: "string", values: ["0", ...positioningValues] }
+    }
   })
+
+  // Extract sizing values from Ruby modules (width, height, etc.)
+  // These are defined in lib/playbook/*.rb files with *_values methods
+  const sizingPropsFromRuby = extractSizingPropsFromRuby(playbookRoot)
+  Object.assign(globalProps, sizingPropsFromRuby)
 
   if (!globalProps.dark) {
     globalProps.dark = { type: "boolean" }
@@ -166,13 +241,13 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   if (!globalProps.position) {
     globalProps.position = {
       type: "string",
-      values: ["relative", "absolute", "fixed", "sticky"]
+      values: ["relative", "absolute", "fixed", "sticky", "static"]
     }
   }
   if (!globalProps.z_index) {
     globalProps.z_index = {
-      type: "number",
-      values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+      type: "string",
+      values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "max"]
     }
   }
   if (!globalProps.display) {
@@ -180,212 +255,6 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       type: "string",
       values: ["block", "inline_block", "inline", "flex", "inline_flex", "none"]
     }
-  }
-  if (!globalProps.group_hover) {
-    globalProps.group_hover = { type: "boolean" }
-  }
-  if (!globalProps.truncate) {
-    globalProps.truncate = { type: "string", values: ["none", "1", "2", "3", "4", "5"] }
-  }
-
-  globalProps.width = {
-    type: "string",
-    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
-  }
-  globalProps.min_width = {
-    type: "string",
-    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
-  }
-  globalProps.max_width = {
-    type: "string",
-    values: ["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]
-  }
-  globalProps.height = {
-    type: "string",
-    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
-  }
-  globalProps.min_height = {
-    type: "string",
-    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
-  }
-  globalProps.max_height = {
-    type: "string",
-    values: ["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]
-  }
-  globalProps.gap = { type: "string", values: ["none", "xxs", "xs", "sm", "md", "lg", "xl"] }
-  if (!globalProps.column_gap) {
-    globalProps.column_gap = { type: "string" }
-  }
-  if (!globalProps.row_gap) {
-    globalProps.row_gap = { type: "string" }
-  }
-  if (!globalProps.order) {
-    globalProps.order = {
-      type: "string",
-      values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-    }
-  }
-  if (!globalProps.hover) {
-    globalProps.hover = { type: "string" }
-  }
-  if (!globalProps.border_radius) {
-    globalProps.border_radius = {
-      type: "string",
-      values: ["none", "xs", "sm", "md", "lg", "xl", "rounded"]
-    }
-  }
-  if (!globalProps.text_align) {
-    globalProps.text_align = {
-      type: "string",
-      values: ["start", "end", "left", "right", "center", "justify", "justify-all", "match-parent"]
-    }
-  }
-  if (!globalProps.overflow) {
-    globalProps.overflow = {
-      type: "string",
-      values: ["visible", "hidden", "scroll", "auto"]
-    }
-  }
-  if (!globalProps.overflow_x) {
-    globalProps.overflow_x = {
-      type: "string",
-      values: ["visible", "hidden", "scroll", "auto"]
-    }
-  }
-  if (!globalProps.overflow_y) {
-    globalProps.overflow_y = {
-      type: "string",
-      values: ["visible", "hidden", "scroll", "auto"]
-    }
-  }
-  if (!globalProps.flex_direction) {
-    globalProps.flex_direction = {
-      type: "string",
-      values: ["row", "column", "rowReverse", "columnReverse"]
-    }
-  }
-  if (!globalProps.flex_wrap) {
-    globalProps.flex_wrap = {
-      type: "string",
-      values: ["wrap", "nowrap", "wrapReverse"]
-    }
-  }
-  if (!globalProps.justify_content) {
-    globalProps.justify_content = {
-      type: "string",
-      values: ["start", "end", "center", "spaceBetween", "spaceAround", "spaceEvenly"]
-    }
-  }
-  if (!globalProps.justify_self) {
-    globalProps.justify_self = {
-      type: "string",
-      values: ["auto", "start", "end", "center", "stretch"]
-    }
-  }
-  if (!globalProps.align_items) {
-    globalProps.align_items = {
-      type: "string",
-      values: ["flexStart", "flexEnd", "start", "end", "center", "baseline", "stretch"]
-    }
-  }
-  if (!globalProps.align_content) {
-    globalProps.align_content = {
-      type: "string",
-      values: ["start", "end", "center", "spaceBetween", "spaceAround", "spaceEvenly"]
-    }
-  }
-  if (!globalProps.align_self) {
-    globalProps.align_self = {
-      type: "string",
-      values: ["auto", "start", "end", "center", "stretch", "baseline"]
-    }
-  }
-  if (!globalProps.flex) {
-    globalProps.flex = {
-      type: "string",
-      values: [
-        "auto",
-        "initial",
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "none"
-      ]
-    }
-  }
-  if (!globalProps.flex_grow) {
-    globalProps.flex_grow = { type: "string", values: ["1", "0"] }
-  }
-  if (!globalProps.flex_shrink) {
-    globalProps.flex_shrink = { type: "string", values: ["1", "0"] }
-  }
-  if (!globalProps.cursor) {
-    globalProps.cursor = {
-      type: "string",
-      values: [
-        "auto",
-        "default",
-        "none",
-        "contextMenu",
-        "help",
-        "pointer",
-        "progress",
-        "wait",
-        "cell",
-        "crosshair",
-        "text",
-        "verticalText",
-        "alias",
-        "copy",
-        "move",
-        "noDrop",
-        "notAllowed",
-        "grab",
-        "grabbing",
-        "eResize",
-        "nResize",
-        "neResize",
-        "nwResize",
-        "sResize",
-        "seResize",
-        "swResize",
-        "wResize",
-        "ewResize",
-        "nsResize",
-        "neswResize",
-        "nwseResize",
-        "colResize",
-        "rowResize",
-        "allScroll",
-        "zoomIn",
-        "zoomOut"
-      ]
-    }
-  }
-  if (!globalProps.vertical_align) {
-    globalProps.vertical_align = {
-      type: "string",
-      values: ["baseline", "super", "top", "middle", "bottom", "sub", "text-top", "text-bottom"]
-    }
-  }
-  if (!globalProps.line_height) {
-    globalProps.line_height = {
-      type: "string",
-      values: ["tightest", "tighter", "tight", "normal", "loose", "looser", "loosest"]
-    }
-  }
-  if (!globalProps.number_spacing) {
-    globalProps.number_spacing = { type: "string", values: ["tabular"] }
   }
 
   if (!globalProps.aria) {
@@ -414,6 +283,43 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   }
 
   return globalProps
+}
+
+function extractSizingPropsFromRuby(playbookRoot: string): Record<string, any> {
+  const sizingProps: Record<string, any> = {}
+  const libDir = path.join(playbookRoot, "lib/playbook")
+
+  // Map of Ruby files to prop names they define
+  const rubyFiles = [
+    { file: "height.rb", prop: "height" },
+    { file: "min_height.rb", prop: "min_height" },
+    { file: "max_height.rb", prop: "max_height" },
+    { file: "spacing.rb", props: ["width", "min_width", "max_width", "gap", "column_gap", "row_gap"] }
+  ]
+
+  rubyFiles.forEach(({ file, prop, props }) => {
+    const filePath = path.join(libDir, file)
+    if (!fs.existsSync(filePath)) return
+
+    const content = fs.readFileSync(filePath, "utf-8")
+
+    // Extract all *_values methods
+    const valuesRegex = /def\s+(\w+)_values\s*\n\s*%w\[([^\]]+)\]/g
+    let match
+
+    while ((match = valuesRegex.exec(content)) !== null) {
+      const methodName = match[1] // e.g., "height", "width", "min_width"
+      const valuesStr = match[2]
+      const values = valuesStr.trim().split(/\s+/)
+
+      sizingProps[methodName] = {
+        type: "string",
+        values: values
+      }
+    }
+  })
+
+  return sizingProps
 }
 
 function extractGlobalPropsList(playbookPath: string): string[] {
@@ -815,7 +721,6 @@ function parseReactPropsFromTypeScript(
     const content = fs.readFileSync(tsxFile, "utf-8")
     const props: PropDefinition[] = []
 
-    // Get component name in PascalCase
     const pascalName = componentName
       .split("/")
       .pop()!
@@ -823,7 +728,6 @@ function parseReactPropsFromTypeScript(
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join("")
 
-    // Find the type definition - more flexible regex
     const typePattern = `type\\s+${pascalName}Props\\s*=\\s*\\{`
     const startIndex = content.search(new RegExp(typePattern))
 
@@ -831,7 +735,6 @@ function parseReactPropsFromTypeScript(
       return []
     }
 
-    // Find the matching closing brace
     let braceCount = 0
     let inType = false
     let typeBody = ""
@@ -852,10 +755,8 @@ function parseReactPropsFromTypeScript(
       }
     }
 
-    // Remove the opening brace and parse props
     typeBody = typeBody.substring(typeBody.indexOf("{") + 1)
 
-    // Split by lines and parse each prop
     const lines = typeBody.split("\n")
 
     for (const line of lines) {
@@ -864,7 +765,6 @@ function parseReactPropsFromTypeScript(
         continue
       }
 
-      // Match prop definition: propName?: type
       const propMatch = trimmed.match(/^(\w+)\??:\s*(.+?)(?:,|$)/)
       if (!propMatch) {
         continue
@@ -873,12 +773,10 @@ function parseReactPropsFromTypeScript(
       const propName = propMatch[1]
       const propType = propMatch[2].trim().replace(/,$/, "")
 
-      // Skip global props
       if (["aria", "data", "htmlOptions", "className", "children"].includes(propName)) {
         continue
       }
 
-      // Determine type and extract enum values if applicable
       let type = "any"
       let values: string[] | undefined
 
@@ -902,7 +800,6 @@ function parseReactPropsFromTypeScript(
         type = "boolean"
       }
 
-      // Convert camelCase to snake_case
       const snakeCaseName = propName.replace(/([A-Z])/g, "_$1").toLowerCase()
 
       props.push({
@@ -926,15 +823,12 @@ function mergeComponentProps(components: ComponentMetadata[]): ComponentMetadata
       component.name
     )
 
-    // Merge Rails and React props, preferring React props when there's a conflict
     const mergedPropsMap = new Map<string, PropDefinition>()
 
-    // Add Rails props first
     component.props.forEach((prop) => {
       mergedPropsMap.set(prop.name, prop)
     })
 
-    // Add/override with React props
     reactProps.forEach((prop) => {
       if (!mergedPropsMap.has(prop.name)) {
         mergedPropsMap.set(prop.name, prop)

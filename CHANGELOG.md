@@ -5,6 +5,31 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.22] - 2026-02-11
+
+### Changed
+
+- **Dynamic Global Props Extraction from Source Files** 🔄
+  - Global props now extracted from **both TypeScript and Ruby source files**
+  - TypeScript extraction:
+    - Reads `globalProps.ts` for prop type definitions
+    - Loads imported types from `types/*.ts` (Sizes, None, Display, etc.)
+    - Resolves type references and aliases dynamically
+    - Handles multi-line type definitions (e.g., cursor with 36 values)
+  - Ruby extraction:
+    - Reads sizing prop values from `lib/playbook/*.rb` files
+    - Extracts `*_values` methods from Ruby modules
+    - Parses `%w[...]` arrays for enum values
+    - Covers width, height, min/max variants, and gap props
+  - All 65 global props now have accurate enum values from their source definitions
+  - Removed 200+ lines of hardcoded fallbacks that are now extracted dynamically
+  - Examples of improved props:
+    - `width`: `["0%", "xs", "sm", "md", "lg", "xl", "xxl", "0", "none", "100%"]`
+    - `height`: `["auto", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl"]`
+    - `cursor`: All 36 cursor values extracted from multi-line TypeScript definition
+    - `truncate`: `["1", "2", "3", "4", "5", "none"]` with None type resolved
+  - Extension is now **self-updating** - when Playbook updates global props, next sync picks up changes automatically
+
 ## [1.0.21] - 2026-02-10
 
 ### Updated
