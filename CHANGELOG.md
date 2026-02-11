@@ -5,6 +5,27 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.24] - 2026-02-11
+
+### Fixed
+
+- **Multi-line React Component Validation** 🐛
+  - Fixed issue where React components with props spanning multiple lines weren't being validated
+  - Previously only single-line components like `<Body top="xs"/>` worked correctly
+  - Now multi-line components are fully supported:
+
+    ```tsx
+    <Body
+      top=""
+      bottom='asdf'
+    />
+    ```
+
+  - Fixed regex in `extractReactComponentBlock` to match component tags at end of line
+  - Fixed prop value formatting to match Rails implementation (including quotes in `propValue`)
+  - Multi-line components now get proper IntelliSense suggestions and validation
+  - Rails multi-line components already worked correctly; this fix brings React to parity
+
 ## [1.0.23] - 2026-02-11
 
 ### Changed

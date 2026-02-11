@@ -290,48 +290,110 @@ export class PlaybookDiagnostics {
         }
       }
     } else {
-      const line = document.lineAt(startLineIndex).text
+      // Extract the full component block for multi-line support
+      console.log(`[VALIDATE] React: extracting component block from line ${startLineIndex}`)
+      const componentBlock = this.extractReactComponentBlock(document, startLineIndex)
+      if (!componentBlock) {
+        console.log(`[VALIDATE] React: No component block found`)
+        return
+      }
+
       const propRegex = /(\w+)=(?:["']([^"']+)["']|\{([^}]+)\})/g
       let match
+      const blockLines = componentBlock.text.split('\n')
 
-      while ((match = propRegex.exec(line)) !== null) {
-        const propName = match[1]
-        const propValue = (match[2] || match[3])?.trim()
+      // Process each line in the component block
+      for (let i = 0; i < blockLines.length; i++) {
+        const line = blockLines[i]
+        const actualLineIndex = startLineIndex + i
 
-        const snakeCaseProp = propName.replace(/([A-Z])/g, "_$1").toLowerCase()
+        // Reset regex for each line
+        propRegex.lastIndex = 0
 
-        if (!component.props[snakeCaseProp] && !metadata.globalProps?.[snakeCaseProp]) {
-          const startIndex = match.index
-          const range = new vscode.Range(
-            startLineIndex,
-            startIndex,
-            startLineIndex,
-            startIndex + propName.length
-          )
+        while ((match = propRegex.exec(line)) !== null) {
+          const propName = match[1]
+          const quotedValue = match[2]
+          const braceValue = match[3]
 
-          const diagnostic = new vscode.Diagnostic(
-            range,
-            `Unknown prop "${propName}" for component "${component.react}"`,
-            vscode.DiagnosticSeverity.Warning
-          )
-          diagnostic.source = "Playbook"
-          diagnostics.push(diagnostic)
-        } else {
-          const prop = component.props[snakeCaseProp] || metadata.globalProps?.[snakeCaseProp]
-          if (prop) {
-            this.validatePropValue(
-              propName,
-              propValue || "",
-              prop,
-              match[0],
-              match.index,
-              startLineIndex,
-              diagnostics,
-              document
+          // Reconstruct propValue to include quotes/braces (like the Rails implementation)
+          const propValue = quotedValue !== undefined
+            ? `"${quotedValue}"`
+            : braceValue !== undefined
+              ? `{${braceValue}}`
+              : ""
+
+          const snakeCaseProp = propName.replace(/([A-Z])/g, "_$1").toLowerCase()
+
+          if (!component.props[snakeCaseProp] && !metadata.globalProps?.[snakeCaseProp]) {
+            const startIndex = match.index
+            const range = new vscode.Range(
+              actualLineIndex,
+              startIndex,
+              actualLineIndex,
+              startIndex + propName.length
             )
+
+            const diagnostic = new vscode.Diagnostic(
+              range,
+              `Unknown prop "${propName}" for component "${component.react}"`,
+              vscode.DiagnosticSeverity.Warning
+            )
+            diagnostic.source = "Playbook"
+            diagnostics.push(diagnostic)
+          } else {
+            const prop = component.props[snakeCaseProp] || metadata.globalProps?.[snakeCaseProp]
+            if (prop) {
+              this.validatePropValue(
+                propName,
+                propValue || "",
+                prop,
+                match[0],
+                match.index,
+                actualLineIndex,
+                diagnostics,
+                document
+              )
+            }
           }
         }
       }
+    }
+  }
+
+  private extractReactComponentBlock(
+    document: vscode.TextDocument,
+    startLineIndex: number
+  ): { text: string; startLine: number; componentName: string } | null {
+    const startLine = document.lineAt(startLineIndex).text
+    const componentMatch = startLine.match(/<([A-Z][a-zA-Z0-9]*)(?:\s|>|\/|$)/)
+
+    if (!componentMatch) {
+      return null
+    }
+
+    const componentName = componentMatch[1]
+    const lines: string[] = []
+
+    // Search forward up to 50 lines to find the closing tag or self-closing tag
+    for (let i = startLineIndex; i < Math.min(startLineIndex + 50, document.lineCount); i++) {
+      const line = document.lineAt(i).text
+      lines.push(line)
+
+      // Check for self-closing tag or closing tag
+      if (line.includes('/>') || line.includes(`</${componentName}>`)) {
+        return {
+          text: lines.join('\n'),
+          startLine: startLineIndex,
+          componentName
+        }
+      }
+    }
+
+    // If we didn't find a closing tag, still return what we have
+    return {
+      text: lines.join('\n'),
+      startLine: startLineIndex,
+      componentName
     }
   }
 

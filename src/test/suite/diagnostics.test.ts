@@ -421,6 +421,45 @@ suite("Diagnostics Test Suite", () => {
     assert.ok(!textWarning, "Should allow React prop 'text' in React component")
   })
 
+  test("Should validate props in multi-line React components", async () => {
+    const content = `<Body
+  top=""
+  bottom='asdf'
+/>`
+
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const propWarnings = diagnostics.filter((d) => d.message.includes("Unknown prop"))
+
+    assert.strictEqual(
+      propWarnings.length,
+      0,
+      "Should recognize 'top' and 'bottom' as valid props in multi-line Body component"
+    )
+  })
+
+  test("Should detect invalid prop values in multi-line React components", async () => {
+    const content = `<Body
+  padding="invalid_value"
+  marginTop="xs"
+/>`
+
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const invalidPaddingWarning = diagnostics.find(
+      (d) => d.message.includes("padding") && d.message.includes("invalid_value")
+    )
+
+    assert.ok(
+      invalidPaddingWarning,
+      "Should detect 'invalid_value' is not a valid value for 'padding' in multi-line Body component"
+    )
+  })
+
   test("Should not warn for form builder field props inside pb_rails block", async () => {
     const content = `<%= pb_rails("flex/flex_item") do %>
   <%= f.text_field :template_text_field, props: {
@@ -594,7 +633,20 @@ async function createTestDocument(
   languageId: string,
   content: string
 ): Promise<vscode.TextDocument> {
-  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${languageId}`)
+  // Map languageId to appropriate file extension
+  const extensionMap: Record<string, string> = {
+    'typescriptreact': 'tsx',
+    'javascriptreact': 'jsx',
+    'typescript': 'ts',
+    'javascript': 'js',
+    'erb': 'erb',
+    'ruby': 'rb',
+    'html.erb': 'html.erb',
+    'html': 'html'
+  }
+
+  const extension = extensionMap[languageId] || languageId
+  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${extension}`)
   const document = await vscode.workspace.openTextDocument(uri)
   const edit = new vscode.WorkspaceEdit()
   edit.insert(uri, new vscode.Position(0, 0), content)
