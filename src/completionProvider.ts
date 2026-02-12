@@ -1,13 +1,13 @@
-import * as vscode from "vscode"
-import { loadMetadata, ComponentMetadata, getPropValues } from "./metadata"
-import { findComponentContext } from "./parser"
+import * as vscode from "vscode";
+import { loadMetadata, ComponentMetadata, getPropValues, PlaybookMetadata, PropMetadata } from "./metadata";
+import { findComponentContext } from "./parser";
 
 export class PlaybookCompletionProvider implements vscode.CompletionItemProvider {
-  private extensionPath: string
+  private extensionPath: string;
 
   constructor(extensionPath: string) {
-    this.extensionPath = extensionPath
-    console.log(`[PlaybookCompletionProvider] Created with extension path: ${extensionPath}`)
+    this.extensionPath = extensionPath;
+    console.log(`[PlaybookCompletionProvider] Created with extension path: ${extensionPath}`);
   }
 
   provideCompletionItems(
@@ -18,32 +18,32 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
   ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
     console.log(
       `[PlaybookCompletionProvider] Completion requested at ${document.languageId}:${position.line}:${position.character}, trigger: ${context.triggerCharacter || "manual"}`
-    )
+    );
 
-    const metadata = loadMetadata(this.extensionPath)
-    const line = document.lineAt(position.line).text
-    const linePrefix = line.substring(0, position.character)
-    console.log(`[PlaybookCompletionProvider] Line prefix: "${linePrefix}"`)
+    const metadata = loadMetadata(this.extensionPath);
+    const line = document.lineAt(position.line).text;
+    const linePrefix = line.substring(0, position.character);
+    console.log(`[PlaybookCompletionProvider] Line prefix: "${linePrefix}"`);
 
-    const completionType = this.detectCompletionType(linePrefix, document, position)
-    console.log(`[PlaybookCompletionProvider] Detected completion type: ${completionType}`)
+    const completionType = this.detectCompletionType(linePrefix, document, position);
+    console.log(`[PlaybookCompletionProvider] Detected completion type: ${completionType}`);
 
     switch (completionType) {
       case "rails-component":
-        return this.provideRailsComponentCompletions(metadata)
+        return this.provideRailsComponentCompletions(metadata);
       case "react-component":
-        return this.provideReactComponentCompletions(metadata)
+        return this.provideReactComponentCompletions(metadata);
       case "rails-prop-name":
-        return this.provideRailsPropNameCompletions(document, position, metadata)
+        return this.provideRailsPropNameCompletions(document, position, metadata);
       case "react-prop-name":
-        return this.provideReactPropNameCompletions(document, position, metadata)
+        return this.provideReactPropNameCompletions(document, position, metadata);
       case "rails-prop-value":
-        return this.providePropValueCompletions(document, position, metadata, "rails")
+        return this.providePropValueCompletions(document, position, metadata, "rails");
       case "react-prop-value":
-        return this.providePropValueCompletions(document, position, metadata, "react")
+        return this.providePropValueCompletions(document, position, metadata, "react");
       default:
-        console.log(`[PlaybookCompletionProvider] No completions for type: ${completionType}`)
-        return []
+        console.log(`[PlaybookCompletionProvider] No completions for type: ${completionType}`);
+        return [];
     }
   }
 
@@ -53,49 +53,49 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     position: vscode.Position
   ): string {
     if (linePrefix.match(/pb_rails\(\s*["']$/)) {
-      return "rails-component"
+      return "rails-component";
     }
 
-    const propsContext = this.findPropsContext(document, position)
+    const propsContext = this.findPropsContext(document, position);
 
     if ((linePrefix.includes("props:") && linePrefix.includes("{")) || propsContext) {
-      const lastBraceIndex = linePrefix.lastIndexOf("{")
+      const lastBraceIndex = linePrefix.lastIndexOf("{");
       const afterBrace =
-        lastBraceIndex !== -1 ? linePrefix.substring(lastBraceIndex + 1) : linePrefix
-      const propValueMatch = afterBrace.match(/(\w+):\s*["']?([^",}]*)$/)
+        lastBraceIndex !== -1 ? linePrefix.substring(lastBraceIndex + 1) : linePrefix;
+      const propValueMatch = afterBrace.match(/(\w+):\s*["']?([^",}]*)$/);
 
       if (propValueMatch) {
-        return "rails-prop-value"
+        return "rails-prop-value";
       }
-      return "rails-prop-name"
+      return "rails-prop-name";
     }
 
     if (linePrefix.match(/<[A-Z]?\w*$/)) {
-      return "react-component"
+      return "react-component";
     }
 
-    const reactTagMatch = linePrefix.match(/<([A-Z][a-zA-Z0-9]*)\s+/)
+    const reactTagMatch = linePrefix.match(/<([A-Z][a-zA-Z0-9]*)\s+/);
     if (reactTagMatch) {
       const afterTag = linePrefix.substring(
         linePrefix.indexOf(reactTagMatch[1]) + reactTagMatch[1].length
-      )
+      );
 
       if (afterTag.match(/\w+\s*=\s*["'{]?$/)) {
-        return "react-prop-value"
+        return "react-prop-value";
       }
 
-      return "react-prop-name"
+      return "react-prop-name";
     }
 
-    const reactComponentContext = this.findReactComponentContext(document, position)
+    const reactComponentContext = this.findReactComponentContext(document, position);
     if (reactComponentContext) {
       if (linePrefix.match(/\w+\s*=\s*["'{]?$/)) {
-        return "react-prop-value"
+        return "react-prop-value";
       }
-      return "react-prop-name"
+      return "react-prop-name";
     }
 
-    return "none"
+    return "none";
   }
 
   private findReactComponentContext(
@@ -103,296 +103,296 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     position: vscode.Position
   ): string | null {
     for (let lineNum = position.line; lineNum >= Math.max(0, position.line - 20); lineNum--) {
-      const line = document.lineAt(lineNum).text
+      const line = document.lineAt(lineNum).text;
 
-      const componentMatch = line.match(/<([A-Z][a-zA-Z0-9]*)(?:\s|$)/)
+      const componentMatch = line.match(/<([A-Z][a-zA-Z0-9]*)(?:\s|$)/);
       if (componentMatch) {
-        const componentName = componentMatch[1]
+        const componentName = componentMatch[1];
 
-        let foundClosing = false
+        let foundClosing = false;
         for (let checkLine = lineNum; checkLine <= position.line; checkLine++) {
-          const checkText = document.lineAt(checkLine).text
+          const checkText = document.lineAt(checkLine).text;
           if (checkText.includes('/>') || checkText.includes(`</${componentName}>`)) {
             if (checkLine < position.line ||
                 (checkLine === position.line && checkText.indexOf('/>') < position.character)) {
-              foundClosing = true
-              break
+              foundClosing = true;
+              break;
             }
           }
         }
 
         if (!foundClosing) {
-          return componentName
+          return componentName;
         }
       }
     }
 
-    return null
+    return null;
   }
 
   private findPropsContext(document: vscode.TextDocument, position: vscode.Position): boolean {
-    let openBraces = 0
-    let foundPropsStart = false
+    let openBraces = 0;
+    let foundPropsStart = false;
 
     for (let lineNum = position.line; lineNum >= Math.max(0, position.line - 20); lineNum--) {
-      const line = document.lineAt(lineNum).text
-      const searchText = lineNum === position.line ? line.substring(0, position.character) : line
+      const line = document.lineAt(lineNum).text;
+      const searchText = lineNum === position.line ? line.substring(0, position.character) : line;
 
       for (let i = searchText.length - 1; i >= 0; i--) {
-        const char = searchText[i]
+        const char = searchText[i];
         if (char === "}") {
-          openBraces++
+          openBraces++;
         } else if (char === "{") {
-          openBraces--
+          openBraces--;
 
           if (openBraces < 0) {
-            const beforeBrace = searchText.substring(0, i).trim()
+            const beforeBrace = searchText.substring(0, i).trim();
             if (beforeBrace.endsWith("props:")) {
-              foundPropsStart = true
-              break
+              foundPropsStart = true;
+              break;
             }
-            return false
+            return false;
           }
         }
       }
 
       if (foundPropsStart) {
-        break
+        break;
       }
 
       if (line.includes("pb_rails") && !foundPropsStart) {
-        return false
+        return false;
       }
     }
 
-    return foundPropsStart
+    return foundPropsStart;
   }
 
-  private provideRailsComponentCompletions(metadata: any): vscode.CompletionItem[] {
-    const items: vscode.CompletionItem[] = []
+  private provideRailsComponentCompletions(metadata: PlaybookMetadata): vscode.CompletionItem[] {
+    const items: vscode.CompletionItem[] = [];
 
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
       metadata.components
     )) {
-      const item = new vscode.CompletionItem(component.rails, vscode.CompletionItemKind.Class)
-      item.detail = `Playbook ${componentName}`
-      item.documentation = new vscode.MarkdownString(component.description)
+      const item = new vscode.CompletionItem(component.rails, vscode.CompletionItemKind.Class);
+      item.detail = `Playbook ${componentName}`;
+      item.documentation = new vscode.MarkdownString(component.description);
 
-      item.insertText = component.rails
+      item.insertText = component.rails;
 
       if (Object.keys(component.props).length > 0) {
-        const propNames = Object.keys(component.props).slice(0, 3).join(", ")
-        item.documentation.appendMarkdown(`\n\nProps: ${propNames}...`)
+        const propNames = Object.keys(component.props).slice(0, 3).join(", ");
+        item.documentation.appendMarkdown(`\n\nProps: ${propNames}...`);
       }
 
-      items.push(item)
+      items.push(item);
     }
 
-    return items.sort((a, b) => a.label.toString().localeCompare(b.label.toString()))
+    return items.sort((a, b) => a.label.toString().localeCompare(b.label.toString()));
   }
 
-  private provideReactComponentCompletions(metadata: any): vscode.CompletionItem[] {
-    const items: vscode.CompletionItem[] = []
+  private provideReactComponentCompletions(metadata: PlaybookMetadata): vscode.CompletionItem[] {
+    const items: vscode.CompletionItem[] = [];
 
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
       metadata.components
     )) {
-      const item = new vscode.CompletionItem(componentName, vscode.CompletionItemKind.Class)
-      item.detail = `Playbook ${componentName}`
-      item.documentation = new vscode.MarkdownString(component.description)
+      const item = new vscode.CompletionItem(componentName, vscode.CompletionItemKind.Class);
+      item.detail = `Playbook ${componentName}`;
+      item.documentation = new vscode.MarkdownString(component.description);
 
-      const commonProps = Object.entries(component.props).slice(0, 2)
+      const commonProps = Object.entries(component.props).slice(0, 2);
       if (commonProps.length > 0) {
-        let snippet = componentName
-        commonProps.forEach(([propName, prop], index) => {
-          const camelProp = propName.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
-          snippet += `\n\t${camelProp}={$${index + 1}}`
-        })
+        let snippet = componentName;
+        commonProps.forEach(([propName], index) => {
+          const camelProp = propName.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+          snippet += `\n\t${camelProp}={$${index + 1}}`;
+        });
 
         if (component.hasChildren) {
-          snippet += "\n>\n\t$0\n</" + componentName + ">"
+          snippet += "\n>\n\t$0\n</" + componentName + ">";
         } else {
-          snippet += "\n\t$0\n/>"
+          snippet += "\n\t$0\n/>";
         }
 
-        item.insertText = new vscode.SnippetString(snippet)
-        item.kind = vscode.CompletionItemKind.Snippet
+        item.insertText = new vscode.SnippetString(snippet);
+        item.kind = vscode.CompletionItemKind.Snippet;
       }
 
-      items.push(item)
+      items.push(item);
     }
 
-    return items.sort((a, b) => a.label.toString().localeCompare(b.label.toString()))
+    return items.sort((a, b) => a.label.toString().localeCompare(b.label.toString()));
   }
 
   private provideRailsPropNameCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any
+    metadata: PlaybookMetadata
   ): vscode.CompletionItem[] {
-    const componentContext = findComponentContext(document, position)
+    const componentContext = findComponentContext(document, position);
     if (!componentContext || componentContext.type !== "rails") {
-      return []
+      return [];
     }
 
-    const items: vscode.CompletionItem[] = []
+    const items: vscode.CompletionItem[] = [];
 
-    let component: ComponentMetadata | undefined
-    for (const [componentName, comp] of Object.entries<ComponentMetadata>(metadata.components)) {
+    let component: ComponentMetadata | undefined;
+    for (const [, comp] of Object.entries<ComponentMetadata>(metadata.components)) {
       if (comp.rails === componentContext.componentName) {
-        component = comp
-        break
+        component = comp;
+        break;
       }
     }
 
     if (!component) {
-      return []
+      return [];
     }
 
     for (const [propName, prop] of Object.entries(component.props)) {
-      const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property)
-      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`
+      const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property);
+      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`;
 
-      const validValues = getPropValues(prop, document.languageId)
-      let doc = `Type: \`${prop.type}\``
+      const validValues = getPropValues(prop, document.languageId);
+      let doc = `Type: \`${prop.type}\``;
       if (validValues && validValues.length > 0) {
-        doc += `\nValues: ${validValues.map((v) => `\`${v}\``).join(", ")}`
+        doc += `\nValues: ${validValues.map((v) => `\`${v}\``).join(", ")}`;
       }
       if (prop.default !== undefined) {
-        doc += `\nDefault: \`${prop.default}\``
+        doc += `\nDefault: \`${prop.default}\``;
       }
 
-      item.documentation = new vscode.MarkdownString(doc)
+      item.documentation = new vscode.MarkdownString(doc);
 
       if (validValues && validValues.length > 0) {
-        const choices = validValues.join(",")
-        item.insertText = new vscode.SnippetString(`${propName}: "\${1|${choices}|}"`)
+        const choices = validValues.join(",");
+        item.insertText = new vscode.SnippetString(`${propName}: "\${1|${choices}|}"`);
       } else if (prop.type === "boolean") {
-        item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`)
+        item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`);
       } else {
-        item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`)
+        item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`);
       }
 
-      item.kind = vscode.CompletionItemKind.Snippet
-      items.push(item)
+      item.kind = vscode.CompletionItemKind.Snippet;
+      items.push(item);
     }
 
     if (metadata.globalProps) {
-      for (const [propName, prop] of Object.entries(metadata.globalProps)) {
-        const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property)
-        item.detail = `${(prop as any).type} (global)`
+      for (const [propName, prop] of Object.entries<PropMetadata>(metadata.globalProps)) {
+        const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property);
+        item.detail = `${prop.type} (global)`;
 
-        const validValues = getPropValues(prop as any, document.languageId)
-        let doc = `Type: \`${(prop as any).type}\` (global prop)`
+        const validValues = getPropValues(prop, document.languageId);
+        let doc = `Type: \`${prop.type}\` (global prop)`;
         if (validValues && validValues.length > 0) {
-          doc += `\nValues: ${validValues.map((v: string) => `\`${v}\``).join(", ")}`
+          doc += `\nValues: ${validValues.map((v: string) => `\`${v}\``).join(", ")}`;
         }
 
-        item.documentation = new vscode.MarkdownString(doc)
+        item.documentation = new vscode.MarkdownString(doc);
 
         if (validValues && validValues.length > 0) {
-          const choices = validValues.join(",")
-          item.insertText = new vscode.SnippetString(`${propName}: "\${1|${choices}|}"`)
-        } else if ((prop as any).type === "boolean") {
-          item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`)
+          const choices = validValues.join(",");
+          item.insertText = new vscode.SnippetString(`${propName}: "\${1|${choices}|}"`);
+        } else if (prop.type === "boolean") {
+          item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`);
         } else {
-          item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`)
+          item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`);
         }
 
-        item.kind = vscode.CompletionItemKind.Snippet
-        item.sortText = "z" + propName
-        items.push(item)
+        item.kind = vscode.CompletionItemKind.Snippet;
+        item.sortText = "z" + propName;
+        items.push(item);
       }
     }
 
-    return items
+    return items;
   }
 
   private provideReactPropNameCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any
+    metadata: PlaybookMetadata
   ): vscode.CompletionItem[] {
-    const componentContext = findComponentContext(document, position)
+    const componentContext = findComponentContext(document, position);
     if (!componentContext || componentContext.type !== "react") {
-      return []
+      return [];
     }
 
-    const component = metadata.components[componentContext.componentName]
+    const component = metadata.components[componentContext.componentName];
     if (!component) {
-      return []
+      return [];
     }
 
-    const items: vscode.CompletionItem[] = []
+    const items: vscode.CompletionItem[] = [];
 
-    for (const [propName, prop] of Object.entries(component.props)) {
-      const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase())
-      const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property)
-      item.detail = `${(prop as any).type}${(prop as any).required ? " (required)" : ""}`
+    for (const [propName, prop] of Object.entries<PropMetadata>(component.props)) {
+      const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+      const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property);
+      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`;
 
-      let doc = `Type: \`${(prop as any).type}\``
-      if ((prop as any).values && (prop as any).values.length > 0) {
-        doc += `\nValues: ${(prop as any).values.map((v: string) => `\`${v}\``).join(", ")}`
+      let doc = `Type: \`${prop.type}\``;
+      if (prop.values && prop.values.length > 0) {
+        doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`;
       }
-      if ((prop as any).default !== undefined) {
-        doc += `\nDefault: \`${(prop as any).default}\``
+      if (prop.default !== undefined) {
+        doc += `\nDefault: \`${prop.default}\``;
       }
 
-      item.documentation = new vscode.MarkdownString(doc)
+      item.documentation = new vscode.MarkdownString(doc);
 
-      if ((prop as any).values && (prop as any).values.length > 0) {
-        const choices = (prop as any).values.map((v: string) => `"${v}"`).join(",")
-        item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`)
-      } else if ((prop as any).type === "boolean") {
-        item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`)
+      if (prop.values && prop.values.length > 0) {
+        const choices = prop.values.map((v: string) => `"${v}"`).join(",");
+        item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`);
+      } else if (prop.type === "boolean") {
+        item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`);
       } else {
-        item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`)
+        item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`);
       }
 
-      item.kind = vscode.CompletionItemKind.Snippet
-      items.push(item)
+      item.kind = vscode.CompletionItemKind.Snippet;
+      items.push(item);
     }
 
     if (metadata.globalProps) {
-      for (const [propName, prop] of Object.entries(metadata.globalProps)) {
-        const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase())
-        const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property)
-        item.detail = `${(prop as any).type} (global)`
+      for (const [propName, prop] of Object.entries<PropMetadata>(metadata.globalProps)) {
+        const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+        const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property);
+        item.detail = `${prop.type} (global)`;
 
-        let doc = `Type: \`${(prop as any).type}\` (global prop)`
-        if ((prop as any).values && (prop as any).values.length > 0) {
-          doc += `\nValues: ${(prop as any).values.map((v: string) => `\`${v}\``).join(", ")}`
+        let doc = `Type: \`${prop.type}\` (global prop)`;
+        if (prop.values && prop.values.length > 0) {
+          doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`;
         }
 
-        item.documentation = new vscode.MarkdownString(doc)
+        item.documentation = new vscode.MarkdownString(doc);
 
-        if ((prop as any).values && (prop as any).values.length > 0) {
-          const choices = (prop as any).values.map((v: string) => `"${v}"`).join(",")
-          item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`)
-        } else if ((prop as any).type === "boolean") {
-          item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`)
+        if (prop.values && prop.values.length > 0) {
+          const choices = prop.values.map((v: string) => `"${v}"`).join(",");
+          item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`);
+        } else if (prop.type === "boolean") {
+          item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`);
         } else {
-          item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`)
+          item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`);
         }
 
-        item.kind = vscode.CompletionItemKind.Snippet
-        item.sortText = "z" + camelProp
-        items.push(item)
+        item.kind = vscode.CompletionItemKind.Snippet;
+        item.sortText = "z" + camelProp;
+        items.push(item);
       }
     }
 
-    return items
+    return items;
   }
 
   private providePropValueCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any,
+    metadata: PlaybookMetadata,
     type: "rails" | "react"
   ): vscode.CompletionItem[] {
-    const componentContext = findComponentContext(document, position)
+    const componentContext = findComponentContext(document, position);
     if (!componentContext) {
-      return []
+      return [];
     }
 
     const component =
@@ -400,85 +400,85 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
         ? Object.values<ComponentMetadata>(metadata.components).find(
             (c) => c.rails === componentContext.componentName
           )
-        : metadata.components[componentContext.componentName]
+        : metadata.components[componentContext.componentName];
 
     if (!component) {
-      return []
+      return [];
     }
 
-    const line = document.lineAt(position.line).text
-    const beforeCursor = line.substring(0, position.character)
+    const line = document.lineAt(position.line).text;
+    const beforeCursor = line.substring(0, position.character);
 
-    let propName: string | null = null
-    let insideString = false
+    let propName: string | null = null;
+    let insideString = false;
 
     if (type === "rails") {
-      const match = beforeCursor.match(/(\w+):\s*["']?([^",}]*)$/)
+      const match = beforeCursor.match(/(\w+):\s*["']?([^",}]*)$/);
       if (match) {
-        propName = match[1]
+        propName = match[1];
         const afterColon = beforeCursor.substring(
           beforeCursor.lastIndexOf(propName) + propName.length + 1
-        )
-        insideString = /["']/.test(afterColon)
+        );
+        insideString = /["']/.test(afterColon);
       }
     } else {
-      const match = beforeCursor.match(/(\w+)\s*=\s*["'{]?([^"'}]*)$/)
+      const match = beforeCursor.match(/(\w+)\s*=\s*["'{]?([^"'}]*)$/);
       if (match) {
-        propName = match[1].replace(/([A-Z])/g, "_$1").toLowerCase()
-        const afterEquals = beforeCursor.substring(beforeCursor.lastIndexOf("=") + 1)
-        insideString = /["']/.test(afterEquals)
+        propName = match[1].replace(/([A-Z])/g, "_$1").toLowerCase();
+        const afterEquals = beforeCursor.substring(beforeCursor.lastIndexOf("=") + 1);
+        insideString = /["']/.test(afterEquals);
       }
     }
 
     if (!propName || (!component.props[propName] && !metadata.globalProps?.[propName])) {
-      return []
+      return [];
     }
 
-    const prop = component.props[propName] || metadata.globalProps?.[propName]
+    const prop = component.props[propName] || metadata.globalProps?.[propName];
     if (!prop) {
-      return []
+      return [];
     }
 
-    const items: vscode.CompletionItem[] = []
+    const items: vscode.CompletionItem[] = [];
 
-    const validValues = getPropValues(prop, document.languageId)
+    const validValues = getPropValues(prop, document.languageId);
     if (validValues && validValues.length > 0) {
       for (const value of validValues) {
-        const item = new vscode.CompletionItem(value, vscode.CompletionItemKind.EnumMember)
-        item.detail = `Valid value for ${propName}`
+        const item = new vscode.CompletionItem(value, vscode.CompletionItemKind.EnumMember);
+        item.detail = `Valid value for ${propName}`;
 
         if (insideString) {
-          item.insertText = value
+          item.insertText = value;
         } else {
-          item.insertText = `"${value}"`
+          item.insertText = `"${value}"`;
         }
 
         if (value === prop.default?.replace(/["']/g, "")) {
-          item.detail += " (default)"
-          item.sortText = "0" + value
+          item.detail += " (default)";
+          item.sortText = "0" + value;
         }
 
-        items.push(item)
+        items.push(item);
       }
     }
 
     if (prop.type === "boolean") {
-      const trueItem = new vscode.CompletionItem("true", vscode.CompletionItemKind.Value)
-      trueItem.insertText = "true"
-      const falseItem = new vscode.CompletionItem("false", vscode.CompletionItemKind.Value)
-      falseItem.insertText = "false"
+      const trueItem = new vscode.CompletionItem("true", vscode.CompletionItemKind.Value);
+      trueItem.insertText = "true";
+      const falseItem = new vscode.CompletionItem("false", vscode.CompletionItemKind.Value);
+      falseItem.insertText = "false";
 
       if (prop.default === "true") {
-        trueItem.detail = "(default)"
-        trueItem.sortText = "0true"
+        trueItem.detail = "(default)";
+        trueItem.sortText = "0true";
       } else if (prop.default === "false") {
-        falseItem.detail = "(default)"
-        falseItem.sortText = "0false"
+        falseItem.detail = "(default)";
+        falseItem.sortText = "0false";
       }
 
-      items.push(trueItem, falseItem)
+      items.push(trueItem, falseItem);
     }
 
-    return items
+    return items;
   }
 }
