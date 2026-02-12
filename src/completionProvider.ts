@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { loadMetadata, ComponentMetadata, getPropValues } from "./metadata";
+import { loadMetadata, ComponentMetadata, getPropValues, PlaybookMetadata, PropMetadata } from "./metadata";
 import { findComponentContext } from "./parser";
 
 export class PlaybookCompletionProvider implements vscode.CompletionItemProvider {
@@ -168,7 +168,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     return foundPropsStart;
   }
 
-  private provideRailsComponentCompletions(metadata: any): vscode.CompletionItem[] {
+  private provideRailsComponentCompletions(metadata: PlaybookMetadata): vscode.CompletionItem[] {
     const items: vscode.CompletionItem[] = [];
 
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
@@ -191,7 +191,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     return items.sort((a, b) => a.label.toString().localeCompare(b.label.toString()));
   }
 
-  private provideReactComponentCompletions(metadata: any): vscode.CompletionItem[] {
+  private provideReactComponentCompletions(metadata: PlaybookMetadata): vscode.CompletionItem[] {
     const items: vscode.CompletionItem[] = [];
 
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
@@ -204,7 +204,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
       const commonProps = Object.entries(component.props).slice(0, 2);
       if (commonProps.length > 0) {
         let snippet = componentName;
-        commonProps.forEach(([propName, prop], index) => {
+        commonProps.forEach(([propName], index) => {
           const camelProp = propName.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
           snippet += `\n\t${camelProp}={$${index + 1}}`;
         });
@@ -228,7 +228,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
   private provideRailsPropNameCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any
+    metadata: PlaybookMetadata
   ): vscode.CompletionItem[] {
     const componentContext = findComponentContext(document, position);
     if (!componentContext || componentContext.type !== "rails") {
@@ -238,7 +238,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     const items: vscode.CompletionItem[] = [];
 
     let component: ComponentMetadata | undefined;
-    for (const [componentName, comp] of Object.entries<ComponentMetadata>(metadata.components)) {
+    for (const [, comp] of Object.entries<ComponentMetadata>(metadata.components)) {
       if (comp.rails === componentContext.componentName) {
         component = comp;
         break;
@@ -278,12 +278,12 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     }
 
     if (metadata.globalProps) {
-      for (const [propName, prop] of Object.entries(metadata.globalProps)) {
+      for (const [propName, prop] of Object.entries<PropMetadata>(metadata.globalProps)) {
         const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property);
-        item.detail = `${(prop as any).type} (global)`;
+        item.detail = `${prop.type} (global)`;
 
-        const validValues = getPropValues(prop as any, document.languageId);
-        let doc = `Type: \`${(prop as any).type}\` (global prop)`;
+        const validValues = getPropValues(prop, document.languageId);
+        let doc = `Type: \`${prop.type}\` (global prop)`;
         if (validValues && validValues.length > 0) {
           doc += `\nValues: ${validValues.map((v: string) => `\`${v}\``).join(", ")}`;
         }
@@ -293,7 +293,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
         if (validValues && validValues.length > 0) {
           const choices = validValues.join(",");
           item.insertText = new vscode.SnippetString(`${propName}: "\${1|${choices}|}"`);
-        } else if ((prop as any).type === "boolean") {
+        } else if (prop.type === "boolean") {
           item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`);
         } else {
           item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`);
@@ -311,7 +311,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
   private provideReactPropNameCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any
+    metadata: PlaybookMetadata
   ): vscode.CompletionItem[] {
     const componentContext = findComponentContext(document, position);
     if (!componentContext || componentContext.type !== "react") {
@@ -325,25 +325,25 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
 
     const items: vscode.CompletionItem[] = [];
 
-    for (const [propName, prop] of Object.entries(component.props)) {
+    for (const [propName, prop] of Object.entries<PropMetadata>(component.props)) {
       const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
       const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property);
-      item.detail = `${(prop as any).type}${(prop as any).required ? " (required)" : ""}`;
+      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`;
 
-      let doc = `Type: \`${(prop as any).type}\``;
-      if ((prop as any).values && (prop as any).values.length > 0) {
-        doc += `\nValues: ${(prop as any).values.map((v: string) => `\`${v}\``).join(", ")}`;
+      let doc = `Type: \`${prop.type}\``;
+      if (prop.values && prop.values.length > 0) {
+        doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`;
       }
-      if ((prop as any).default !== undefined) {
-        doc += `\nDefault: \`${(prop as any).default}\``;
+      if (prop.default !== undefined) {
+        doc += `\nDefault: \`${prop.default}\``;
       }
 
       item.documentation = new vscode.MarkdownString(doc);
 
-      if ((prop as any).values && (prop as any).values.length > 0) {
-        const choices = (prop as any).values.map((v: string) => `"${v}"`).join(",");
+      if (prop.values && prop.values.length > 0) {
+        const choices = prop.values.map((v: string) => `"${v}"`).join(",");
         item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`);
-      } else if ((prop as any).type === "boolean") {
+      } else if (prop.type === "boolean") {
         item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`);
       } else {
         item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`);
@@ -354,22 +354,22 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
     }
 
     if (metadata.globalProps) {
-      for (const [propName, prop] of Object.entries(metadata.globalProps)) {
+      for (const [propName, prop] of Object.entries<PropMetadata>(metadata.globalProps)) {
         const camelProp = propName.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
         const item = new vscode.CompletionItem(camelProp, vscode.CompletionItemKind.Property);
-        item.detail = `${(prop as any).type} (global)`;
+        item.detail = `${prop.type} (global)`;
 
-        let doc = `Type: \`${(prop as any).type}\` (global prop)`;
-        if ((prop as any).values && (prop as any).values.length > 0) {
-          doc += `\nValues: ${(prop as any).values.map((v: string) => `\`${v}\``).join(", ")}`;
+        let doc = `Type: \`${prop.type}\` (global prop)`;
+        if (prop.values && prop.values.length > 0) {
+          doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`;
         }
 
         item.documentation = new vscode.MarkdownString(doc);
 
-        if ((prop as any).values && (prop as any).values.length > 0) {
-          const choices = (prop as any).values.map((v: string) => `"${v}"`).join(",");
+        if (prop.values && prop.values.length > 0) {
+          const choices = prop.values.map((v: string) => `"${v}"`).join(",");
           item.insertText = new vscode.SnippetString(`${camelProp}={\${1|${choices}|}}`);
-        } else if ((prop as any).type === "boolean") {
+        } else if (prop.type === "boolean") {
           item.insertText = new vscode.SnippetString(`${camelProp}={$\{1|true,false|}}`);
         } else {
           item.insertText = new vscode.SnippetString(`${camelProp}="\${1}"`);
@@ -387,7 +387,7 @@ export class PlaybookCompletionProvider implements vscode.CompletionItemProvider
   private providePropValueCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
-    metadata: any,
+    metadata: PlaybookMetadata,
     type: "rails" | "react"
   ): vscode.CompletionItem[] {
     const componentContext = findComponentContext(document, position);

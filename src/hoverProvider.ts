@@ -4,7 +4,8 @@ import {
   findComponentByRailsName,
   findComponentByReactName,
   generateComponentDocs,
-  generatePropDocs
+  generatePropDocs,
+  PlaybookMetadata
 } from "./metadata";
 import {
   parseRailsComponent,
@@ -30,7 +31,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
       `[PlaybookHoverProvider] Hover requested at ${document.languageId}:${position.line}:${position.character}`
     );
 
-    const metadata = loadMetadata(this.extensionPath);
+    const metadata: PlaybookMetadata = loadMetadata(this.extensionPath);
 
     const railsComponent = parseRailsComponent(document, position);
     if (railsComponent) {
@@ -62,7 +63,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
         if (component) {
           const prop =
             component.props[railsProp.propName] ||
-            (metadata as any).globalProps?.[railsProp.propName];
+            metadata.globalProps?.[railsProp.propName];
           if (prop) {
             const propDocs = generatePropDocs(
               railsProp.propName,
@@ -85,7 +86,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           const snakeCaseProp = reactProp.propName.replace(/([A-Z])/g, "_$1").toLowerCase();
 
           const prop =
-            component.props[snakeCaseProp] || (metadata as any).globalProps?.[snakeCaseProp];
+            component.props[snakeCaseProp] || metadata.globalProps?.[snakeCaseProp];
           if (prop) {
             const propDocs = generatePropDocs(
               reactProp.propName,

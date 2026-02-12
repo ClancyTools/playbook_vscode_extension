@@ -9,7 +9,8 @@ import {
   findFormBuilderField,
   FormBuilderMetadata,
   FormBuilderField,
-  getPropValues
+  getPropValues,
+  PlaybookMetadata
 } from "./metadata";
 
 const HARDCODED_GLOBAL_PROPS = new Set(["id", "key"]);
@@ -94,7 +95,7 @@ export class PlaybookDiagnostics {
     line: string,
     lineIndex: number,
     document: vscode.TextDocument,
-    metadata: any,
+    metadata: PlaybookMetadata,
     diagnostics: vscode.Diagnostic[]
   ): void {
     const componentRegex = /pb_rails\(\s*["']([^"']+)["']/g;
@@ -130,7 +131,7 @@ export class PlaybookDiagnostics {
     line: string,
     lineIndex: number,
     document: vscode.TextDocument,
-    metadata: any,
+    metadata: PlaybookMetadata,
     diagnostics: vscode.Diagnostic[]
   ): void {
     const componentRegex = /<([A-Z][a-zA-Z0-9]*)/g;
@@ -150,7 +151,7 @@ export class PlaybookDiagnostics {
     document: vscode.TextDocument,
     startLineIndex: number,
     component: ComponentMetadata,
-    metadata: any,
+    metadata: PlaybookMetadata,
     diagnostics: vscode.Diagnostic[],
     type: "rails" | "react"
   ): void {
@@ -373,7 +374,6 @@ export class PlaybookDiagnostics {
     const componentName = componentMatch[1];
     const componentStartIndex = startLine.indexOf(componentMatch[0]);
     const lines: string[] = [];
-    let foundClosingBracket = false;
 
     for (let i = startLineIndex; i < Math.min(startLineIndex + 50, document.lineCount); i++) {
       let line = document.lineAt(i).text;
@@ -393,7 +393,6 @@ export class PlaybookDiagnostics {
         } else {
           lines.push(line.substring(0, selfClosingIndex + 2));
         }
-        foundClosingBracket = true;
         break;
       }
 
@@ -412,7 +411,6 @@ export class PlaybookDiagnostics {
         }
 
         lines.push(line.substring(0, closingBracketIndex + 1));
-        foundClosingBracket = true;
         break;
       }
 
@@ -518,7 +516,6 @@ export class PlaybookDiagnostics {
     }
 
     let braceCount = 1;
-    let endLine = propsStartLine;
     let endChar = propsStartChar;
     const lines: string[] = [];
 
@@ -533,7 +530,6 @@ export class PlaybookDiagnostics {
         if (line[j] === "}") {
           braceCount--;
           if (braceCount === 0) {
-            endLine = i;
             endChar = j;
             if (i === propsStartLine) {
               lines.push(line.substring(propsStartChar, endChar));
@@ -565,7 +561,7 @@ export class PlaybookDiagnostics {
     lineIndex: number,
     document: vscode.TextDocument,
     formBuilderMetadata: FormBuilderMetadata,
-    playbookMetadata: any,
+    playbookMetadata: PlaybookMetadata,
     diagnostics: vscode.Diagnostic[]
   ): void {
     const formBuilderRegex = /(\w+)\.(\w+)\s*\(/g;
@@ -611,7 +607,7 @@ export class PlaybookDiagnostics {
     document: vscode.TextDocument,
     startLineIndex: number,
     field: FormBuilderField,
-    metadata: any,
+    metadata: PlaybookMetadata,
     diagnostics: vscode.Diagnostic[]
   ): void {
     const propsBlock = this.extractFormBuilderPropsBlock(document, startLineIndex);
@@ -773,7 +769,6 @@ export class PlaybookDiagnostics {
     }
 
     let braceCount = 1;
-    let endLine = propsStartLine;
     let endChar = propsStartChar;
     const lines: string[] = [];
 
@@ -788,7 +783,6 @@ export class PlaybookDiagnostics {
         if (line[j] === "}") {
           braceCount--;
           if (braceCount === 0) {
-            endLine = i;
             endChar = j;
             if (i === propsStartLine) {
               lines.push(line.substring(propsStartChar, endChar));

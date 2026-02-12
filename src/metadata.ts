@@ -58,7 +58,7 @@ export function findComponentByRailsName(
   metadata: PlaybookMetadata,
   railsName: string
 ): ComponentMetadata | null {
-  for (const [componentName, component] of Object.entries(metadata.components)) {
+  for (const [, component] of Object.entries(metadata.components)) {
     if (component.rails === railsName) {
       return component;
     }

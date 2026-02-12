@@ -18,7 +18,6 @@ export function parseRailsComponent(
   position: vscode.Position
 ): ComponentUsage | null {
   const line = document.lineAt(position.line).text;
-  const lineRange = document.lineAt(position.line).range;
 
   const regex = /pb_rails\(\s*["']([^"']+)["']/g;
   let match;
