@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-02-11T20:28:29.487Z",
+  "generatedAt": "2026-02-19T15:56:02.284Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -3362,6 +3362,15 @@
         "unstyled": {
           "type": "boolean",
           "default": "false"
+        },
+        "dark": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "value": {
+          "type": "any"
         }
       }
     },
@@ -4236,6 +4245,14 @@
         "required_indicator": {
           "type": "boolean",
           "default": "false"
+        },
+        "close_on_click": {
+          "type": "enum",
+          "values": [
+            "outside",
+            "inside",
+            "any"
+          ]
         },
         "dark": {
           "type": "boolean"
@@ -5449,6 +5466,9 @@
         },
         "url": {
           "type": "any"
+        },
+        "id": {
+          "type": "string"
         }
       }
     },
@@ -6724,6 +6744,18 @@
             "inside",
             "any"
           ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "any"
+        },
+        "show": {
+          "type": "boolean"
+        },
+        "should_close_popover": {
+          "type": "any"
         }
       }
     },
@@ -7141,6 +7173,10 @@
         "validation_message": {
           "type": "string",
           "default": "\"\""
+        },
+        "required_indicator": {
+          "type": "boolean",
+          "default": "false"
         },
         "id": {
           "type": "string"
@@ -8150,7 +8186,8 @@
           "default": "false"
         },
         "disabled": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": "false"
         },
         "id": {
           "type": "string"
@@ -8732,6 +8769,12 @@
         "disabled": {
           "type": "boolean",
           "default": "false"
+        },
+        "id": {
+          "type": "string"
+        },
+        "on_change": {
+          "type": "any"
         }
       }
     },

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.28] - 2026-02-17
 
 - **Touchup README**
+- **Fix Syncing Logic for Uncommon Prop Type Names**
 
 ## [1.0.27] - 2026-02-11
 

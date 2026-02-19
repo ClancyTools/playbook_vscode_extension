@@ -44,7 +44,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
   const typesDir = path.join(playbookRoot, "app/pb_kits/playbook/types")
   const typeFiles = ["sizes.ts", "display.ts", "base.ts", "spacing.ts"]
 
-  typeFiles.forEach(typeFile => {
+  typeFiles.forEach((typeFile) => {
     const typePath = path.join(typesDir, typeFile)
     if (fs.existsSync(typePath)) {
       const typeContent = fs.readFileSync(typePath, "utf-8")
@@ -77,7 +77,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
     const typeName = aliasMatch[1]
     const typeDef = aliasMatch[2].trim()
 
-    if (typeDef.includes('{')) continue
+    if (typeDef.includes("{")) continue
 
     const values: string[] = []
     const quotedValuesRegex = /"([^"]+)"/g
@@ -143,7 +143,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
     const typeName = typeMatch[1]
     const typeBody = typeMatch[2]
 
-    if (typeName === 'GlobalProps') continue
+    if (typeName === "GlobalProps") continue
 
     const propRegex = /(\w+)\?:\s*([^,}]+(?:,\s*)?)/gs
     let propMatch
@@ -152,7 +152,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       const propNameCamelCase = propMatch[1]
       let valuesDef = propMatch[2].trim()
 
-      valuesDef = valuesDef.replace(/,\s*$/, '').trim()
+      valuesDef = valuesDef.replace(/,\s*$/, "").trim()
 
       if (
         propNameCamelCase === "break" ||
@@ -197,10 +197,7 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
       const tsValues = globalProps[key].values || []
       const rubyValues = sizingPropsFromRuby[key].values || []
 
-      const combined = [
-        ...rubyValues,
-        ...tsValues.filter((v: string) => !rubyValues.includes(v))
-      ]
+      const combined = [...rubyValues, ...tsValues.filter((v: string) => !rubyValues.includes(v))]
 
       globalProps[key] = {
         ...globalProps[key],
@@ -222,11 +219,13 @@ function extractGlobalPropsFromTypeScript(playbookPath: string): Record<string, 
     }
   })
 
-  const propsWithSeparateValues = Object.keys(globalProps).filter(k =>
-    globalProps[k].railsValues || globalProps[k].reactValues
+  const propsWithSeparateValues = Object.keys(globalProps).filter(
+    (k) => globalProps[k].railsValues || globalProps[k].reactValues
   )
   if (propsWithSeparateValues.length > 0) {
-    console.log(`\n📝 Props with separate Rails/React values: ${propsWithSeparateValues.join(', ')}`)
+    console.log(
+      `\n📝 Props with separate Rails/React values: ${propsWithSeparateValues.join(", ")}`
+    )
   }
 
   if (!globalProps.dark) {
@@ -273,9 +272,9 @@ function extractSizingPropsFromRuby(playbookRoot: string): Record<string, any> {
     return sizingProps
   }
 
-  const rubyFiles = fs.readdirSync(libDir).filter(file => file.endsWith('.rb'))
+  const rubyFiles = fs.readdirSync(libDir).filter((file) => file.endsWith(".rb"))
 
-  rubyFiles.forEach(fileName => {
+  rubyFiles.forEach((fileName) => {
     const filePath = path.join(libDir, fileName)
     const content = fs.readFileSync(filePath, "utf-8")
 
@@ -688,10 +687,20 @@ function parseReactPropsFromTypeScript(
   componentDir: string,
   componentName: string
 ): PropDefinition[] {
-  const tsxFile = path.join(componentDir, `_${componentName.split("/").pop()}.tsx`)
+  const baseName = componentName.split("/").pop()!
+  let tsxFile = path.join(componentDir, `_${baseName}.tsx`)
 
   if (!fs.existsSync(tsxFile)) {
-    return []
+    const pascalName = baseName
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join("")
+    const subdirIndexPath = path.join(componentDir, pascalName, "index.tsx")
+    if (fs.existsSync(subdirIndexPath)) {
+      tsxFile = subdirIndexPath
+    } else {
+      return []
+    }
   }
 
   try {
@@ -707,19 +716,28 @@ function parseReactPropsFromTypeScript(
 
     const typePatterns = [
       `type\\s+${pascalName}Props\\s*=\\s*\\{`,
-      `type\\s+${pascalName}PropTypes\\s*=\\s*\\{`
+      `type\\s+${pascalName}PropTypes\\s*=\\s*\\{`,
+      `type\\s+Pb${pascalName}Props\\s*=\\s*\\{`,
+      `type\\s+${pascalName}Type\\s*=\\s*\\{`,
+      `type\\s+Props\\s*=\\s*\\{`,
+      `type\\s+${pascalName}Props\\s*=\\s*[\\s\\S]*?\\{`,
+      `type\\s+Pb${pascalName}Props\\s*=\\s*[\\s\\S]*?\\{`
     ]
 
     let startIndex = -1
+    let matchedPattern = ""
     for (const pattern of typePatterns) {
       startIndex = content.search(new RegExp(pattern))
       if (startIndex !== -1) {
+        matchedPattern = pattern
         break
       }
     }
 
     if (startIndex === -1) {
-      console.warn(`⚠️  Could not find Props type for ${pascalName} (tried ${pascalName}Props and ${pascalName}PropTypes)`)
+      console.warn(
+        `⚠️  Could not find Props type for ${pascalName} (tried ${pascalName}Props, ${pascalName}PropTypes, Pb${pascalName}Props, ${pascalName}Type, and Props)`
+      )
       return []
     }
 
