@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-02-19T15:56:02.284Z",
+  "generatedAt": "2026-02-20T19:31:41.908Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -2914,7 +2914,8 @@
           "default": "false"
         },
         "icon": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "loading": {
           "type": "boolean",
@@ -3228,7 +3229,8 @@
           "default": "\"$\""
         },
         "amount": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "unit": {
           "type": "string"
@@ -3322,7 +3324,8 @@
       "hasChildren": false,
       "props": {
         "date": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "alignment": {
           "type": "enum",
@@ -3469,7 +3472,8 @@
           "default": "\"single\""
         },
         "picker_id": {
-          "type": "string"
+          "type": "string",
+          "required": true
         },
         "placeholder": {
           "type": "string",
@@ -3589,10 +3593,12 @@
       "hasChildren": true,
       "props": {
         "end_date": {
-          "type": "date"
+          "type": "date",
+          "required": true
         },
         "start_date": {
-          "type": "date"
+          "type": "date",
+          "required": true
         },
         "icon": {
           "type": "any"
@@ -3638,10 +3644,12 @@
           "default": "false"
         },
         "end_date": {
-          "type": "date"
+          "type": "date",
+          "required": true
         },
         "start_date": {
-          "type": "date"
+          "type": "date",
+          "required": true
         },
         "id": {
           "type": "string"
@@ -3655,7 +3663,8 @@
       "hasChildren": true,
       "props": {
         "date": {
-          "type": "date"
+          "type": "date",
+          "required": true
         },
         "align": {
           "type": "enum",
@@ -5292,7 +5301,8 @@
       "hasChildren": false,
       "props": {
         "icon": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "emoji": {
           "type": "string",
@@ -5343,7 +5353,8 @@
       "hasChildren": false,
       "props": {
         "icon": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "size": {
           "type": "enum",
@@ -5403,10 +5414,12 @@
       "hasChildren": false,
       "props": {
         "text": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "icon": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "align": {
           "type": "enum",
@@ -5508,7 +5521,8 @@
       "hasChildren": false,
       "props": {
         "label": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "value": {
           "type": "any"
@@ -5711,7 +5725,8 @@
           "type": "any"
         },
         "text": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "dark": {
           "type": "boolean"
@@ -6099,7 +6114,8 @@
           ]
         },
         "users": {
-          "type": "hasharray"
+          "type": "hasharray",
+          "required": true
         },
         "with_tooltip": {
           "type": "boolean",
@@ -6123,7 +6139,8 @@
       "hasChildren": false,
       "props": {
         "users": {
-          "type": "hasharray"
+          "type": "hasharray",
+          "required": true
         },
         "size": {
           "type": "enum",
@@ -6572,6 +6589,10 @@
           "type": "boolean",
           "default": "false"
         },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
         "required": {
           "type": "boolean",
           "default": "false"
@@ -6627,9 +6648,6 @@
         "country_search": {
           "type": "boolean",
           "default": "false"
-        },
-        "dark": {
-          "type": "boolean"
         },
         "id": {
           "type": "string"
@@ -8105,7 +8123,8 @@
       "hasChildren": false,
       "props": {
         "icon": {
-          "type": "string"
+          "type": "string",
+          "required": true
         },
         "alignment": {
           "type": "enum",
@@ -8210,7 +8229,8 @@
       "hasChildren": false,
       "props": {
         "time": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "size": {
           "type": "enum",
@@ -8267,6 +8287,10 @@
       "description": "Playbook TimePicker component",
       "hasChildren": false,
       "props": {
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
         "default_time": {
           "type": "string"
         },
@@ -8339,10 +8363,12 @@
       "hasChildren": false,
       "props": {
         "start_time": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "end_time": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "alignment": {
           "type": "enum",
@@ -8385,7 +8411,8 @@
       "hasChildren": false,
       "props": {
         "time": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "align": {
           "type": "enum",
@@ -8728,10 +8755,12 @@
           ]
         },
         "detail": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "title": {
-          "type": "any"
+          "type": "any",
+          "required": true
         },
         "id": {
           "type": "string"
