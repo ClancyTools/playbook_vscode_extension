@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Defines which props should be included in generated snippets. See SNIPPET_WHITELIST.md for documentation.",
+  "rails": {
+    "body": [
+      { "name": "text", "placeholder": "" }
+    ],
+    "title": [
+      { "name": "text", "placeholder": "" }
+    ],
+    "link": [
+      { "name": "text", "placeholder": "" },
+      { "name": "href", "placeholder": "" }
+    ],
+    "date_picker": [
+      { "name": "picker_id", "placeholder": ""}
+    ]
+  },
+  "react": {
+    "Body": [
+      { "name": "text", "placeholder": "" }
+    ],
+    "Title": [
+      { "name": "text", "placeholder": "" }
+    ],
+    "Link": [
+      { "name": "text", "placeholder": "" },
+      { "name": "href", "placeholder": "" }
+    ],
+    "DatePicker": [
+      { "name": "picker_id", "placeholder": ""}
+    ]
+  }
+}
