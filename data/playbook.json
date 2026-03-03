@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-02-20T19:31:41.908Z",
+  "generatedAt": "2026-03-03T20:03:16.993Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -1712,6 +1712,9 @@
         "persist_toggle_expansion_button": {
           "type": "boolean",
           "default": "false"
+        },
+        "cascade_collapse": {
+          "type": "boolean"
         },
         "column_visibility_control": {
           "type": "any"
@@ -7813,6 +7816,14 @@
         "title": {
           "type": "string",
           "default": "nil"
+        },
+        "card_props": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "title_props": {
+          "type": "hashprop",
+          "default": "{}"
         },
         "dark": {
           "type": "boolean"
