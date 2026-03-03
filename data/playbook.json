@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-02-19T15:56:02.284Z",
+  "generatedAt": "2026-03-03T19:58:19.994Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -6572,6 +6572,10 @@
           "type": "boolean",
           "default": "false"
         },
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
         "required": {
           "type": "boolean",
           "default": "false"
@@ -6627,9 +6631,6 @@
         "country_search": {
           "type": "boolean",
           "default": "false"
-        },
-        "dark": {
-          "type": "boolean"
         },
         "id": {
           "type": "string"
@@ -8267,6 +8268,10 @@
       "description": "Playbook TimePicker component",
       "hasChildren": false,
       "props": {
+        "dark": {
+          "type": "boolean",
+          "default": "false"
+        },
         "default_time": {
           "type": "string"
         },

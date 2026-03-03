@@ -1313,10 +1313,10 @@
     "body": [
       "<PhoneNumberInput",
       "\tdisabled={${1|true,false|}}",
-      "\trequired={${2|true,false|}}",
-      "\trequiredIndicator={${3|true,false|}}",
-      "\tinitialCountry=\"${4:}\"",
-      "\tlabel=\"${5:}\"",
+      "\tdark={${2|true,false|}}",
+      "\trequired={${3|true,false|}}",
+      "\trequiredIndicator={${4|true,false|}}",
+      "\tinitialCountry=\"${5:}\"",
       "\t$0",
       "/>"
     ],
@@ -1701,11 +1701,11 @@
     "prefix": "pbTimePicker",
     "body": [
       "<TimePicker",
-      "\tdefaultTime=\"${1}\"",
-      "\tdisabled={${2|true,false|}}",
-      "\terror=\"${3}\"",
-      "\tinputOptions=\"${4:{}}\"",
-      "\tlabel=\"${5:Time Picker}\"",
+      "\tdark={${1|true,false|}}",
+      "\tdefaultTime=\"${2}\"",
+      "\tdisabled={${3|true,false|}}",
+      "\terror=\"${4}\"",
+      "\tinputOptions=\"${5:{}}\"",
       "\t$0",
       "/>"
     ],

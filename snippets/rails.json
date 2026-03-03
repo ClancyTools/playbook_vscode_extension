@@ -1361,10 +1361,10 @@
     "body": [
       "<%= pb_rails(\"phone_number_input\", props: {",
       "\tdisabled: \"${1}\",",
-      "\trequired: \"${2}\",",
-      "\trequired_indicator: \"${3}\",",
-      "\tinitial_country: \"${4:}\",",
-      "\tlabel: \"${5:}\",",
+      "\tdark: \"${2}\",",
+      "\trequired: \"${3}\",",
+      "\trequired_indicator: \"${4}\",",
+      "\tinitial_country: \"${5:}\",",
       "\t$0",
       "}) %>"
     ],
@@ -1788,11 +1788,11 @@
     "prefix": "pb_time_picker",
     "body": [
       "<%= pb_rails(\"time_picker\", props: {",
-      "\tdefault_time: \"${1}\",",
-      "\tdisabled: \"${2}\",",
-      "\terror: \"${3}\",",
-      "\tinput_options: \"${4:{}}\",",
-      "\tlabel: \"${5:Time Picker}\",",
+      "\tdark: \"${1}\",",
+      "\tdefault_time: \"${2}\",",
+      "\tdisabled: \"${3}\",",
+      "\terror: \"${4}\",",
+      "\tinput_options: \"${5:{}}\",",
       "\t$0",
       "}) %>"
     ],
