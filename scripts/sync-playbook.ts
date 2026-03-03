@@ -9,6 +9,12 @@ const PLAYBOOK_REPO_PATH =
 const OUTPUT_DIR = path.join(__dirname, "..")
 const SNIPPETS_DIR = path.join(OUTPUT_DIR, "snippets")
 const DATA_DIR = path.join(OUTPUT_DIR, "data")
+const WHITELIST_PATH = path.join(OUTPUT_DIR, "snippet-whitelist.json")
+
+let SNIPPET_WHITELIST: any = { rails: {}, react: {} }
+if (fs.existsSync(WHITELIST_PATH)) {
+  SNIPPET_WHITELIST = JSON.parse(fs.readFileSync(WHITELIST_PATH, "utf-8"))
+}
 
 interface PropDefinition {
   name: string
@@ -395,7 +401,7 @@ function parsePropLine(line: string): PropDefinition | null {
   const name = propMatch[1]
   const rest = propMatch[2] || ""
 
-  const prop: PropDefinition = { name, type: "any" }
+  const prop: PropDefinition = { name, type: "any", required: false }
 
   const typeMatch = rest.match(/type:\s*Playbook::Props::(\w+)/)
   if (typeMatch) {
@@ -414,6 +420,11 @@ function parsePropLine(line: string): PropDefinition | null {
       .split(/[\s,]+/)
       .map((v) => v.replace(/["']/g, "").trim())
       .filter((v) => v && v !== "nil" && v.length > 0)
+  }
+
+  const requiredMatch = rest.match(/required:\s*true/)
+  if (requiredMatch) {
+    prop.required = true
   }
 
   return prop
@@ -551,17 +562,12 @@ function generateERBSnippet(component: ComponentMetadata): any {
   const propLines: string[] = []
   let tabIndex = 1
 
-  const priorityProps = ["text", "variant", "size"]
-  const orderedProps = [
-    ...props.filter((p) => priorityProps.includes(p.name)),
-    ...props.filter((p) => !priorityProps.includes(p.name))
-  ]
-
-  for (const prop of orderedProps.slice(0, 5)) {
+  const requiredProps = props.filter((p) => p.required)
+  for (const prop of requiredProps) {
     if (prop.values && prop.values.length > 0) {
       const choices = prop.values.join(",")
       propLines.push(`\t${prop.name}: "\${${tabIndex}|${choices}|}\",`)
-    } else if (prop.default !== undefined && prop.default !== "nil" && prop.default !== "false") {
+    } else if (prop.default && prop.default !== "nil") {
       propLines.push(`\t${prop.name}: "\${${tabIndex}:${prop.default.replace(/"/g, "")}}\",`)
     } else {
       propLines.push(`\t${prop.name}: "\${${tabIndex}}\",`)
@@ -569,24 +575,50 @@ function generateERBSnippet(component: ComponentMetadata): any {
     tabIndex++
   }
 
+  const whitelistedProps = SNIPPET_WHITELIST.rails[name] || []
+  if (whitelistedProps.length > 0) {
+    for (const whitelistItem of whitelistedProps) {
+      const propName = whitelistItem.name
+      const prop = props.find((p) => p.name === propName)
+
+      if (!prop || prop.required) continue
+
+      if (whitelistItem.placeholder !== null && whitelistItem.placeholder !== "") {
+        propLines.push(`\t${propName}: "\${${tabIndex}:${whitelistItem.placeholder}}\",`)
+      } else if (prop.values && prop.values.length > 0) {
+        const choices = prop.values.join(",")
+        propLines.push(`\t${propName}: "\${${tabIndex}|${choices}|}\",`)
+      } else {
+        propLines.push(`\t${propName}: "\${${tabIndex}}\",`)
+      }
+      tabIndex++
+    }
+  }
+
   const body: string[] = []
 
   if (hasChildren) {
-    body.push(`<%= pb_rails("${name}", props: {`)
     if (propLines.length > 0) {
+      body.push(`<%= pb_rails("${name}", props: {`)
       body.push(...propLines)
+      body.push(`\t$0`)
+      body.push(`}) do %>`)
+      body.push(`\t\${${tabIndex}:Content}`)
+      body.push(`<% end %>`)
+    } else {
+      body.push(`<%= pb_rails("${name}", props: {}) do %>`)
+      body.push(`\t$0`)
+      body.push(`<% end %>`)
     }
-    body.push(`\t$0`)
-    body.push(`}) do %>`)
-    body.push(`\t\${${tabIndex}:Content}`)
-    body.push(`<% end %>`)
   } else {
-    body.push(`<%= pb_rails("${name}", props: {`)
     if (propLines.length > 0) {
+      body.push(`<%= pb_rails("${name}", props: {`)
       body.push(...propLines)
+      body.push(`\t$0`)
+      body.push(`}) %>`)
+    } else {
+      body.push(`<%= pb_rails("${name}", props: {}) $0%>`)
     }
-    body.push(`\t$0`)
-    body.push(`}) %>`)
   }
 
   return {
@@ -603,46 +635,73 @@ function generateReactSnippet(component: ComponentMetadata): any {
   const propLines: string[] = []
   let tabIndex = 1
 
-  const priorityProps = ["text", "variant", "size"]
-  const orderedProps = [
-    ...props.filter((p) => priorityProps.includes(p.name)),
-    ...props.filter((p) => !priorityProps.includes(p.name))
-  ]
-
-  for (const prop of orderedProps.slice(0, 5)) {
-    const propName = prop.name.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+  const requiredProps = props.filter((p) => p.required)
+  for (const prop of requiredProps) {
+    const camelPropName = prop.name.replace(/_([a-z])/g, (_: string, letter: string) =>
+      letter.toUpperCase()
+    )
 
     if (prop.values && prop.values.length > 0) {
       const choices = prop.values.map((v) => `"${v}"`).join(",")
-      propLines.push(`\t${propName}={\${${tabIndex}|${choices}|}}`)
+      propLines.push(`\t${camelPropName}={\${${tabIndex}|${choices}|}}`)
     } else if (prop.type === "boolean") {
-      propLines.push(`\t${propName}={\${${tabIndex}|true,false|}}`)
-    } else if (prop.default !== undefined && prop.default !== "nil" && prop.default !== "false") {
-      propLines.push(`\t${propName}="\${${tabIndex}:${prop.default.replace(/"/g, "")}}"`)
+      propLines.push(`\t${camelPropName}={\${${tabIndex}|true,false|}}`)
+    } else if (prop.default && prop.default !== "nil") {
+      propLines.push(`\t${camelPropName}="\${${tabIndex}:${prop.default.replace(/"/g, "")}}"`)
     } else {
-      propLines.push(`\t${propName}="\${${tabIndex}}"`)
+      propLines.push(`\t${camelPropName}="\${${tabIndex}}"`)
     }
     tabIndex++
+  }
+
+  const whitelistedProps = SNIPPET_WHITELIST.react[reactName] || []
+  if (whitelistedProps.length > 0) {
+    for (const whitelistItem of whitelistedProps) {
+      const propName = whitelistItem.name
+      const prop = props.find((p) => p.name === propName)
+
+      if (!prop || prop.required) continue
+
+      const camelPropName = propName.replace(/_([a-z])/g, (_: string, letter: string) =>
+        letter.toUpperCase()
+      )
+
+      if (whitelistItem.placeholder !== null && whitelistItem.placeholder !== "") {
+        propLines.push(`\t${camelPropName}="\${${tabIndex}:${whitelistItem.placeholder}}"`)
+      } else if (prop.values && prop.values.length > 0) {
+        const choices = prop.values.map((v) => `"${v}"`).join(",")
+        propLines.push(`\t${camelPropName}={\${${tabIndex}|${choices}|}}`)
+      } else if (prop.type === "boolean") {
+        propLines.push(`\t${camelPropName}={\${${tabIndex}|true,false|}}`)
+      } else {
+        propLines.push(`\t${camelPropName}="\${${tabIndex}}"`)
+      }
+      tabIndex++
+    }
   }
 
   const body: string[] = []
 
   if (hasChildren) {
-    body.push(`<${reactName}`)
     if (propLines.length > 0) {
+      body.push(`<${reactName}`)
       body.push(...propLines)
+      body.push(`\t$0`)
+      body.push(`>`)
+      body.push(`\t\${${tabIndex}:Content}`)
+      body.push(`</${reactName}>`)
+    } else {
+      body.push(`<${reactName}>$0</${reactName}>`)
     }
-    body.push(`\t$0`)
-    body.push(`>`)
-    body.push(`\t\${${tabIndex}:Content}`)
-    body.push(`</${reactName}>`)
   } else {
-    body.push(`<${reactName}`)
     if (propLines.length > 0) {
+      body.push(`<${reactName}`)
       body.push(...propLines)
+      body.push(`\t$0`)
+      body.push(`/>`)
+    } else {
+      body.push(`<${reactName} $0/>`)
     }
-    body.push(`\t$0`)
-    body.push(`/>`)
   }
 
   return {
@@ -811,6 +870,7 @@ function parseReactPropsFromTypeScript(
       props.push({
         name: snakeCaseName,
         type,
+        required: false,
         ...(values && { values })
       })
     }

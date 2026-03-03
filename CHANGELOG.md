@@ -5,6 +5,34 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-20
+
+### Added
+
+- **Automatic Required Props in Snippets** ✨
+  - Snippets now automatically include props marked with `required: true` in Rails component definitions
+  - Required props appear first in generated snippets for both Rails and React
+  - Rails `.rb` files are the single source of truth for required status - React/TypeScript definitions are not checked
+  - Example: DatePicker automatically includes `picker_id` prop without whitelist configuration
+  - Ensures generated snippets always include props needed for components to function
+
+- **Snippet Whitelist System** 🎯
+  - New `snippet-whitelist.json` configuration file for specifying commonly-used optional props
+  - Whitelisted props appear after required props in snippet tab order
+  - Props already included as required are not duplicated by whitelist
+  - Separate configuration for Rails (snake_case) and React (PascalCase) components
+  - Supports custom placeholder values or empty strings for each prop
+  - Example: Link component shows `href` (required) + `text` (whitelisted)
+
+### Changed
+
+- **Snippet Generation Logic** 🔄
+  - Updated `sync-playbook.ts` to parse `required: true` from Ruby prop definitions
+  - Modified `generateERBSnippet()` to add required props before whitelisted props
+  - Modified `generateReactSnippet()` to add required props before whitelisted props
+  - React props are now always set to `required: false` - only Rails definitions determine required status
+  - Regenerated all 150 Rails and 143 React snippets with new required prop logic
+
 ## [1.0.29] - 2026-02-17
 
 - **Touchup README Again**
