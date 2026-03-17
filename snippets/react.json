@@ -794,13 +794,6 @@
     ],
     "description": "Playbook Radio component for React"
   },
-  "Playbook RichTextEditor": {
-    "prefix": "pbRichTextEditor",
-    "body": [
-      "<RichTextEditor $0/>"
-    ],
-    "description": "Playbook RichTextEditor component for React"
-  },
   "Playbook SectionSeparator": {
     "prefix": "pbSectionSeparator",
     "body": [

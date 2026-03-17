@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-03-03T20:03:16.993Z",
+  "generatedAt": "2026-03-17T12:26:36.866Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -1766,6 +1766,9 @@
         },
         "sort_control": {
           "type": "any"
+        },
+        "sort_parent_only": {
+          "type": "boolean"
         },
         "table_options": {
           "type": "any"
@@ -4231,6 +4234,15 @@
           "type": "boolean",
           "default": "true"
         },
+        "close_on_click": {
+          "type": "enum",
+          "default": "\"any\"",
+          "values": [
+            "outside",
+            "inside",
+            "any"
+          ]
+        },
         "start_date_id": {
           "type": "string",
           "default": "\"start_date_id\""
@@ -4258,13 +4270,9 @@
           "type": "boolean",
           "default": "false"
         },
-        "close_on_click": {
-          "type": "enum",
-          "values": [
-            "outside",
-            "inside",
-            "any"
-          ]
+        "custom_event_type": {
+          "type": "string",
+          "default": "\"\""
         },
         "dark": {
           "type": "boolean"
@@ -4593,6 +4601,10 @@
         },
         "icon": {
           "type": "string"
+        },
+        "nav_margin_top": {
+          "type": "boolean",
+          "default": "false"
         },
         "id": {
           "type": "string"
@@ -6994,90 +7006,6 @@
         },
         "on_change": {
           "type": "any"
-        }
-      }
-    },
-    "RichTextEditor": {
-      "rails": "rich_text_editor",
-      "react": "RichTextEditor",
-      "description": "Playbook RichTextEditor component",
-      "hasChildren": false,
-      "props": {
-        "focus": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "inline": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "simple": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "sticky": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "toolbar_bottom": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "value": {
-          "type": "any"
-        },
-        "template": {
-          "type": "any"
-        },
-        "placeholder": {
-          "type": "any"
-        },
-        "input_options": {
-          "type": "any"
-        },
-        "label": {
-          "type": "any"
-        },
-        "required_indicator": {
-          "type": "boolean",
-          "default": "false"
-        },
-        "advanced_editor": {
-          "type": "any"
-        },
-        "advanced_editor_toolbar": {
-          "type": "boolean"
-        },
-        "id": {
-          "type": "string"
-        },
-        "extensions": {
-          "type": "any"
-        },
-        "name": {
-          "type": "string"
-        },
-        "on_change": {
-          "type": "any"
-        },
-        "input_height": {
-          "type": "enum",
-          "values": [
-            "sm",
-            "md",
-            "lg"
-          ]
-        },
-        "input_min_height": {
-          "type": "enum",
-          "values": [
-            "sm",
-            "md",
-            "lg"
-          ]
-        },
-        "max_width": {
-          "type": "string"
         }
       }
     },
