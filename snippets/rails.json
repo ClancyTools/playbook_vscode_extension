@@ -852,13 +852,6 @@
     ],
     "description": "Playbook Radio component for Rails/ERB"
   },
-  "Playbook RichTextEditor": {
-    "prefix": "pb_rich_text_editor",
-    "body": [
-      "<%= pb_rails(\"rich_text_editor\", props: {}) $0%>"
-    ],
-    "description": "Playbook RichTextEditor component for Rails/ERB"
-  },
   "Playbook SectionSeparator": {
     "prefix": "pb_section_separator",
     "body": [
