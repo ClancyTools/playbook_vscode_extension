@@ -1,6 +1,6 @@
 {
   "$schema": "./playbook-schema.json",
-  "generatedAt": "2026-03-17T12:26:36.866Z",
+  "generatedAt": "2026-03-28T15:18:22.171Z",
   "globalProps": {
     "align_content": {
       "type": "string",
@@ -1713,6 +1713,10 @@
           "type": "boolean",
           "default": "false"
         },
+        "pinned_rows": {
+          "type": "hashprop",
+          "default": "{}"
+        },
         "cascade_collapse": {
           "type": "boolean"
         },
@@ -1753,9 +1757,6 @@
           "type": "boolean"
         },
         "pagination_props": {
-          "type": "any"
-        },
-        "pinned_rows": {
           "type": "any"
         },
         "value": {
@@ -1871,6 +1872,10 @@
         "inline_row_loading": {
           "type": "boolean",
           "default": "false"
+        },
+        "pinned_rows": {
+          "type": "hashprop",
+          "default": "{}"
         }
       }
     },
@@ -2007,6 +2012,22 @@
         "inline_row_loading": {
           "type": "boolean",
           "default": "false"
+        },
+        "is_pinned_row": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "pinned_index": {
+          "type": "numeric",
+          "default": "nil"
+        },
+        "html_options": {
+          "type": "hashprop",
+          "default": "{}"
+        },
+        "classname": {
+          "type": "string",
+          "default": "\"\""
         }
       }
     },
@@ -2054,6 +2075,18 @@
             "none",
             "scroll"
           ]
+        },
+        "is_pinned_row": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "pinned_index": {
+          "type": "numeric",
+          "default": "nil"
+        },
+        "html_options": {
+          "type": "hashprop",
+          "default": "{}"
         }
       }
     },
@@ -6094,6 +6127,10 @@
           "type": "string",
           "default": "\"\""
         },
+        "placeholder": {
+          "type": "string",
+          "default": "\"Start typing...\""
+        },
         "required_indicator": {
           "type": "boolean",
           "default": "false"
@@ -7736,6 +7773,9 @@
           "default": "{}"
         },
         "filter_content": {
+          "type": "any"
+        },
+        "filter": {
           "type": "any"
         },
         "pagination": {
