@@ -340,7 +340,7 @@ export class PlaybookCompletionProvider
       )
       item.detail = `${prop.type}${prop.required ? " (required)" : ""}`
 
-      const validValues = getPropValues(prop, document.languageId)
+      const validValues = getPropValues(prop)
       let doc = `Type: \`${prop.type}\``
       if (validValues && validValues.length > 0) {
         doc += `\nValues: ${validValues.map(v => `\`${v}\``).join(", ")}`
@@ -378,7 +378,7 @@ export class PlaybookCompletionProvider
         )
         item.detail = `${prop.type} (global)`
 
-        const validValues = getPropValues(prop, document.languageId)
+        const validValues = getPropValues(prop)
         let doc = `Type: \`${prop.type}\` (global prop)`
         if (validValues && validValues.length > 0) {
           doc += `\nValues: ${validValues.map((v: string) => `\`${v}\``).join(", ")}`
@@ -571,7 +571,7 @@ export class PlaybookCompletionProvider
 
     const items: vscode.CompletionItem[] = []
 
-    const validValues = getPropValues(prop, document.languageId)
+    const validValues = getPropValues(prop)
     if (validValues && validValues.length > 0) {
       for (const value of validValues) {
         const item = new vscode.CompletionItem(

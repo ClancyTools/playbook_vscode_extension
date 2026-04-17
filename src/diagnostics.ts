@@ -565,7 +565,7 @@ export class PlaybookDiagnostics {
     diagnostics: vscode.Diagnostic[],
     document: vscode.TextDocument
   ): void {
-    const validValues = getPropValues(prop, document.languageId)
+    const validValues = getPropValues(prop)
 
     if (validValues && validValues.length > 0) {
       const cleanValue = propValue.replace(/["']/g, "").trim()

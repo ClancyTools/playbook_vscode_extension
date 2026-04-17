@@ -19,8 +19,8 @@ suite("Context-Aware Prop Values Test Suite", () => {
     const position = metadata.globalProps.position
     assert.ok(position, "position prop should exist")
 
-    const erbValues = getPropValues(position, "erb")
-    const tsxValues = getPropValues(position, "typescriptreact")
+    const erbValues = getPropValues(position)
+    const tsxValues = getPropValues(position)
 
     assert.ok(erbValues, "Should return values for ERB")
     assert.ok(tsxValues, "Should return values for TSX")
@@ -40,15 +40,15 @@ suite("Context-Aware Prop Values Test Suite", () => {
     const truncate = metadata.globalProps.truncate
     assert.ok(truncate, "truncate prop should exist")
 
-    const values = getPropValues(truncate, "erb")
+    const values = getPropValues(truncate)
     assert.ok(values, "Should return values")
     assert.strictEqual(values!.includes("1"), true, "Should have '1'")
   })
 
   test("Should return same values for Ruby files as ERB files", () => {
     const position = metadata.globalProps.position
-    const rubyValues = getPropValues(position, "ruby")
-    const erbValues = getPropValues(position, "erb")
+    const rubyValues = getPropValues(position)
+    const erbValues = getPropValues(position)
     assert.deepStrictEqual(
       rubyValues,
       erbValues,
@@ -58,8 +58,8 @@ suite("Context-Aware Prop Values Test Suite", () => {
 
   test("Should return same values for JSX as TSX files", () => {
     const position = metadata.globalProps.position
-    const jsxValues = getPropValues(position, "javascriptreact")
-    const tsxValues = getPropValues(position, "typescriptreact")
+    const jsxValues = getPropValues(position)
+    const tsxValues = getPropValues(position)
     assert.deepStrictEqual(
       jsxValues,
       tsxValues,
@@ -74,7 +74,7 @@ suite("Context-Aware Prop Values Test Suite", () => {
       const prop = metadata.globalProps[propName]
       assert.ok(prop, `${propName} should exist`)
 
-      const values = getPropValues(prop, "erb")
+      const values = getPropValues(prop)
       assert.ok(values, `${propName} should have values`)
       assert.ok(
         values!.length > 0,
@@ -87,7 +87,7 @@ suite("Context-Aware Prop Values Test Suite", () => {
     const z_index = metadata.globalProps.z_index
     assert.ok(z_index, "z_index should exist")
 
-    const values = getPropValues(z_index, "erb")
+    const values = getPropValues(z_index)
     assert.ok(values, "Should return values for z_index")
     assert.ok(values!.length > 0, "z_index should have values")
   })
@@ -95,8 +95,8 @@ suite("Context-Aware Prop Values Test Suite", () => {
   test("Should return same values for border_radius regardless of platform", () => {
     const border_radius = metadata.globalProps.border_radius
 
-    const erbValues = getPropValues(border_radius, "erb")
-    const tsxValues = getPropValues(border_radius, "typescriptreact")
+    const erbValues = getPropValues(border_radius)
+    const tsxValues = getPropValues(border_radius)
 
     assert.deepStrictEqual(
       erbValues,
