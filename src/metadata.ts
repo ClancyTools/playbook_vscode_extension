@@ -34,13 +34,38 @@ export interface PlaybookMetadata {
   formBuilders?: FormBuilderMetadata
 }
 
+interface RawPropData {
+  type?: string
+  default?: unknown
+  values?: unknown[]
+  platforms?: string[]
+}
+
+interface RawKit {
+  name?: string
+  description?: string
+  usage?: {
+    rails?: {
+      example?: string
+    }
+  }
+  props?: Record<string, RawPropData>
+}
+
+interface RawSchema {
+  globalProps?: {
+    props?: Record<string, RawPropData>
+  }
+  kits?: Record<string, RawKit>
+}
+
 let cachedMetadata: PlaybookMetadata | null = null
 
 function camelToSnake(str: string): string {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase()
 }
 
-function transformSchema(raw: any): PlaybookMetadata {
+function transformSchema(raw: RawSchema): PlaybookMetadata {
   const metadata: PlaybookMetadata = {
     components: {},
     globalProps: {},
@@ -48,16 +73,14 @@ function transformSchema(raw: any): PlaybookMetadata {
 
   // Transform global props (camelCase → snake_case)
   if (raw.globalProps?.props) {
-    for (const [camelName, prop] of Object.entries<any>(
-      raw.globalProps.props
-    )) {
+    for (const [camelName, prop] of Object.entries(raw.globalProps.props)) {
       if (camelName.startsWith("$")) {
         continue
       }
       const snakeName = camelToSnake(camelName)
       metadata.globalProps![snakeName] = {
         type: prop.type || "string",
-        values: prop.values?.map((v: any) => String(v)),
+        values: prop.values?.map((v: unknown) => String(v)),
         default: prop.default !== undefined ? String(prop.default) : undefined,
       }
     }
@@ -81,7 +104,7 @@ function transformSchema(raw: any): PlaybookMetadata {
 
   // Transform kits → components
   if (raw.kits) {
-    for (const [kitName, kit] of Object.entries<any>(raw.kits)) {
+    for (const [kitName, kit] of Object.entries(raw.kits)) {
       if (kitName.startsWith("$")) {
         continue
       }
@@ -101,14 +124,14 @@ function transformSchema(raw: any): PlaybookMetadata {
       // Transform props: camelCase → snake_case, preserve platform info
       const props: Record<string, PropMetadata> = {}
       if (kit.props) {
-        for (const [propCamel, propData] of Object.entries<any>(kit.props)) {
+        for (const [propCamel, propData] of Object.entries(kit.props)) {
           if (propCamel.startsWith("$")) {
             continue
           }
           const propSnake = camelToSnake(propCamel)
           props[propSnake] = {
             type: propData.type || "string",
-            values: propData.values?.map((v: any) => String(v)),
+            values: propData.values?.map((v: unknown) => String(v)),
             default:
               propData.default !== undefined
                 ? String(propData.default)
@@ -231,13 +254,9 @@ export function findFormBuilderField(
 /**
  * Get the appropriate prop values based on the language context
  * @param prop The prop metadata
- * @param languageId The VS Code language ID (e.g., 'erb', 'typescriptreact')
  * @returns The appropriate values array for the context
  */
-export function getPropValues(
-  prop: PropMetadata,
-  languageId: string
-): string[] | undefined {
+export function getPropValues(prop: PropMetadata): string[] | undefined {
   return prop.values
 }
 
