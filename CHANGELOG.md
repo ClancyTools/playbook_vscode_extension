@@ -5,6 +5,45 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-04-17
+
+### Breaking Changes
+
+- **Removed Sync Script** — The `sync-playbook.ts` script and `playbook.json` data file have been removed. The extension no longer generates its own metadata from the Playbook repository.
+- **Removed `railsValues`/`reactValues`** — Platform-specific value sets are no longer maintained. The extension uses the unified values provided by Playbook's official schema.
+
+### Added
+
+- **Dynamic Metadata from `playbook-ui` Package** 🚀
+  - The extension now reads component metadata directly from `node_modules/playbook-ui/dist/ai/all-schemas.json` at runtime
+  - Automatically picks up new components, props, and values when `playbook-ui` is updated — no extension update required
+  - Falls back to a bundled schema if `playbook-ui` is not installed in the workspace
+
+- **Platform-Aware Prop Validation** 🎯
+  - Props now carry `platforms` metadata (`["react"]`, `["rails"]`, or both)
+  - Diagnostics warn when a platform-specific prop is used in the wrong context (e.g., `onClick` in ERB, `delay_open` in TSX)
+  - Completion provider only suggests props valid for the current file type
+
+- **Alphabetical Prop Order Checking (React Only)** 🔤
+  - React components now emit a warning when props are not in alphabetical order
+  - Warning appears on the first out-of-order prop with a helpful message (e.g., `"text" should come before "variant"`)
+  - Single warning per component—moves to the next violation when user reorders props
+  - Rails components are not checked (Rails doesn't enforce this convention)
+
+### Changed
+
+- **Metadata Loading** — `loadMetadata()` now searches workspace `node_modules` first, then falls back to the bundled schema
+- **Schema Transformation** — The Playbook AI schema (camelCase props, per-prop platform arrays) is automatically transformed to the extension's internal format (snake_case props)
+- **Global Props** — Now sourced from Playbook's `global-props.schema.json` instead of being extracted from TypeScript/Ruby source files
+- **Hardcoded Global Props** — `id`, `data`, `aria`, `html_options`, `children`, `style`, and `classname` are always available regardless of schema content
+
+### Removed
+
+- `scripts/sync-playbook.ts` — No longer needed
+- `scripts/analyze-prop-differences.ts` — No longer needed
+- `data/playbook.json` — Replaced by `data/all-schemas.json` (bundled fallback)
+- `npm run sync` script command
+
 ## [1.1.3] - 2026-03-28
 
 ### Added

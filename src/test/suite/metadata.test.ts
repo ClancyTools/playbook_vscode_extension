@@ -6,7 +6,8 @@ import {
   findComponentByRailsName,
   findComponentByReactName,
   generateComponentDocs,
-  generatePropDocs
+  generatePropDocs,
+  isPropValidForPlatform,
 } from "../../metadata"
 
 suite("Metadata Test Suite", () => {
@@ -20,7 +21,10 @@ suite("Metadata Test Suite", () => {
   test("Should load metadata successfully", () => {
     assert.ok(metadata, "Metadata should be loaded")
     assert.ok(metadata.components, "Metadata should have components")
-    assert.ok(Object.keys(metadata.components).length > 0, "Should have at least one component")
+    assert.ok(
+      Object.keys(metadata.components).length > 0,
+      "Should have at least one component"
+    )
   })
 
   test("Should find component by Rails name", () => {
@@ -38,13 +42,24 @@ suite("Metadata Test Suite", () => {
   })
 
   test("Should return null for non-existent Rails component", () => {
-    const component = findComponentByRailsName(metadata, "nonexistent_component")
-    assert.strictEqual(component, null, "Should return null for non-existent component")
+    const component = findComponentByRailsName(
+      metadata,
+      "nonexistent_component"
+    )
+    assert.strictEqual(
+      component,
+      null,
+      "Should return null for non-existent component"
+    )
   })
 
   test("Should return null for non-existent React component", () => {
     const component = findComponentByReactName(metadata, "NonExistentComponent")
-    assert.strictEqual(component, null, "Should return null for non-existent component")
+    assert.strictEqual(
+      component,
+      null,
+      "Should return null for non-existent component"
+    )
   })
 
   test("Should generate component docs", () => {
@@ -66,7 +81,10 @@ suite("Metadata Test Suite", () => {
       assert.ok(docs.length > 0, "Should generate prop documentation")
       assert.ok(docs.includes("variant"), "Docs should include prop name")
       assert.ok(docs.includes("Type:"), "Docs should include type info")
-      assert.ok(docs.includes("Values:"), "Docs should include valid values for enum")
+      assert.ok(
+        docs.includes("Values:"),
+        "Docs should include valid values for enum"
+      )
     }
   })
 
@@ -129,52 +147,54 @@ suite("Metadata Test Suite", () => {
   test("Should have hardcoded global props (id, data, aria, html_options, children, style)", () => {
     assert.ok(metadata.globalProps, "Metadata should have globalProps")
 
-    const hardcodedProps = ["id", "data", "aria", "html_options", "children", "style"]
-    hardcodedProps.forEach((propName) => {
-      assert.ok(metadata.globalProps[propName], `Should have ${propName} global prop`)
-      assert.strictEqual(
-        metadata.globalProps[propName].type,
-        "string",
-        `${propName} should be string type`
+    const hardcodedProps = [
+      "id",
+      "data",
+      "aria",
+      "html_options",
+      "children",
+      "style",
+    ]
+    hardcodedProps.forEach(propName => {
+      assert.ok(
+        metadata.globalProps[propName],
+        `Should have ${propName} global prop`
       )
     })
   })
 
-  test("Should have align_items with all values including type alias values", () => {
+  test("Should have align_items with values from Playbook schema", () => {
     assert.ok(metadata.globalProps, "Metadata should have globalProps")
-    assert.ok(metadata.globalProps.align_items, "Should have align_items global prop")
+    assert.ok(
+      metadata.globalProps.align_items,
+      "Should have align_items global prop"
+    )
 
     const alignItems = metadata.globalProps.align_items
     assert.ok(alignItems.values, "align_items should have values")
 
-    assert.ok(alignItems.values.includes("start"), "Should include 'start' from Alignment")
-    assert.ok(alignItems.values.includes("end"), "Should include 'end' from Alignment")
-    assert.ok(alignItems.values.includes("center"), "Should include 'center' from Alignment")
-
-    assert.ok(alignItems.values.includes("flexStart"), "Should include 'flexStart'")
-    assert.ok(alignItems.values.includes("flexEnd"), "Should include 'flexEnd'")
-    assert.ok(alignItems.values.includes("stretch"), "Should include 'stretch'")
-    assert.ok(alignItems.values.includes("baseline"), "Should include 'baseline'")
+    assert.ok(alignItems.values.includes("start"), "Should include 'start'")
+    assert.ok(alignItems.values.includes("end"), "Should include 'end'")
+    assert.ok(alignItems.values.includes("center"), "Should include 'center'")
   })
 
-  test("Should have global props extracted from TypeScript", () => {
+  test("Should have global props from Playbook schema", () => {
     assert.ok(metadata.globalProps, "Metadata should have globalProps")
 
     const expectedProps = [
       "padding",
       "margin",
       "dark",
-      "display",
       "position",
       "vertical_align",
       "text_align",
-      "flex_direction"
+      "flex_direction",
     ]
 
-    expectedProps.forEach((propName) => {
+    expectedProps.forEach(propName => {
       assert.ok(
         metadata.globalProps[propName],
-        `Should have ${propName} global prop extracted from TypeScript`
+        `Should have ${propName} global prop from Playbook schema`
       )
     })
   })
@@ -186,71 +206,95 @@ suite("Metadata Test Suite", () => {
     assert.ok(bodyComponent.props, "Body component should have props")
   })
 
-  test("Should have spacing props extracted from TypeScript", () => {
+  test("Should have spacing props from Playbook schema", () => {
     assert.ok(metadata.globalProps, "Metadata should have globalProps")
 
     const spacingProps = ["padding", "padding_top", "margin", "margin_left"]
 
-    spacingProps.forEach((propName) => {
+    spacingProps.forEach(propName => {
       const prop = metadata.globalProps[propName]
       assert.ok(prop, `Should have ${propName}`)
-      assert.strictEqual(prop.type, "string", `${propName} should be string type`)
-      assert.ok(prop.values && prop.values.length > 0, `${propName} should have values`)
-    })
-  })
-
-  test("Should have positioning props with combined values from Ruby and TypeScript", () => {
-    assert.ok(metadata.globalProps, "Metadata should have globalProps")
-
-    const bottom = metadata.globalProps.bottom
-    assert.ok(bottom, "Should have bottom prop")
-    assert.strictEqual(bottom.type, "string", "bottom should be string type")
-    assert.ok(bottom.values, "bottom should have values")
-
-    const rubyBottomValues = ["0", "xxs", "xs", "sm", "md", "lg", "xl", "auto", "initial", "inherit"]
-    rubyBottomValues.forEach(value => {
       assert.ok(
-        bottom.values.includes(value),
-        `bottom should include Ruby value '${value}' from bottom.rb`
+        prop.values && prop.values.length > 0,
+        `${propName} should have values`
       )
     })
+  })
 
-    const positioningProps = ["top", "right", "left"]
-    positioningProps.forEach((propName) => {
+  test("Should have positioning props from Playbook schema", () => {
+    assert.ok(metadata.globalProps, "Metadata should have globalProps")
+
+    const positioningProps = ["top", "right", "bottom", "left"]
+    positioningProps.forEach(propName => {
       const prop = metadata.globalProps[propName]
       assert.ok(prop, `Should have ${propName}`)
-      assert.strictEqual(prop.type, "string", `${propName} should be string type`)
-      assert.ok(prop.values && prop.values.length > 0, `${propName} should have values`)
+      assert.ok(
+        prop.values && prop.values.length > 0,
+        `${propName} should have values`
+      )
     })
   })
 
-  test("Should have sizing props with correct enum values", () => {
-    assert.ok(metadata.globalProps, "Metadata should have globalProps")
+  test("Should have platform info on component props", () => {
+    const component = findComponentByRailsName(metadata, "button")
+    assert.ok(component, "Button component should exist")
 
-    const widthProps = ["width", "min_width", "max_width"]
-    widthProps.forEach((propName) => {
-      const prop = metadata.globalProps[propName]
-      assert.ok(prop, `Should have ${propName}`)
-      assert.strictEqual(prop.type, "string", `${propName} should be string type`)
-      assert.ok(prop.values && prop.values.length > 0, `${propName} should have enum values`)
-    })
+    // onClick should be react-only
+    const onClickProp = component.props.on_click
+    assert.ok(onClickProp, "Should have on_click prop")
+    assert.ok(onClickProp.platforms, "on_click should have platforms")
+    assert.ok(
+      onClickProp.platforms.includes("react"),
+      "on_click should include react"
+    )
+    assert.ok(
+      !onClickProp.platforms.includes("rails"),
+      "on_click should NOT include rails"
+    )
 
-    const heightProps = ["height", "min_height", "max_height"]
-    heightProps.forEach((propName) => {
-      const prop = metadata.globalProps[propName]
-      assert.ok(prop, `Should have ${propName}`)
-      assert.strictEqual(prop.type, "string", `${propName} should be string type`)
-      assert.ok(prop.values && prop.values.length > 0, `${propName} should have enum values`)
-    })
+    // variant should be on both platforms
+    const variantProp = component.props.variant
+    assert.ok(variantProp, "Should have variant prop")
+    assert.ok(variantProp.platforms, "variant should have platforms")
+    assert.ok(
+      variantProp.platforms.includes("react"),
+      "variant should include react"
+    )
+    assert.ok(
+      variantProp.platforms.includes("rails"),
+      "variant should include rails"
+    )
+  })
 
-    const widthValues = metadata.globalProps.width.values
-    assert.ok(widthValues.includes("xs"), "width should include 'xs'")
-    assert.ok(widthValues.includes("100%"), "width should include '100%'")
-    assert.ok(widthValues.includes("none"), "width should include 'none'")
+  test("isPropValidForPlatform should filter by platform", () => {
+    const component = findComponentByRailsName(metadata, "button")
+    assert.ok(component, "Button component should exist")
 
-    const heightValues = metadata.globalProps.height.values
-    assert.ok(heightValues.includes("xs"), "height should include 'xs'")
-    assert.ok(heightValues.includes("auto"), "height should include 'auto'")
-    assert.ok(heightValues.includes("xxxl"), "height should include 'xxxl'")
+    const onClickProp = component.props.on_click
+    assert.ok(onClickProp, "Should have on_click prop")
+
+    assert.strictEqual(
+      isPropValidForPlatform(onClickProp, "erb"),
+      false,
+      "onClick should not be valid for Rails"
+    )
+    assert.strictEqual(
+      isPropValidForPlatform(onClickProp, "typescriptreact"),
+      true,
+      "onClick should be valid for React"
+    )
+
+    const variantProp = component.props.variant
+    assert.ok(variantProp, "Should have variant prop")
+    assert.strictEqual(
+      isPropValidForPlatform(variantProp, "erb"),
+      true,
+      "variant should be valid for Rails"
+    )
+    assert.strictEqual(
+      isPropValidForPlatform(variantProp, "typescriptreact"),
+      true,
+      "variant should be valid for React"
+    )
   })
 })
