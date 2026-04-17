@@ -16,14 +16,20 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should update diagnostics for ERB document", async () => {
-    const document = await createTestDocument("erb", '<%= pb_rails("button", props: {}) %>')
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("button", props: {}) %>'
+    )
 
     diagnosticsInstance.updateDiagnostics(document)
     assert.ok(true, "Diagnostics updated successfully")
   })
 
   test("Should update diagnostics for React document", async () => {
-    const document = await createTestDocument("typescriptreact", '<Button text="Click" />')
+    const document = await createTestDocument(
+      "typescriptreact",
+      '<Button text="Click" />'
+    )
 
     diagnosticsInstance.updateDiagnostics(document)
     assert.ok(true, "Diagnostics updated successfully")
@@ -251,12 +257,17 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const remoteWarning = diagnostics.find((d) => d.message.includes("remote"))
-    const toggleWarning = diagnostics.find((d) => d.message.includes("toggle"))
-    const targetWarning = diagnostics.find((d) => d.message.includes("target"))
-    const disableWithWarning = diagnostics.find((d) => d.message.includes("disable_with"))
+    const remoteWarning = diagnostics.find(d => d.message.includes("remote"))
+    const toggleWarning = diagnostics.find(d => d.message.includes("toggle"))
+    const targetWarning = diagnostics.find(d => d.message.includes("target"))
+    const disableWithWarning = diagnostics.find(d =>
+      d.message.includes("disable_with")
+    )
 
-    assert.ok(!remoteWarning, "Should not warn about 'remote' (it's in link_to args)")
+    assert.ok(
+      !remoteWarning,
+      "Should not warn about 'remote' (it's in link_to args)"
+    )
     assert.ok(
       !toggleWarning,
       "Should not warn about 'toggle' (it's in nested data hash inside link_to)"
@@ -280,10 +291,15 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const labelWarning = diagnostics.find((d) => d.message.includes("label"))
-    const disableInputWarning = diagnostics.find((d) => d.message.includes("disable_input"))
+    const labelWarning = diagnostics.find(d => d.message.includes("label"))
+    const disableInputWarning = diagnostics.find(d =>
+      d.message.includes("disable_input")
+    )
 
-    assert.ok(!labelWarning, "Should not warn about 'label' (it's in nested date_picker props)")
+    assert.ok(
+      !labelWarning,
+      "Should not warn about 'label' (it's in nested date_picker props)"
+    )
     assert.ok(
       !disableInputWarning,
       "Should not warn about 'disable_input' (it's in nested date_picker props)"
@@ -304,9 +320,12 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const messageWarning = diagnostics.find((d) => d.message.includes("message"))
+    const messageWarning = diagnostics.find(d => d.message.includes("message"))
 
-    assert.ok(!messageWarning, "Should not warn about 'message' (it's in nested validation hash)")
+    assert.ok(
+      !messageWarning,
+      "Should not warn about 'message' (it's in nested validation hash)"
+    )
   })
 
   test("Should not attribute render_app props to previous pb_rails component", async () => {
@@ -319,8 +338,10 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const defaultSelectedWarning = diagnostics.find((d) => d.message.includes("defaultSelected"))
-    const labelWarning = diagnostics.find((d) => d.message.includes("label"))
+    const defaultSelectedWarning = diagnostics.find(d =>
+      d.message.includes("defaultSelected")
+    )
+    const labelWarning = diagnostics.find(d => d.message.includes("label"))
 
     assert.ok(
       !defaultSelectedWarning,
@@ -339,7 +360,9 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidPropWarning = diagnostics.find((d) => d.message.includes("invalid_prop"))
+    const invalidPropWarning = diagnostics.find(d =>
+      d.message.includes("invalid_prop")
+    )
 
     assert.ok(
       invalidPropWarning,
@@ -358,9 +381,12 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const dataWarning = diagnostics.find((d) => d.message.includes('"data"'))
+    const dataWarning = diagnostics.find(d => d.message.includes('"data"'))
 
-    assert.ok(!dataWarning, "Should not warn about 'data' (it's a valid global prop)")
+    assert.ok(
+      !dataWarning,
+      "Should not warn about 'data' (it's a valid global prop)"
+    )
   })
 
   test("Should allow React-specific props in React components", async () => {
@@ -372,18 +398,26 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const textWarning = diagnostics.find((d) => d.message.includes('"text"'))
-    const placementWarning = diagnostics.find((d) => d.message.includes('"placement"'))
+    const textWarning = diagnostics.find(d => d.message.includes('"text"'))
+    const placementWarning = diagnostics.find(d =>
+      d.message.includes('"placement"')
+    )
 
-    assert.ok(!textWarning, "Should not warn about 'text' (it's a valid React prop)")
-    assert.ok(!placementWarning, "Should not warn about 'placement' (it's a valid React prop)")
+    assert.ok(
+      !textWarning,
+      "Should not warn about 'text' (it's a valid React prop)"
+    )
+    assert.ok(
+      !placementWarning,
+      "Should not warn about 'placement' (it's a valid React prop)"
+    )
   })
 
   test("Should allow Rails-specific props in Rails components", async () => {
     const content = `<%= pb_rails("tooltip", props: {
       delay_open: 1000,
       trigger_element_id: "my-btn",
-      position: "top"
+      interaction: true
     }) do %>
       Save to My Favorites
     <% end %>`
@@ -392,18 +426,25 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const delayOpenWarning = diagnostics.find((d) => d.message.includes('"delay_open"'))
-    const triggerWarning = diagnostics.find((d) => d.message.includes('"trigger_element_id"'))
+    const delayOpenWarning = diagnostics.find(d =>
+      d.message.includes('"delay_open"')
+    )
+    const triggerWarning = diagnostics.find(d =>
+      d.message.includes('"trigger_element_id"')
+    )
 
-    assert.ok(!delayOpenWarning, "Should not warn about 'delay_open' (it's a valid Rails prop)")
+    assert.ok(
+      !delayOpenWarning,
+      "Should not warn about 'delay_open' (it's a valid Rails prop)"
+    )
     assert.ok(
       !triggerWarning,
       "Should not warn about 'trigger_element_id' (it's a valid Rails prop)"
     )
   })
 
-  test("Should allow both React and Rails props for same component", async () => {
-    const reactContent = `<Tooltip delay_open={1000} text="Hello">
+  test("Should correctly identify platform-specific props for same component", async () => {
+    const reactContent = `<Tooltip text="Hello">
       <Button>Click me</Button>
     </Tooltip>`
 
@@ -411,11 +452,27 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(reactDoc)
 
     const reactDiagnostics = diagnosticsInstance.getDiagnostics(reactDoc.uri)
-    const delayOpenWarning = reactDiagnostics.find((d) => d.message.includes('"delay_open"'))
-    const textWarning = reactDiagnostics.find((d) => d.message.includes('"text"'))
+    const textWarning = reactDiagnostics.find(d => d.message.includes('"text"'))
 
-    assert.ok(!delayOpenWarning, "Should allow Rails prop 'delay_open' in React component")
     assert.ok(!textWarning, "Should allow React prop 'text' in React component")
+
+    // delay_open is Rails-only, so it should warn in React context
+    const reactContent2 = `<Tooltip delayOpen={1000}>
+      <Button>Click me</Button>
+    </Tooltip>`
+
+    const reactDoc2 = await createTestDocument("typescriptreact", reactContent2)
+    diagnosticsInstance.updateDiagnostics(reactDoc2)
+
+    const reactDiagnostics2 = diagnosticsInstance.getDiagnostics(reactDoc2.uri)
+    const delayOpenWarning = reactDiagnostics2.find(d =>
+      d.message.includes("delayOpen")
+    )
+
+    assert.ok(
+      delayOpenWarning,
+      "Should warn about Rails-only prop 'delayOpen' in React context"
+    )
   })
 
   test("Should recognize React-only props like onClick and htmlType for Button", async () => {
@@ -431,11 +488,21 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const onClickWarning = diagnostics.find((d) => d.message.includes('"onClick"'))
-    const htmlTypeWarning = diagnostics.find((d) => d.message.includes('"htmlType"'))
+    const onClickWarning = diagnostics.find(d =>
+      d.message.includes('"onClick"')
+    )
+    const htmlTypeWarning = diagnostics.find(d =>
+      d.message.includes('"htmlType"')
+    )
 
-    assert.ok(!onClickWarning, "Should recognize 'onClick' as a valid React prop for Button")
-    assert.ok(!htmlTypeWarning, "Should recognize 'htmlType' as a valid React prop for Button")
+    assert.ok(
+      !onClickWarning,
+      "Should recognize 'onClick' as a valid React prop for Button"
+    )
+    assert.ok(
+      !htmlTypeWarning,
+      "Should recognize 'htmlType' as a valid React prop for Button"
+    )
   })
 
   test("Should validate htmlType enum values for Button", async () => {
@@ -445,19 +512,30 @@ suite("Diagnostics Test Suite", () => {
     const validDoc = await createTestDocument("typescriptreact", validContent)
     diagnosticsInstance.updateDiagnostics(validDoc)
     const validDiagnostics = diagnosticsInstance.getDiagnostics(validDoc.uri)
-    const validHtmlTypeWarning = validDiagnostics.find((d) =>
-      d.message.includes("htmlType") && d.message.includes("invalid")
+    const validHtmlTypeWarning = validDiagnostics.find(
+      d => d.message.includes("htmlType") && d.message.includes("invalid")
     )
 
-    const invalidDoc = await createTestDocument("typescriptreact", invalidContent)
+    const invalidDoc = await createTestDocument(
+      "typescriptreact",
+      invalidContent
+    )
     diagnosticsInstance.updateDiagnostics(invalidDoc)
-    const invalidDiagnostics = diagnosticsInstance.getDiagnostics(invalidDoc.uri)
-    const invalidHtmlTypeWarning = invalidDiagnostics.find((d) =>
-      d.message.includes("htmlType") && d.message.includes("invalid")
+    const invalidDiagnostics = diagnosticsInstance.getDiagnostics(
+      invalidDoc.uri
+    )
+    const invalidHtmlTypeWarning = invalidDiagnostics.find(
+      d => d.message.includes("htmlType") && d.message.includes("invalid")
     )
 
-    assert.ok(!validHtmlTypeWarning, "Should accept valid htmlType value 'submit'")
-    assert.ok(invalidHtmlTypeWarning, "Should reject invalid htmlType value 'invalid'")
+    assert.ok(
+      !validHtmlTypeWarning,
+      "Should accept valid htmlType value 'submit'"
+    )
+    assert.ok(
+      invalidHtmlTypeWarning,
+      "Should reject invalid htmlType value 'invalid'"
+    )
   })
 
   test("Should validate props in multi-line React components", async () => {
@@ -470,7 +548,9 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const propWarnings = diagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const propWarnings = diagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
     assert.strictEqual(
       propWarnings.length,
@@ -490,7 +570,7 @@ suite("Diagnostics Test Suite", () => {
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
     const invalidPaddingWarning = diagnostics.find(
-      (d) => d.message.includes("padding") && d.message.includes("invalid_value")
+      d => d.message.includes("padding") && d.message.includes("invalid_value")
     )
 
     assert.ok(
@@ -513,10 +593,14 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const labelWarning = diagnostics.find((d) => d.message.includes('"label"'))
-    const placeholderWarning = diagnostics.find((d) => d.message.includes('"placeholder"'))
-    const requiredWarning = diagnostics.find((d) => d.message.includes('"required"'))
-    const requiredIndicatorWarning = diagnostics.find((d) =>
+    const labelWarning = diagnostics.find(d => d.message.includes('"label"'))
+    const placeholderWarning = diagnostics.find(d =>
+      d.message.includes('"placeholder"')
+    )
+    const requiredWarning = diagnostics.find(d =>
+      d.message.includes('"required"')
+    )
+    const requiredIndicatorWarning = diagnostics.find(d =>
       d.message.includes('"required_indicator"')
     )
 
@@ -549,12 +633,16 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const unknownPropWarnings = diagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const unknownPropWarnings = diagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
-    assert.strictEqual(unknownPropWarnings.length, 0, "Should not warn for valid text_field props")
+    assert.strictEqual(
+      unknownPropWarnings.length,
+      0,
+      "Should not warn for valid text_field props"
+    )
   })
-
-
 
   test("Should validate form builder select field", async () => {
     const content = `<%= f.select :status, options, props: {
@@ -567,9 +655,15 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const unknownPropWarnings = diagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const unknownPropWarnings = diagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
-    assert.strictEqual(unknownPropWarnings.length, 0, "Should not warn for valid select props")
+    assert.strictEqual(
+      unknownPropWarnings.length,
+      0,
+      "Should not warn for valid select props"
+    )
   })
 
   test("Should validate form builder date_picker field", async () => {
@@ -583,7 +677,9 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const unknownPropWarnings = diagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const unknownPropWarnings = diagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
     assert.strictEqual(
       unknownPropWarnings.length,
@@ -602,9 +698,15 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(formDocument)
 
     const formDiagnostics = diagnosticsInstance.getDiagnostics(formDocument.uri)
-    const formWarnings = formDiagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const formWarnings = formDiagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
-    assert.strictEqual(formWarnings.length, 0, "Should validate 'form' variable name")
+    assert.strictEqual(
+      formWarnings.length,
+      0,
+      "Should validate 'form' variable name"
+    )
 
     const builderContent = `<%= builder.password_field :password, props: {
   label: "Password",
@@ -614,10 +716,18 @@ suite("Diagnostics Test Suite", () => {
     const builderDocument = await createTestDocument("erb", builderContent)
     diagnosticsInstance.updateDiagnostics(builderDocument)
 
-    const builderDiagnostics = diagnosticsInstance.getDiagnostics(builderDocument.uri)
-    const builderWarnings = builderDiagnostics.filter((d) => d.message.includes("Unknown prop"))
+    const builderDiagnostics = diagnosticsInstance.getDiagnostics(
+      builderDocument.uri
+    )
+    const builderWarnings = builderDiagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
-    assert.strictEqual(builderWarnings.length, 0, "Should validate 'builder' variable name")
+    assert.strictEqual(
+      builderWarnings.length,
+      0,
+      "Should validate 'builder' variable name"
+    )
   })
 
   test("Should validate mask prop enum values for form builder fields", async () => {
@@ -630,9 +740,13 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const maskWarnings = diagnostics.filter((d) => d.message.includes("mask"))
+    const maskWarnings = diagnostics.filter(d => d.message.includes("mask"))
 
-    assert.strictEqual(maskWarnings.length, 0, "Should accept valid mask value 'ssn'")
+    assert.strictEqual(
+      maskWarnings.length,
+      0,
+      "Should accept valid mask value 'ssn'"
+    )
   })
 
   test("Should not validate non-form-builder method calls", async () => {
@@ -644,8 +758,10 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const warnings = diagnostics.filter((d) =>
-      d.message.includes("form builder") || d.message.includes("random_method")
+    const warnings = diagnostics.filter(
+      d =>
+        d.message.includes("form builder") ||
+        d.message.includes("random_method")
     )
 
     assert.strictEqual(
@@ -678,52 +794,85 @@ suite("Diagnostics Test Suite", () => {
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
 
-    const titleSizeOnFlex = diagnostics.find((d) =>
-      d.message.includes("size") && d.message.includes("Flex")
+    const titleSizeOnFlex = diagnostics.find(
+      d => d.message.includes("size") && d.message.includes("Flex")
     )
-    const titleTagOnFlex = diagnostics.find((d) =>
-      d.message.includes("tag") && d.message.includes("Flex")
+    const titleTagOnFlex = diagnostics.find(
+      d => d.message.includes("tag") && d.message.includes("Flex")
     )
-    const titleTextOnFlex = diagnostics.find((d) =>
-      d.message.includes("text") && d.message.includes("Flex")
-    )
-
-    const errorOnCard = diagnostics.find((d) =>
-      d.message.includes("error") && d.message.includes("Card")
-    )
-    const errorOnFlex = diagnostics.find((d) =>
-      d.message.includes("error") && d.message.includes("Flex")
-    )
-    const labelOnCard = diagnostics.find((d) =>
-      d.message.includes("label") && d.message.includes("Card")
-    )
-    const labelOnFlex = diagnostics.find((d) =>
-      d.message.includes("label") && d.message.includes("Flex")
-    )
-    const placeholderOnCard = diagnostics.find((d) =>
-      d.message.includes("placeholder") && d.message.includes("Card")
-    )
-    const placeholderOnFlex = diagnostics.find((d) =>
-      d.message.includes("placeholder") && d.message.includes("Flex")
-    )
-    const valueOnCard = diagnostics.find((d) =>
-      d.message.includes("value") && d.message.includes("Card")
-    )
-    const valueOnFlex = diagnostics.find((d) =>
-      d.message.includes("value") && d.message.includes("Flex")
+    const titleTextOnFlex = diagnostics.find(
+      d => d.message.includes("text") && d.message.includes("Flex")
     )
 
-    assert.ok(!titleSizeOnFlex, "Should NOT validate Title's 'size' prop against Flex")
-    assert.ok(!titleTagOnFlex, "Should NOT validate Title's 'tag' prop against Flex")
-    assert.ok(!titleTextOnFlex, "Should NOT validate Title's 'text' prop against Flex")
-    assert.ok(!errorOnCard, "Should NOT validate TextInput's 'error' prop against Card")
-    assert.ok(!errorOnFlex, "Should NOT validate TextInput's 'error' prop against Flex")
-    assert.ok(!labelOnCard, "Should NOT validate TextInput's 'label' prop against Card")
-    assert.ok(!labelOnFlex, "Should NOT validate TextInput's 'label' prop against Flex")
-    assert.ok(!placeholderOnCard, "Should NOT validate TextInput's 'placeholder' prop against Card")
-    assert.ok(!placeholderOnFlex, "Should NOT validate TextInput's 'placeholder' prop against Flex")
-    assert.ok(!valueOnCard, "Should NOT validate TextInput's 'value' prop against Card")
-    assert.ok(!valueOnFlex, "Should NOT validate TextInput's 'value' prop against Flex")
+    const errorOnCard = diagnostics.find(
+      d => d.message.includes("error") && d.message.includes("Card")
+    )
+    const errorOnFlex = diagnostics.find(
+      d => d.message.includes("error") && d.message.includes("Flex")
+    )
+    const labelOnCard = diagnostics.find(
+      d => d.message.includes("label") && d.message.includes("Card")
+    )
+    const labelOnFlex = diagnostics.find(
+      d => d.message.includes("label") && d.message.includes("Flex")
+    )
+    const placeholderOnCard = diagnostics.find(
+      d => d.message.includes("placeholder") && d.message.includes("Card")
+    )
+    const placeholderOnFlex = diagnostics.find(
+      d => d.message.includes("placeholder") && d.message.includes("Flex")
+    )
+    const valueOnCard = diagnostics.find(
+      d => d.message.includes("value") && d.message.includes("Card")
+    )
+    const valueOnFlex = diagnostics.find(
+      d => d.message.includes("value") && d.message.includes("Flex")
+    )
+
+    assert.ok(
+      !titleSizeOnFlex,
+      "Should NOT validate Title's 'size' prop against Flex"
+    )
+    assert.ok(
+      !titleTagOnFlex,
+      "Should NOT validate Title's 'tag' prop against Flex"
+    )
+    assert.ok(
+      !titleTextOnFlex,
+      "Should NOT validate Title's 'text' prop against Flex"
+    )
+    assert.ok(
+      !errorOnCard,
+      "Should NOT validate TextInput's 'error' prop against Card"
+    )
+    assert.ok(
+      !errorOnFlex,
+      "Should NOT validate TextInput's 'error' prop against Flex"
+    )
+    assert.ok(
+      !labelOnCard,
+      "Should NOT validate TextInput's 'label' prop against Card"
+    )
+    assert.ok(
+      !labelOnFlex,
+      "Should NOT validate TextInput's 'label' prop against Flex"
+    )
+    assert.ok(
+      !placeholderOnCard,
+      "Should NOT validate TextInput's 'placeholder' prop against Card"
+    )
+    assert.ok(
+      !placeholderOnFlex,
+      "Should NOT validate TextInput's 'placeholder' prop against Flex"
+    )
+    assert.ok(
+      !valueOnCard,
+      "Should NOT validate TextInput's 'value' prop against Card"
+    )
+    assert.ok(
+      !valueOnFlex,
+      "Should NOT validate TextInput's 'value' prop against Flex"
+    )
   })
 
   test("Should validate only direct props on single-line nested components", async () => {
@@ -736,8 +885,10 @@ suite("Diagnostics Test Suite", () => {
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
 
-    const titlePropsOnFlex = diagnostics.filter((d) =>
-      (d.message.includes("size") || d.message.includes("text")) && d.message.includes("Flex")
+    const titlePropsOnFlex = diagnostics.filter(
+      d =>
+        (d.message.includes("size") || d.message.includes("text")) &&
+        d.message.includes("Flex")
     )
 
     assert.strictEqual(
@@ -765,8 +916,10 @@ suite("Diagnostics Test Suite", () => {
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
 
-    const textInputPropsOnCard = diagnostics.filter((d) =>
-      (d.message.includes("label") || d.message.includes("placeholder")) && d.message.includes("Card")
+    const textInputPropsOnCard = diagnostics.filter(
+      d =>
+        (d.message.includes("label") || d.message.includes("placeholder")) &&
+        d.message.includes("Card")
     )
 
     assert.strictEqual(
@@ -777,19 +930,20 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should place warning squiggle on invalid prop name (single line)", async () => {
-    const content = '<%= pb_rails("badge", props: { classname: "test", text_transform: "none" }) %>'
+    const content =
+      '<%= pb_rails("badge", props: { classname: "test", text_transform: "none" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const textTransformDiagnostic = diagnostics.find((d) =>
-      d.message.includes('text_transform')
+    const textTransformDiagnostic = diagnostics.find(d =>
+      d.message.includes("text_transform")
     )
 
     assert.ok(textTransformDiagnostic, "Should have warning for text_transform")
 
-    const expectedStart = content.indexOf('text_transform')
-    const expectedEnd = expectedStart + 'text_transform'.length
+    const expectedStart = content.indexOf("text_transform")
+    const expectedEnd = expectedStart + "text_transform".length
 
     assert.strictEqual(
       textTransformDiagnostic.range.start.line,
@@ -809,16 +963,20 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should place warning squiggle on invalid prop value (single line - Rails)", async () => {
-    const content = '<%= pb_rails("button", props: { variant: "invalid_variant" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { variant: "invalid_variant" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const variantDiagnostic = diagnostics.find((d) =>
-      d.message.includes('Invalid value') && d.message.includes('variant')
+    const variantDiagnostic = diagnostics.find(
+      d => d.message.includes("Invalid value") && d.message.includes("variant")
     )
 
-    assert.ok(variantDiagnostic, "Should have warning for invalid variant value")
+    assert.ok(
+      variantDiagnostic,
+      "Should have warning for invalid variant value"
+    )
 
     // Warning should be on the VALUE "invalid_variant", not the prop name
     const expectedStart = content.indexOf('"invalid_variant"')
@@ -849,15 +1007,15 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidPropDiagnostic = diagnostics.find((d) =>
-      d.message.includes('invalid_prop')
+    const invalidPropDiagnostic = diagnostics.find(d =>
+      d.message.includes("invalid_prop")
     )
 
     assert.ok(invalidPropDiagnostic, "Should have warning for invalid_prop")
 
-    const firstLine = content.split('\n')[0]
-    const expectedStart = firstLine.indexOf('invalid_prop')
-    const expectedEnd = expectedStart + 'invalid_prop'.length
+    const firstLine = content.split("\n")[0]
+    const expectedStart = firstLine.indexOf("invalid_prop")
+    const expectedEnd = expectedStart + "invalid_prop".length
 
     assert.strictEqual(
       invalidPropDiagnostic.range.start.line,
@@ -885,16 +1043,16 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidPropDiagnostic = diagnostics.find((d) =>
-      d.message.includes('invalid_prop')
+    const invalidPropDiagnostic = diagnostics.find(d =>
+      d.message.includes("invalid_prop")
     )
 
     assert.ok(invalidPropDiagnostic, "Should have warning for invalid_prop")
 
-    const lines = content.split('\n')
+    const lines = content.split("\n")
     const secondLine = lines[2]
-    const expectedStart = secondLine.indexOf('invalid_prop')
-    const expectedEnd = expectedStart + 'invalid_prop'.length
+    const expectedStart = secondLine.indexOf("invalid_prop")
+    const expectedEnd = expectedStart + "invalid_prop".length
 
     assert.strictEqual(
       invalidPropDiagnostic.range.start.line,
@@ -922,14 +1080,17 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const variantDiagnostic = diagnostics.find((d) =>
-      d.message.includes('Invalid value') && d.message.includes('variant')
+    const variantDiagnostic = diagnostics.find(
+      d => d.message.includes("Invalid value") && d.message.includes("variant")
     )
 
-    assert.ok(variantDiagnostic, "Should have warning for invalid variant value")
+    assert.ok(
+      variantDiagnostic,
+      "Should have warning for invalid variant value"
+    )
 
     // Warning should be on the VALUE "invalid_value", not the prop name
-    const lines = content.split('\n')
+    const lines = content.split("\n")
     const lineWithValue = lines[1]
     const expectedStart = lineWithValue.indexOf('"invalid_value"')
     const expectedEnd = expectedStart + '"invalid_value"'.length
@@ -963,21 +1124,25 @@ suite("Diagnostics Test Suite", () => {
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
 
-    const wrongPropDiagnostic = diagnostics.find((d) =>
-      d.message.includes('wrong_prop')
+    const wrongPropDiagnostic = diagnostics.find(d =>
+      d.message.includes("wrong_prop")
     )
-    const anotherBadDiagnostic = diagnostics.find((d) =>
-      d.message.includes('another_bad')
+    const anotherBadDiagnostic = diagnostics.find(d =>
+      d.message.includes("another_bad")
     )
 
     assert.ok(wrongPropDiagnostic, "Should have warning for wrong_prop")
     assert.ok(anotherBadDiagnostic, "Should have warning for another_bad")
 
-    const lines = content.split('\n')
+    const lines = content.split("\n")
 
     const wrongPropLine = lines[2]
-    const wrongPropStart = wrongPropLine.indexOf('wrong_prop')
-    assert.strictEqual(wrongPropDiagnostic.range.start.line, 2, "wrong_prop should be on line 2")
+    const wrongPropStart = wrongPropLine.indexOf("wrong_prop")
+    assert.strictEqual(
+      wrongPropDiagnostic.range.start.line,
+      2,
+      "wrong_prop should be on line 2"
+    )
     assert.strictEqual(
       wrongPropDiagnostic.range.start.character,
       wrongPropStart,
@@ -985,8 +1150,12 @@ suite("Diagnostics Test Suite", () => {
     )
 
     const anotherBadLine = lines[4]
-    const anotherBadStart = anotherBadLine.indexOf('another_bad')
-    assert.strictEqual(anotherBadDiagnostic.range.start.line, 4, "another_bad should be on line 4")
+    const anotherBadStart = anotherBadLine.indexOf("another_bad")
+    assert.strictEqual(
+      anotherBadDiagnostic.range.start.line,
+      4,
+      "another_bad should be on line 4"
+    )
     assert.strictEqual(
       anotherBadDiagnostic.range.start.character,
       anotherBadStart,
@@ -1004,19 +1173,22 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidDiagnostic = diagnostics.find((d) =>
-      d.message.includes('not_a_valid_prop')
+    const invalidDiagnostic = diagnostics.find(d =>
+      d.message.includes("not_a_valid_prop")
     )
 
     if (!invalidDiagnostic) {
-      const badContent = '<%= pb_rails("badge", props: { xyz_invalid: "test" }) %>'
+      const badContent =
+        '<%= pb_rails("badge", props: { xyz_invalid: "test" }) %>'
       const badDoc = await createTestDocument("erb", badContent)
       diagnosticsInstance.updateDiagnostics(badDoc)
       const badDiagnostics = diagnosticsInstance.getDiagnostics(badDoc.uri)
-      const badDiagnostic = badDiagnostics.find(d => d.message.includes('xyz_invalid'))
+      const badDiagnostic = badDiagnostics.find(d =>
+        d.message.includes("xyz_invalid")
+      )
 
       assert.ok(badDiagnostic, "Should have warning for xyz_invalid on badge")
-      const expectedStart = badContent.indexOf('xyz_invalid')
+      const expectedStart = badContent.indexOf("xyz_invalid")
       assert.strictEqual(
         badDiagnostic.range.start.character,
         expectedStart,
@@ -1025,10 +1197,10 @@ suite("Diagnostics Test Suite", () => {
       return
     }
 
-    const lines = content.split('\n')
+    const lines = content.split("\n")
     const lineWithProp = lines[2]
-    const expectedStart = lineWithProp.indexOf('not_a_valid_prop')
-    const expectedEnd = expectedStart + 'not_a_valid_prop'.length
+    const expectedStart = lineWithProp.indexOf("not_a_valid_prop")
+    const expectedEnd = expectedStart + "not_a_valid_prop".length
 
     assert.strictEqual(
       invalidDiagnostic.range.start.line,
@@ -1053,11 +1225,14 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidDiagnostic = diagnostics.find((d) =>
-      d.message.includes('justify')
+    const invalidDiagnostic = diagnostics.find(d =>
+      d.message.includes("justify")
     )
 
-    assert.ok(invalidDiagnostic, "Should have warning for invalid 'justify' prop")
+    assert.ok(
+      invalidDiagnostic,
+      "Should have warning for invalid 'justify' prop"
+    )
 
     // The warning should be on the VALUE "right", not the prop name "justify"
     const expectedStart = content.indexOf('"right"')
@@ -1089,16 +1264,16 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidDiagnostic = diagnostics.find((d) =>
-      d.message.includes('invalid_prop')
+    const invalidDiagnostic = diagnostics.find(d =>
+      d.message.includes("invalid_prop")
     )
 
     assert.ok(invalidDiagnostic, "Should have warning for 'invalid_prop'")
 
-    const lines = content.split('\n')
+    const lines = content.split("\n")
     const lineWithProp = lines[1]
-    const expectedStart = lineWithProp.indexOf('invalid_prop')
-    const expectedEnd = expectedStart + 'invalid_prop'.length
+    const expectedStart = lineWithProp.indexOf("invalid_prop")
+    const expectedEnd = expectedStart + "invalid_prop".length
 
     assert.strictEqual(
       invalidDiagnostic.range.start.line,
@@ -1128,12 +1303,12 @@ suite("Diagnostics Test Suite", () => {
 
     // justify="center" is valid, so no warning for it
     // invalid_xyz is an invalid PROP NAME, so warning should be on the prop name
-    const xyzWarning = diagnostics.find((d) => d.message.includes('invalid_xyz'))
+    const xyzWarning = diagnostics.find(d => d.message.includes("invalid_xyz"))
 
     assert.ok(xyzWarning, "Should have warning for 'invalid_xyz'")
 
-    const xyzStart = content.indexOf('invalid_xyz')
-    const xyzEnd = xyzStart + 'invalid_xyz'.length
+    const xyzStart = content.indexOf("invalid_xyz")
+    const xyzEnd = xyzStart + "invalid_xyz".length
 
     assert.strictEqual(
       xyzWarning.range.start.character,
@@ -1156,14 +1331,17 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const justifyDiagnostic = diagnostics.find((d) =>
-      d.message.includes('Invalid value') && d.message.includes('justify')
+    const justifyDiagnostic = diagnostics.find(
+      d => d.message.includes("Invalid value") && d.message.includes("justify")
     )
 
-    assert.ok(justifyDiagnostic, "Should have warning for invalid justify value")
+    assert.ok(
+      justifyDiagnostic,
+      "Should have warning for invalid justify value"
+    )
 
     // Warning should be on the VALUE "invalid_justify", not the prop name
-    const lines = content.split('\n')
+    const lines = content.split("\n")
     const lineWithValue = lines[1]
     const expectedStart = lineWithValue.indexOf('"invalid_justify"')
     const expectedEnd = expectedStart + '"invalid_justify"'.length
@@ -1198,7 +1376,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle props with escaped quotes", async () => {
-    const content = '<%= pb_rails("button", props: { text: "Say \\"Hello\\"" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: "Say \\"Hello\\"" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1206,7 +1385,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle props with newline characters", async () => {
-    const content = '<%= pb_rails("button", props: { text: "Line 1\\nLine 2" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: "Line 1\\nLine 2" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1222,7 +1402,7 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle React component with no props", async () => {
-    const content = '<Button />'
+    const content = "<Button />"
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1230,7 +1410,7 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle React component with only closing tag", async () => {
-    const content = '<Button></Button>'
+    const content = "<Button></Button>"
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1243,14 +1423,19 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const unknownProp = diagnostics.find(d => d.message.includes("Unknown prop"))
+    const unknownProp = diagnostics.find(d =>
+      d.message.includes("Unknown prop")
+    )
 
     // alignItems should be converted to align_items for validation
-    assert.ok(!unknownProp, "Should convert camelCase to snake_case for validation")
+    assert.ok(
+      !unknownProp,
+      "Should convert camelCase to snake_case for validation"
+    )
   })
 
   test("Should handle React component with boolean props", async () => {
-    const content = '<Button disabled loading />'
+    const content = "<Button disabled loading />"
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1258,7 +1443,7 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle React component with expression props", async () => {
-    const content = '<Button onClick={handleClick} count={count + 1} />'
+    const content = "<Button onClick={handleClick} count={count + 1} />"
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1274,7 +1459,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with Ruby string interpolation", async () => {
-    const content = '<%= pb_rails("button", props: { text: "Hello #{name}" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: "Hello #{name}" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1290,7 +1476,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with array values", async () => {
-    const content = '<%= pb_rails("select", props: { options: ["one", "two", "three"] }) %>'
+    const content =
+      '<%= pb_rails("select", props: { options: ["one", "two", "three"] }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1298,7 +1485,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with hash literal values", async () => {
-    const content = '<%= pb_rails("button", props: { data: { toggle: "modal", target: "#myModal" } }) %>'
+    const content =
+      '<%= pb_rails("button", props: { data: { toggle: "modal", target: "#myModal" } }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1314,9 +1502,14 @@ suite("Diagnostics Test Suite", () => {
       diagnosticsInstance.updateDiagnostics(document)
 
       const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-      const unknownProp = diagnostics.find(d => d.message.includes("Unknown prop"))
+      const unknownProp = diagnostics.find(d =>
+        d.message.includes("Unknown prop")
+      )
 
-      assert.ok(!unknownProp, `Should recognize '${varName}' as form builder variable`)
+      assert.ok(
+        !unknownProp,
+        `Should recognize '${varName}' as form builder variable`
+      )
     }
   })
 
@@ -1409,11 +1602,11 @@ suite("Diagnostics Test Suite", () => {
 
   test("Should handle React self-closing component variations", async () => {
     const variations = [
-      '<Button />',
-      '<Button/>',
-      '<Button  />',
+      "<Button />",
+      "<Button/>",
+      "<Button  />",
       '<Button text="Click" />',
-      '<Button text="Click"/>'
+      '<Button text="Click"/>',
     ]
 
     for (const content of variations) {
@@ -1467,14 +1660,23 @@ suite("Diagnostics Test Suite", () => {
 
   test("Should validate across all 8 supported language IDs comprehensively", async () => {
     const testCases = [
-      { lang: "ruby", content: '<%= pb_rails("button", props: { text: "Click" }) %>' },
-      { lang: "erb", content: '<%= pb_rails("button", props: { text: "Click" }) %>' },
-      { lang: "html.erb", content: '<%= pb_rails("button", props: { text: "Click" }) %>' },
+      {
+        lang: "ruby",
+        content: '<%= pb_rails("button", props: { text: "Click" }) %>',
+      },
+      {
+        lang: "erb",
+        content: '<%= pb_rails("button", props: { text: "Click" }) %>',
+      },
+      {
+        lang: "html.erb",
+        content: '<%= pb_rails("button", props: { text: "Click" }) %>',
+      },
       { lang: "html", content: '<Button text="Click" />' },
       { lang: "javascript", content: '<Button text="Click" />' },
       { lang: "javascriptreact", content: '<Button text="Click" />' },
       { lang: "typescript", content: '<Button text="Click" />' },
-      { lang: "typescriptreact", content: '<Button text="Click" />' }
+      { lang: "typescriptreact", content: '<Button text="Click" />' },
     ]
 
     for (const { lang, content } of testCases) {
@@ -1485,18 +1687,26 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle form builder date_picker with valid props", async () => {
-    const content = '<%= f.date_picker :start_date, props: { label: "Start Date", placeholder: "MM/DD/YYYY" } %>'
+    const content =
+      '<%= f.date_picker :start_date, props: { label: "Start Date", placeholder: "MM/DD/YYYY" } %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const unknownProps = diagnostics.filter(d => d.message.includes("Unknown prop"))
+    const unknownProps = diagnostics.filter(d =>
+      d.message.includes("Unknown prop")
+    )
 
-    assert.strictEqual(unknownProps.length, 0, "Should not warn for valid date_picker props")
+    assert.strictEqual(
+      unknownProps.length,
+      0,
+      "Should not warn for valid date_picker props"
+    )
   })
 
   test("Should handle form builder checkbox with valid props", async () => {
-    const content = '<%= f.checkbox :agree_to_terms, props: { label: "I agree", text: "Agree to Terms" } %>'
+    const content =
+      '<%= f.checkbox :agree_to_terms, props: { label: "I agree", text: "Agree to Terms" } %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1504,7 +1714,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle form builder select with options", async () => {
-    const content = '<%= f.select :category, @categories, props: { label: "Category", blank_selection: "Choose one" } %>'
+    const content =
+      '<%= f.select :category, @categories, props: { label: "Category", blank_selection: "Choose one" } %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1537,7 +1748,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with 'if' keyword in props value", async () => {
-    const content = '<%= pb_rails("button", props: { text: "Click if ready" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: "Click if ready" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1545,7 +1757,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with 'unless' keyword in props value", async () => {
-    const content = '<%= pb_rails("button", props: { text: "Unless specified" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: "Unless specified" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1553,13 +1766,20 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle getDiagnostics for URI with no diagnostics", async () => {
-    const document = await createTestDocument("erb", '<%= pb_rails("button", props: { text: "Valid" }) %>')
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("button", props: { text: "Valid" }) %>'
+    )
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
 
     assert.ok(Array.isArray(diagnostics), "Should return array")
-    assert.strictEqual(diagnostics.length, 0, "Should have no diagnostics for valid component")
+    assert.strictEqual(
+      diagnostics.length,
+      0,
+      "Should have no diagnostics for valid component"
+    )
   })
 
   test("Should handle dispose method", () => {
@@ -1623,7 +1843,9 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    const invalidProp = diagnostics.find(d => d.message.includes("totally_invalid_prop"))
+    const invalidProp = diagnostics.find(d =>
+      d.message.includes("totally_invalid_prop")
+    )
 
     // The diagnostic should exist for an invalid prop. If it doesn't, that's ok -
     // it means the form builder might not be validating unknown props strictly
@@ -1631,7 +1853,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle Rails component with Ruby conditional in props", async () => {
-    const content = '<%= pb_rails("button", props: { variant: condition ? "primary" : "secondary" }) %>'
+    const content =
+      '<%= pb_rails("button", props: { variant: condition ? "primary" : "secondary" }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1639,7 +1862,10 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle clear() method during active diagnostics", async () => {
-    const document = await createTestDocument("erb", '<%= pb_rails("invalid_comp", props: {}) %>')
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("invalid_comp", props: {}) %>'
+    )
     diagnosticsInstance.updateDiagnostics(document)
 
     let diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
@@ -1648,7 +1874,11 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.clear()
 
     diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    assert.strictEqual(diagnostics.length, 0, "Should have no diagnostics after clear")
+    assert.strictEqual(
+      diagnostics.length,
+      0,
+      "Should have no diagnostics after clear"
+    )
   })
 
   test("Should handle prop value with single quote inside double quotes", async () => {
@@ -1660,7 +1890,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle prop value with double quote inside single quotes", async () => {
-    const content = '<%= pb_rails("button", props: { text: \'Say "Hello"\' }) %>'
+    const content =
+      '<%= pb_rails("button", props: { text: \'Say "Hello"\' }) %>'
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1668,7 +1899,8 @@ suite("Diagnostics Test Suite", () => {
   })
 
   test("Should handle React component with nested braces in expression", async () => {
-    const content = '<Button onClick={() => { console.log("clicked"); return true; }} />'
+    const content =
+      '<Button onClick={() => { console.log("clicked"); return true; }} />'
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
@@ -1692,7 +1924,11 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    assert.strictEqual(diagnostics.length, 0, "Should have no diagnostics for empty document")
+    assert.strictEqual(
+      diagnostics.length,
+      0,
+      "Should have no diagnostics for empty document"
+    )
   })
 
   test("Should not crash on document with only whitespace", async () => {
@@ -1700,7 +1936,11 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
-    assert.strictEqual(diagnostics.length, 0, "Should have no diagnostics for whitespace-only document")
+    assert.strictEqual(
+      diagnostics.length,
+      0,
+      "Should have no diagnostics for whitespace-only document"
+    )
   })
 
   test("Should handle 100+ components in single file", async () => {
@@ -1716,20 +1956,19 @@ suite("Diagnostics Test Suite", () => {
   })
 })
 
-
 async function createTestDocument(
   languageId: string,
   content: string
 ): Promise<vscode.TextDocument> {
   const extensionMap: Record<string, string> = {
-    'typescriptreact': 'tsx',
-    'javascriptreact': 'jsx',
-    'typescript': 'ts',
-    'javascript': 'js',
-    'erb': 'erb',
-    'ruby': 'rb',
-    'html.erb': 'html.erb',
-    'html': 'html'
+    typescriptreact: "tsx",
+    javascriptreact: "jsx",
+    typescript: "ts",
+    javascript: "js",
+    erb: "erb",
+    ruby: "rb",
+    "html.erb": "html.erb",
+    html: "html",
   }
 
   const extension = extensionMap[languageId] || languageId
