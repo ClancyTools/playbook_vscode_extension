@@ -349,8 +349,7 @@ export class PlaybookDiagnostics {
             match[0],
             position.character,
             position.line,
-            diagnostics,
-            document
+            diagnostics
           )
         }
       }
@@ -445,8 +444,7 @@ export class PlaybookDiagnostics {
               match[0],
               adjustedStartIndex,
               actualLineIndex,
-              diagnostics,
-              document
+              diagnostics
             )
           }
         }
@@ -562,8 +560,7 @@ export class PlaybookDiagnostics {
     fullMatch: string,
     startCharacter: number,
     lineIndex: number,
-    diagnostics: vscode.Diagnostic[],
-    document: vscode.TextDocument
+    diagnostics: vscode.Diagnostic[]
   ): void {
     const validValues = getPropValues(prop)
 
@@ -893,8 +890,7 @@ export class PlaybookDiagnostics {
             match[0],
             position.character,
             position.line,
-            diagnostics,
-            document
+            diagnostics
           )
         }
       }
