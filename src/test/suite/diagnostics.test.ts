@@ -1954,6 +1954,219 @@ suite("Diagnostics Test Suite", () => {
 
     assert.ok(true, "Handles 100+ components in single file")
   })
+
+  // =========================================================================
+  // ALPHABETICAL PROP ORDER TESTS (React only)
+  // =========================================================================
+
+  test("Should not warn when React props are in alphabetical order (single line)", async () => {
+    const content = '<Button disabled={false} text="Click" variant="primary" />'
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(
+      !orderWarning,
+      "Should not warn when props are already alphabetical"
+    )
+  })
+
+  test("Should not warn when React props are in alphabetical order (multiline)", async () => {
+    const content = `<Button
+  disabled={false}
+  text="Click"
+  variant="primary"
+/>`
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(
+      !orderWarning,
+      "Should not warn when multiline props are already alphabetical"
+    )
+  })
+
+  test("Should warn when React props are out of alphabetical order (single line)", async () => {
+    const content = '<Button variant="primary" text="Click" />'
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(orderWarning, "Should warn when props are out of order")
+    assert.ok(
+      orderWarning!.message.includes('"text"'),
+      'Warning should mention the out-of-order prop "text"'
+    )
+    assert.ok(
+      orderWarning!.message.includes('"variant"'),
+      'Warning should mention the preceding prop "variant"'
+    )
+  })
+
+  test("Should warn when React props are out of alphabetical order (multiline)", async () => {
+    const content = `<Button
+  variant="primary"
+  text="Click"
+/>`
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(orderWarning, "Should warn when multiline props are out of order")
+  })
+
+  test("Should place the warning squiggle on the first out-of-order prop", async () => {
+    const content = `<Button
+  variant="primary"
+  text="Click"
+/>`
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(orderWarning, "Should have an alphabetical order warning")
+
+    // Warning should point to "text" on line 2, not "variant" on line 1
+    const lines = content.split("\n")
+    const lineWithText = lines[2]
+    const expectedStart = lineWithText.indexOf("text")
+    const expectedEnd = expectedStart + "text".length
+
+    assert.strictEqual(
+      orderWarning!.range.start.line,
+      2,
+      'Warning should be on line 2 (where "text" is)'
+    )
+    assert.strictEqual(
+      orderWarning!.range.start.character,
+      expectedStart,
+      `Warning should start at column ${expectedStart}`
+    )
+    assert.strictEqual(
+      orderWarning!.range.end.character,
+      expectedEnd,
+      "Warning should end after the prop name"
+    )
+  })
+
+  test("Should warn only on the first out-of-order prop, not all violations", async () => {
+    const content = `<Button
+  variant="primary"
+  text="Click"
+  loading={false}
+  disabled={false}
+/>`
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarnings = diagnostics.filter(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.strictEqual(
+      orderWarnings.length,
+      1,
+      "Should produce exactly one alphabetical order warning"
+    )
+  })
+
+  test("Should not warn for alphabetical order in Rails components", async () => {
+    const content = `<%= pb_rails("button", props: {
+  variant: "primary",
+  text: "Click"
+}) %>`
+    const document = await createTestDocument("erb", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(
+      !orderWarning,
+      "Should NOT check alphabetical order for Rails components"
+    )
+  })
+
+  test("Should not warn for single-prop React component", async () => {
+    const content = '<Button text="Click" />'
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(
+      !orderWarning,
+      "Should not warn for a single-prop component (nothing to compare)"
+    )
+  })
+
+  test("Should use case-insensitive comparison for alphabetical order", async () => {
+    // "Text" < "variant" alphabetically when case-insensitive, but "Text" > "variant" when case-sensitive
+    const content = '<Button Text="Click" variant="primary" />'
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(
+      !orderWarning,
+      "Should treat 'Text' and 'text' as equal casing when comparing order"
+    )
+  })
+
+  test("Should warn on the first violation even when later props are back in order", async () => {
+    // z comes before a in this list: a, z, b — warning should be on "z", not "b"
+    // Using actual component props for this: text, variant, disabled (variant > text ✓, disabled < variant ✗)
+    const content = `<Button
+  disabled={false}
+  variant="primary"
+  text="Click"
+/>`
+    const document = await createTestDocument("typescriptreact", content)
+    diagnosticsInstance.updateDiagnostics(document)
+
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const orderWarning = diagnostics.find(d =>
+      d.message.includes("alphabetical order")
+    )
+
+    assert.ok(orderWarning, "Should warn about out-of-order props")
+    // "text" comes after "variant" - that's the first violation
+    assert.ok(
+      orderWarning!.message.includes('"text"'),
+      'First violation should be "text" (comes after "variant" which is out of order)'
+    )
+  })
 })
 
 async function createTestDocument(

@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Diagnostics warn when a platform-specific prop is used in the wrong context (e.g., `onClick` in ERB, `delay_open` in TSX)
   - Completion provider only suggests props valid for the current file type
 
+- **Alphabetical Prop Order Checking (React Only)** 🔤
+  - React components now emit a warning when props are not in alphabetical order
+  - Warning appears on the first out-of-order prop with a helpful message (e.g., `"text" should come before "variant"`)
+  - Single warning per component—moves to the next violation when user reorders props
+  - Rails components are not checked (Rails doesn't enforce this convention)
+
 ### Changed
 
 - **Metadata Loading** — `loadMetadata()` now searches workspace `node_modules` first, then falls back to the bundled schema

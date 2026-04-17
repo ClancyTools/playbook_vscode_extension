@@ -370,6 +370,11 @@ export class PlaybookDiagnostics {
       const propRegex = /(\w+)=(?:["']([^"']+)["']|\{([^}]+)\})/g
       let match
       const blockLines = componentBlock.text.split("\n")
+      const collectedProps: Array<{
+        name: string
+        lineIndex: number
+        startIndex: number
+      }> = []
 
       for (let i = 0; i < blockLines.length; i++) {
         const line = blockLines[i]
@@ -381,6 +386,14 @@ export class PlaybookDiagnostics {
           const propName = match[1]
           const quotedValue = match[2]
           const braceValue = match[3]
+
+          const propStartIndex =
+            i === 0 ? match.index + componentBlock.startChar : match.index
+          collectedProps.push({
+            name: propName,
+            lineIndex: actualLineIndex,
+            startIndex: propStartIndex,
+          })
 
           const propValue =
             quotedValue !== undefined
@@ -449,6 +462,12 @@ export class PlaybookDiagnostics {
           }
         }
       }
+
+      this.checkPropsAlphabeticalOrder(
+        collectedProps,
+        diagnostics,
+        component.react
+      )
     }
   }
 
@@ -550,6 +569,32 @@ export class PlaybookDiagnostics {
       startLine: startLineIndex,
       startChar: componentStartIndex,
       componentName,
+    }
+  }
+
+  private checkPropsAlphabeticalOrder(
+    props: Array<{ name: string; lineIndex: number; startIndex: number }>,
+    diagnostics: vscode.Diagnostic[],
+    componentName: string
+  ): void {
+    for (let i = 1; i < props.length; i++) {
+      if (props[i].name.toLowerCase() < props[i - 1].name.toLowerCase()) {
+        const { name, lineIndex, startIndex } = props[i]
+        const range = new vscode.Range(
+          lineIndex,
+          startIndex,
+          lineIndex,
+          startIndex + name.length
+        )
+        const diagnostic = new vscode.Diagnostic(
+          range,
+          `Props should be in alphabetical order. "${name}" should come before "${props[i - 1].name}" in ${componentName}.`,
+          vscode.DiagnosticSeverity.Warning
+        )
+        diagnostic.source = "Playbook"
+        diagnostics.push(diagnostic)
+        break
+      }
     }
   }
 
