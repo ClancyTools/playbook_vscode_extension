@@ -5,6 +5,7 @@ import {
   getPropValues,
   isPropValidForPlatform,
   isComponentValidForPlatform,
+  findGlobalPropForComponent,
   PlaybookMetadata,
   PropMetadata,
 } from "./metadata"
@@ -387,7 +388,7 @@ export class PlaybookCompletionProvider
       items.push(item)
     }
 
-    if (metadata.globalProps) {
+    if (metadata.globalProps && component.hasGlobalProps !== false) {
       for (const [propName, prop] of Object.entries<PropMetadata>(
         metadata.globalProps
       )) {
@@ -486,7 +487,7 @@ export class PlaybookCompletionProvider
       items.push(item)
     }
 
-    if (metadata.globalProps) {
+    if (metadata.globalProps && component.hasGlobalProps !== false) {
       for (const [propName, prop] of Object.entries<PropMetadata>(
         metadata.globalProps
       )) {
@@ -576,14 +577,13 @@ export class PlaybookCompletionProvider
       }
     }
 
-    if (
-      !propName ||
-      (!component.props[propName] && !metadata.globalProps?.[propName])
-    ) {
+    if (!propName) {
       return []
     }
 
-    const prop = component.props[propName] || metadata.globalProps?.[propName]
+    const prop =
+      component.props[propName] ||
+      findGlobalPropForComponent(metadata, component, propName)
     if (!prop) {
       return []
     }

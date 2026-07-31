@@ -6,6 +6,7 @@ import {
   findComponentByRailsName,
   findComponentByReactName,
   findRailsSubcomponent,
+  findGlobalPropForComponent,
   generateComponentDocs,
   generatePropDocs,
   isPropValidForPlatform,
@@ -380,5 +381,93 @@ suite("Metadata Test Suite", () => {
   test("Should not resolve a subcomponent when the parent kit is invalid", () => {
     const subcomponent = findRailsSubcomponent(metadata, "not_a_real_kit/sub")
     assert.strictEqual(subcomponent, null)
+  })
+
+  test("Should surface kit category and React import statement", () => {
+    const dialog = findComponentByRailsName(metadata, "dialog")
+    assert.ok(dialog, "dialog component should exist")
+    assert.strictEqual(dialog.category, "alerts_and_dialogs")
+    assert.ok(
+      dialog.reactImport?.includes("import { Dialog } from 'playbook-ui'"),
+      "Should carry the documented React import statement"
+    )
+
+    const docs = generateComponentDocs("Dialog", dialog, metadata)
+    assert.ok(docs.includes("alerts_and_dialogs"), "Docs should show category")
+    assert.ok(
+      docs.includes("playbook-ui"),
+      "Docs should show the import statement"
+    )
+  })
+
+  test("Should annotate spacing-token prop values with px equivalents", () => {
+    assert.ok(metadata.spacingTokens, "Metadata should have spacingTokens")
+    assert.strictEqual(metadata.spacingTokens.md, "24px")
+
+    const padding = metadata.globalProps.padding
+    assert.ok(padding, "Should have padding global prop")
+
+    const docs = generatePropDocs("padding", padding, true, metadata)
+    assert.ok(docs.includes("24px"), "Docs should show the px value for md")
+  })
+
+  test("Should show breakpoint ranges for responsive props", () => {
+    assert.ok(metadata.breakpoints, "Metadata should have breakpoints")
+    assert.strictEqual(metadata.breakpoints.md, "768px-991px")
+
+    const alignContent = metadata.globalProps.align_content
+    assert.ok(alignContent?.responsive, "align_content should be responsive")
+
+    const docs = generatePropDocs("align_content", alignContent, true, metadata)
+    assert.ok(
+      docs.includes("768px-991px"),
+      "Docs should show the md breakpoint range"
+    )
+  })
+
+  test("Should show nested shape for object-valued global props", () => {
+    const hover = metadata.globalProps.hover
+    assert.ok(hover, "Should have hover global prop")
+    assert.ok(hover.properties, "hover should have nested properties")
+
+    const docs = generatePropDocs("hover", hover, true, metadata)
+    assert.ok(docs.includes("shadow"), "Docs should list the nested shape")
+  })
+
+  test("Should warn when a prop isn't DOM-safe", () => {
+    assert.ok(metadata.domSafeWarning, "Metadata should have domSafeWarning")
+    assert.ok(metadata.domSafeWarning.nonSafeProps.includes("marginRight"))
+
+    const marginRight = metadata.globalProps.margin_right
+    assert.ok(marginRight, "Should have margin_right global prop")
+
+    const docs = generatePropDocs("margin_right", marginRight, true, metadata)
+    assert.ok(
+      docs.includes("domSafeProps"),
+      "Docs should warn that margin_right isn't DOM-safe"
+    )
+
+    const variant = findComponentByRailsName(metadata, "button")!.props.variant
+    const variantDocs = generatePropDocs("variant", variant, false, metadata)
+    assert.ok(
+      !variantDocs.includes("domSafeProps"),
+      "variant is not a global prop and should not get the DOM-safety warning"
+    )
+  })
+
+  test("findGlobalPropForComponent should respect a kit's hasGlobalProps flag", () => {
+    const button = findComponentByRailsName(metadata, "button")
+    assert.ok(button, "button component should exist")
+
+    const found = findGlobalPropForComponent(metadata, button, "padding")
+    assert.ok(found, "Should find padding as a global prop for button")
+
+    const optedOut = { ...button, hasGlobalProps: false }
+    const notFound = findGlobalPropForComponent(metadata, optedOut, "padding")
+    assert.strictEqual(
+      notFound,
+      undefined,
+      "Should not return a global prop when the kit opts out"
+    )
   })
 })

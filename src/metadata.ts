@@ -2,6 +2,11 @@ import * as fs from "fs"
 import * as path from "path"
 import * as vscode from "vscode"
 
+export interface NestedPropShape {
+  type: string
+  values?: string[]
+}
+
 export interface PropMetadata {
   type: string
   default?: string
@@ -11,6 +16,7 @@ export interface PropMetadata {
   description?: string
   example?: string
   responsive?: boolean
+  properties?: Record<string, NestedPropShape>
 }
 
 export interface ExternalDependency {
@@ -29,6 +35,9 @@ export interface ComponentMetadata {
   platforms?: string[]
   status?: string
   externalDependencies?: ExternalDependency
+  category?: string
+  reactImport?: string
+  hasGlobalProps?: boolean
 }
 
 export interface FormBuilderField {
@@ -41,10 +50,23 @@ export interface FormBuilderMetadata {
   fields: FormBuilderField[]
 }
 
+export interface DomSafeWarning {
+  description: string
+  nonSafeProps: string[]
+}
+
 export interface PlaybookMetadata {
   globalProps?: Record<string, PropMetadata>
   components: Record<string, ComponentMetadata>
   formBuilders?: FormBuilderMetadata
+  spacingTokens?: Record<string, string>
+  breakpoints?: Record<string, string>
+  domSafeWarning?: DomSafeWarning
+}
+
+interface RawNestedPropShape {
+  type?: string
+  values?: unknown[]
 }
 
 interface RawPropData {
@@ -55,6 +77,7 @@ interface RawPropData {
   description?: string
   example?: string
   responsive?: boolean
+  properties?: Record<string, RawNestedPropShape>
 }
 
 interface RawExternalDependency {
@@ -69,8 +92,13 @@ interface RawKit {
   description?: string
   platforms?: string[]
   status?: string
+  category?: string
+  globalProps?: boolean
   externalDependencies?: RawExternalDependency
   usage?: {
+    react?: {
+      import?: string
+    }
     rails?: {
       example?: string
     }
@@ -81,6 +109,16 @@ interface RawKit {
 interface RawSchema {
   globalProps?: {
     props?: Record<string, RawPropData>
+    spacing?: {
+      tokens?: Record<string, string>
+    }
+    breakpoints?: Record<string, string>
+    warnings?: {
+      domSafeProps?: {
+        description?: string
+        nonSafeProps?: string[]
+      }
+    }
   }
   kits?: Record<string, RawKit>
 }
@@ -104,6 +142,17 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         continue
       }
       const snakeName = camelToSnake(camelName)
+      const properties: Record<string, NestedPropShape> | undefined = prop.properties
+        ? Object.fromEntries(
+            Object.entries(prop.properties).map(([nestedName, nestedProp]) => [
+              nestedName,
+              {
+                type: nestedProp.type || "string",
+                values: nestedProp.values?.map((v: unknown) => String(v)),
+              },
+            ])
+          )
+        : undefined
       metadata.globalProps![snakeName] = {
         type: prop.type || "string",
         values: prop.values?.map((v: unknown) => String(v)),
@@ -111,7 +160,23 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         description: prop.description,
         example: prop.example,
         responsive: prop.responsive,
+        properties,
       }
+    }
+  }
+
+  // Schema-wide reference data (spacing scale, breakpoints, DOM-safety
+  // warnings) — surfaced in prop hover docs rather than duplicated per-prop
+  if (raw.globalProps?.spacing?.tokens) {
+    metadata.spacingTokens = raw.globalProps.spacing.tokens
+  }
+  if (raw.globalProps?.breakpoints) {
+    metadata.breakpoints = raw.globalProps.breakpoints
+  }
+  if (raw.globalProps?.warnings?.domSafeProps?.nonSafeProps) {
+    metadata.domSafeWarning = {
+      description: raw.globalProps.warnings.domSafeProps.description || "",
+      nonSafeProps: raw.globalProps.warnings.domSafeProps.nonSafeProps,
     }
   }
 
@@ -178,6 +243,11 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         props,
         platforms: kit.platforms,
         status: kit.status,
+        category: kit.category,
+        reactImport: kit.usage?.react?.import,
+        // Every kit currently opts in; only treat it as false when the
+        // schema explicitly says so, so a future opt-out is respected.
+        hasGlobalProps: kit.globalProps !== false,
         externalDependencies: kit.externalDependencies?.packages
           ? {
               packages: kit.externalDependencies.packages,
@@ -409,6 +479,22 @@ export function isComponentValidForPlatform(
     : component.platforms.includes("react")
 }
 
+/**
+ * Look up a global prop for a specific component, respecting a kit's
+ * globalProps: false opt-out. Every kit currently opts in, so this only
+ * matters once Playbook ships a kit that explicitly disables global props.
+ */
+export function findGlobalPropForComponent(
+  metadata: PlaybookMetadata,
+  component: ComponentMetadata,
+  propName: string
+): PropMetadata | undefined {
+  if (component.hasGlobalProps === false) {
+    return undefined
+  }
+  return metadata.globalProps?.[propName]
+}
+
 export function generateComponentDocs(
   componentName: string,
   component: ComponentMetadata,
@@ -430,6 +516,16 @@ export function generateComponentDocs(
 
   lines.push(component.description)
   lines.push("")
+
+  if (component.category) {
+    lines.push(`_Category: ${component.category}_`)
+    lines.push("")
+  }
+
+  if (component.reactImport) {
+    lines.push(`\`${component.reactImport}\``)
+    lines.push("")
+  }
 
   if (component.platforms && component.platforms.length === 1) {
     lines.push(
@@ -554,7 +650,8 @@ export function generateComponentDocs(
 export function generatePropDocs(
   propName: string,
   prop: PropMetadata,
-  isGlobal: boolean = false
+  isGlobal: boolean = false,
+  metadata?: PlaybookMetadata
 ): string {
   const lines: string[] = []
 
@@ -567,15 +664,43 @@ export function generatePropDocs(
   lines.push(`Type: \`${prop.type}\``)
 
   if (prop.values && prop.values.length > 0) {
-    lines.push(`Values: ${prop.values.map(v => `\`${v}\``).join(", ")}`)
+    const spacingTokens = metadata?.spacingTokens
+    lines.push(
+      `Values: ${prop.values
+        .map(v => {
+          const px = spacingTokens?.[v]
+          return px ? `\`${v}\` (${px})` : `\`${v}\``
+        })
+        .join(", ")}`
+    )
   }
 
   if (prop.default !== undefined) {
     lines.push(`Default: \`${prop.default}\``)
   }
 
+  if (prop.properties && Object.keys(prop.properties).length > 0) {
+    const shape = Object.entries(prop.properties)
+      .map(([nestedName, nestedProp]) => {
+        const values = nestedProp.values?.length
+          ? `: ${nestedProp.values.map(v => `\`${v}\``).join(", ")}`
+          : ""
+        return `\`${nestedName}\` (${nestedProp.type}${values})`
+      })
+      .join(", ")
+    lines.push(`Shape: ${shape}`)
+  }
+
   if (prop.responsive) {
-    lines.push("Supports responsive breakpoint objects.")
+    const breakpoints = metadata?.breakpoints
+    if (breakpoints) {
+      const legend = Object.entries(breakpoints)
+        .map(([bp, range]) => `\`${bp}\` (${range})`)
+        .join(", ")
+      lines.push(`Supports responsive breakpoint objects: ${legend}`)
+    } else {
+      lines.push("Supports responsive breakpoint objects.")
+    }
   }
 
   if (prop.example) {
@@ -584,6 +709,15 @@ export function generatePropDocs(
 
   if (prop.required) {
     lines.push("**Required**")
+  }
+
+  const camelCaseProp = propName.replace(/_([a-z])/g, (_, letter) =>
+    letter.toUpperCase()
+  )
+  if (metadata?.domSafeWarning?.nonSafeProps.includes(camelCaseProp)) {
+    lines.push(
+      `⚠️ Not DOM-safe — filter with \`domSafeProps()\` before spreading onto a native element.`
+    )
   }
 
   return lines.join("  \n")

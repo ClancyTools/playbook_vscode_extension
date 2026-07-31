@@ -5,6 +5,30 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-07-31
+
+### Added
+
+- **Spacing Token → Pixel Values** 📏
+  - Hovering a spacing-scale prop (`padding`, `margin`, etc.) now shows the pixel equivalent next to each token, e.g. `md (24px)`, sourced from Playbook's `globalProps.spacing.tokens`
+
+- **DOM-Safety Warning** ⚠️
+  - Hovering a global prop that Playbook flags as not DOM-safe (`marginRight`, `padding`, `border`, `dark`, `enableDrag`, `requiredIndicator`, and others — 24 total) now warns that it must be filtered with `domSafeProps()` before being spread onto a native element
+  - Previously undocumented anywhere in the extension; sourced from `globalProps.warnings.domSafeProps`
+
+- **Breakpoint Ranges for Responsive Props** 📱
+  - Props marked `responsive: true` (e.g. `alignContent`, `padding`) now show the actual breakpoint ranges (`xs`: 0-575px, `sm`: 576-767px, `md`: 768-991px, `lg`: 992-1199px, `xl`: 1200px+) instead of just "supports responsive breakpoint objects"
+
+- **Nested Shape for Object-Valued Props** 🔍
+  - Object-shaped global props (e.g. `hover`, with `shadow`/`background`/`color`/`scale`/`underline`/`visible`) now show their nested keys and types in hover docs instead of just `type: object`
+
+- **Kit Category and Import Statement** 📦
+  - Hover docs now show the kit's `category` (e.g. "alerts_and_dialogs") and, for React, the exact `import { X } from 'playbook-ui'` line straight from Playbook's schema
+
+### Fixed
+
+- **Global Props Now Respect Per-Kit Opt-Out** — `findGlobalPropForComponent()` checks a kit's `globalProps` flag before offering/validating global props against it. Every kit currently opts in, so this has no visible effect today, but stops the extension from silently allowing global props on a kit that explicitly opts out in a future schema update
+
 ## [2.1.0] - 2026-07-31
 
 ### Fixed

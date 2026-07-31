@@ -5,6 +5,7 @@ import {
   findComponentByReactName,
   findRailsSubcomponent,
   findReactSubcomponent,
+  findGlobalPropForComponent,
   generateComponentDocs,
   generateSubcomponentDocs,
   generatePropDocs,
@@ -78,12 +79,13 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
         if (component) {
           const prop =
             component.props[railsProp.propName] ||
-            metadata.globalProps?.[railsProp.propName];
+            findGlobalPropForComponent(metadata, component, railsProp.propName);
           if (prop) {
             const propDocs = generatePropDocs(
               railsProp.propName,
               prop,
-              !component.props[railsProp.propName]
+              !component.props[railsProp.propName],
+              metadata
             );
             return new vscode.Hover(new vscode.MarkdownString(propDocs), railsProp.range);
           }
@@ -101,12 +103,14 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           const snakeCaseProp = reactProp.propName.replace(/([A-Z])/g, "_$1").toLowerCase();
 
           const prop =
-            component.props[snakeCaseProp] || metadata.globalProps?.[snakeCaseProp];
+            component.props[snakeCaseProp] ||
+            findGlobalPropForComponent(metadata, component, snakeCaseProp);
           if (prop) {
             const propDocs = generatePropDocs(
               reactProp.propName,
               prop,
-              !component.props[snakeCaseProp]
+              !component.props[snakeCaseProp],
+              metadata
             );
             return new vscode.Hover(new vscode.MarkdownString(propDocs), reactProp.range);
           }
