@@ -38,6 +38,10 @@ export interface ComponentMetadata {
   category?: string
   reactImport?: string
   hasGlobalProps?: boolean
+  reactExample?: string
+  railsExample?: string
+  railsNote?: string
+  examplePreset?: string
 }
 
 export interface FormBuilderField {
@@ -98,9 +102,13 @@ interface RawKit {
   usage?: {
     react?: {
       import?: string
+      example?: string
+      preset?: string
     }
     rails?: {
       example?: string
+      preset?: string
+      note?: string
     }
   }
   props?: Record<string, RawPropData>
@@ -245,6 +253,10 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         status: kit.status,
         category: kit.category,
         reactImport: kit.usage?.react?.import,
+        reactExample: kit.usage?.react?.example,
+        railsExample: kit.usage?.rails?.example,
+        railsNote: kit.usage?.rails?.note,
+        examplePreset: kit.usage?.react?.preset || kit.usage?.rails?.preset,
         // Every kit currently opts in; only treat it as false when the
         // schema explicitly says so, so a future opt-out is respected.
         hasGlobalProps: kit.globalProps !== false,
@@ -397,6 +409,13 @@ export function generateSubcomponentDocs(
   lines.push("")
   lines.push(match.parent.description)
   lines.push("")
+
+  const docLinks = docsLinksFor(match.parent)
+  if (docLinks) {
+    lines.push(`📖 ${docLinks} _(parent kit)_`)
+    lines.push("")
+  }
+
   lines.push(
     `_Playbook's shared metadata doesn't publish per-subcomponent props for "${match.subName}" yet, so only the parent kit's info is shown here._`
   )
@@ -495,6 +514,21 @@ export function findGlobalPropForComponent(
   return metadata.globalProps?.[propName]
 }
 
+const PLAYBOOK_DOCS_BASE = "https://playbook.powerapp.cloud/kits"
+
+function docsLinksFor(component: ComponentMetadata): string {
+  const platforms =
+    component.platforms && component.platforms.length > 0
+      ? component.platforms
+      : ["react", "rails"]
+  return platforms
+    .filter(p => p === "react" || p === "rails")
+    .map(
+      p => `[${p === "react" ? "React" : "Rails"} docs](${PLAYBOOK_DOCS_BASE}/${component.rails}/${p})`
+    )
+    .join(" · ")
+}
+
 export function generateComponentDocs(
   componentName: string,
   component: ComponentMetadata,
@@ -522,8 +556,19 @@ export function generateComponentDocs(
     lines.push("")
   }
 
-  if (component.reactImport) {
+  const supportsReact =
+    !component.platforms || component.platforms.includes("react")
+  const supportsRails =
+    !component.platforms || component.platforms.includes("rails")
+
+  if (component.reactImport && supportsReact) {
     lines.push(`\`${component.reactImport}\``)
+    lines.push("")
+  }
+
+  const docLinks = docsLinksFor(component)
+  if (docLinks) {
+    lines.push(`📖 ${docLinks}`)
     lines.push("")
   }
 
@@ -556,29 +601,51 @@ export function generateComponentDocs(
     lines.push("")
   }
 
-  lines.push("**Rails/ERB:**")
-  lines.push("```erb")
-  if (component.hasChildren) {
-    lines.push(`<%= pb_rails("${component.rails}", props: {}) do %>`)
-    lines.push("  Content")
-    lines.push("<% end %>")
-  } else {
-    lines.push(`<%= pb_rails("${component.rails}", props: {}) %>`)
+  if (
+    component.examplePreset &&
+    component.examplePreset !== "Default" &&
+    (component.railsExample || component.reactExample)
+  ) {
+    lines.push(`_Example shown: "${component.examplePreset}" variant_`)
+    lines.push("")
   }
-  lines.push("```")
-  lines.push("")
 
-  lines.push("**React:**")
-  lines.push("```tsx")
-  if (component.hasChildren) {
-    lines.push(`<${componentName}>`)
-    lines.push("  Content")
-    lines.push(`</${componentName}>`)
-  } else {
-    lines.push(`<${componentName} />`)
+  if (supportsRails) {
+    lines.push("**Rails/ERB:**")
+    lines.push("```erb")
+    if (component.railsExample) {
+      lines.push(component.railsExample)
+    } else if (component.hasChildren) {
+      lines.push(`<%= pb_rails("${component.rails}", props: {}) do %>`)
+      lines.push("  Content")
+      lines.push("<% end %>")
+    } else {
+      lines.push(`<%= pb_rails("${component.rails}", props: {}) %>`)
+    }
+    lines.push("```")
+    lines.push("")
+
+    if (component.railsNote) {
+      lines.push(component.railsNote)
+      lines.push("")
+    }
   }
-  lines.push("```")
-  lines.push("")
+
+  if (supportsReact) {
+    lines.push("**React:**")
+    lines.push("```tsx")
+    if (component.reactExample) {
+      lines.push(component.reactExample)
+    } else if (component.hasChildren) {
+      lines.push(`<${componentName}>`)
+      lines.push("  Content")
+      lines.push(`</${componentName}>`)
+    } else {
+      lines.push(`<${componentName} />`)
+    }
+    lines.push("```")
+    lines.push("")
+  }
 
   if (Object.keys(component.props).length > 0) {
     lines.push("## Props")

@@ -6,7 +6,8 @@
   "publisher": "ClancyTools",
   "icon": "enhanced_logo.png",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.75.0",
+    "node": ">=22"
   },
   "categories": [
     "Snippets",
@@ -82,7 +83,7 @@
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^6.x",
     "@typescript-eslint/parser": "^6.x",
-    "@vscode/test-electron": "^2.5.2",
+    "@vscode/test-electron": "^3.1.0",
     "eslint": "^8.x",
     "glob": "^8.1.0",
     "mocha": "^10.8.2",

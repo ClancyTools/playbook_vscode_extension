@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Real Usage Examples in Hover Docs** ✨
+  - Hover docs now show Playbook's actual documented example for each kit (e.g. `<Badge variant="primary" text="Primary" />`) instead of a synthesized `props: {}` / empty-children stub — sourced from `kit.usage.react.example` and `kit.usage.rails.example`, which exist for all 108 kits but weren't being read before
+  - When the shown example isn't the kit's default preset (e.g. a status badge's "Increase" or "Neutral" variant), a caption now notes which variant is displayed
+  - Kit-specific usage notes (currently just `advanced_table`, guiding `column_definitions`/`table_data` shape) are now surfaced when present
+
+- **Links to Playbook's Docs Site** 🔗
+  - Hover docs now link out to the kit's live page on `playbook.powerapp.cloud` (e.g. `/kits/badge/react`, `/kits/badge/rails`), scoped to whichever platform(s) the kit actually supports
+
 - **Spacing Token → Pixel Values** 📏
   - Hovering a spacing-scale prop (`padding`, `margin`, etc.) now shows the pixel equivalent next to each token, e.g. `md (24px)`, sourced from Playbook's `globalProps.spacing.tokens`
 
@@ -26,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hover docs now show the kit's `category` (e.g. "alerts_and_dialogs") and, for React, the exact `import { X } from 'playbook-ui'` line straight from Playbook's schema
 
 ### Fixed
+
+- **React-Only/Rails-Only Kits No Longer Show the Other Platform's Usage Info** 🐛
+  - A Rails-only kit like `form` was still showing a React import line and (now) a React code example directly under the "Rails only — no React implementation exists" warning; React usage info (import statement, code example, docs link) is now hidden for Rails-only kits and vice versa
 
 - **Global Props Now Respect Per-Kit Opt-Out** — `findGlobalPropForComponent()` checks a kit's `globalProps` flag before offering/validating global props against it. Every kit currently opts in, so this has no visible effect today, but stops the extension from silently allowing global props on a kit that explicitly opts out in a future schema update
 

@@ -455,6 +455,77 @@ suite("Metadata Test Suite", () => {
     )
   })
 
+  test("Should surface the real documented example instead of a synthesized one", () => {
+    const badge = findComponentByRailsName(metadata, "badge")
+    assert.ok(badge, "badge component should exist")
+    assert.strictEqual(
+      badge.railsExample,
+      '<%= pb_rails("badge", props: { variant: "primary", text: "Primary" }) %>'
+    )
+    assert.strictEqual(badge.reactExample, '<Badge variant="primary" text="Primary" />')
+
+    const docs = generateComponentDocs("Badge", badge, metadata)
+    assert.ok(
+      docs.includes('variant="primary" text="Primary"'),
+      "Docs should include the real documented React example, not generic boilerplate"
+    )
+  })
+
+  test("Should link out to the Playbook docs site for both platforms", () => {
+    const badge = findComponentByRailsName(metadata, "badge")
+    assert.ok(badge, "badge component should exist")
+
+    const docs = generateComponentDocs("Badge", badge, metadata)
+    assert.ok(
+      docs.includes("https://playbook.powerapp.cloud/kits/badge/react"),
+      "Docs should link to the React docs page"
+    )
+    assert.ok(
+      docs.includes("https://playbook.powerapp.cloud/kits/badge/rails"),
+      "Docs should link to the Rails docs page"
+    )
+  })
+
+  test("Should not show React usage info for a Rails-only kit", () => {
+    const form = findComponentByRailsName(metadata, "form")
+    assert.ok(form, "form component should exist")
+
+    const docs = generateComponentDocs("Form", form, metadata)
+    assert.ok(!docs.includes("**React:**"), "Rails-only docs should omit the React example")
+    assert.ok(
+      !docs.includes("https://playbook.powerapp.cloud/kits/form/react"),
+      "Rails-only docs should not link to a React docs page"
+    )
+    assert.ok(
+      docs.includes("https://playbook.powerapp.cloud/kits/form/rails"),
+      "Rails-only docs should still link to the Rails docs page"
+    )
+  })
+
+  test("Should not show Rails usage info for a React-only kit", () => {
+    const map = findComponentByRailsName(metadata, "map")
+    assert.ok(map, "map component should exist")
+
+    const docs = generateComponentDocs("Map", map, metadata)
+    assert.ok(!docs.includes("**Rails/ERB:**"), "React-only docs should omit the Rails example")
+    assert.ok(
+      !docs.includes("https://playbook.powerapp.cloud/kits/map/rails"),
+      "React-only docs should not link to a Rails docs page"
+    )
+  })
+
+  test("Should surface a kit-specific usage note when present", () => {
+    const advancedTable = findComponentByRailsName(metadata, "advanced_table")
+    assert.ok(advancedTable, "advanced_table component should exist")
+    assert.ok(advancedTable.railsNote, "advanced_table should carry a rails usage note")
+
+    const docs = generateComponentDocs("AdvancedTable", advancedTable, metadata)
+    assert.ok(
+      docs.includes(advancedTable.railsNote!),
+      "Docs should include the kit-specific usage note"
+    )
+  })
+
   test("findGlobalPropForComponent should respect a kit's hasGlobalProps flag", () => {
     const button = findComponentByRailsName(metadata, "button")
     assert.ok(button, "button component should exist")
