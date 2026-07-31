@@ -5,9 +5,11 @@ import {
   loadMetadata,
   findComponentByRailsName,
   findComponentByReactName,
+  findRailsSubcomponent,
   generateComponentDocs,
   generatePropDocs,
   isPropValidForPlatform,
+  isComponentValidForPlatform,
 } from "../../metadata"
 
 suite("Metadata Test Suite", () => {
@@ -296,5 +298,87 @@ suite("Metadata Test Suite", () => {
       true,
       "variant should be valid for React"
     )
+  })
+
+  test("Should mark a React-only kit invalid for Rails", () => {
+    const map = findComponentByRailsName(metadata, "map")
+    assert.ok(map, "map component should exist")
+    assert.ok(map.platforms?.includes("react"), "map should list react")
+    assert.ok(!map.platforms?.includes("rails"), "map should not list rails")
+
+    assert.strictEqual(
+      isComponentValidForPlatform(map, "erb"),
+      false,
+      "map should not be valid for Rails"
+    )
+    assert.strictEqual(
+      isComponentValidForPlatform(map, "typescriptreact"),
+      true,
+      "map should be valid for React"
+    )
+  })
+
+  test("Should mark a Rails-only kit invalid for React", () => {
+    const form = findComponentByRailsName(metadata, "form")
+    assert.ok(form, "form component should exist")
+
+    assert.strictEqual(
+      isComponentValidForPlatform(form, "typescriptreact"),
+      false,
+      "form should not be valid for React"
+    )
+    assert.strictEqual(
+      isComponentValidForPlatform(form, "erb"),
+      true,
+      "form should be valid for Rails"
+    )
+  })
+
+  test("Should surface deprecated status on icon_button", () => {
+    const iconButton = findComponentByRailsName(metadata, "icon_button")
+    assert.ok(iconButton, "icon_button component should exist")
+    assert.strictEqual(iconButton.status, "deprecated")
+
+    const docs = generateComponentDocs("IconButton", iconButton, metadata)
+    assert.ok(
+      docs.includes("Deprecated"),
+      "Docs should call out the deprecated status"
+    )
+  })
+
+  test("Should surface external dependency info on pb_line_graph", () => {
+    const lineGraph = findComponentByRailsName(metadata, "pb_line_graph")
+    assert.ok(lineGraph, "pb_line_graph component should exist")
+    assert.ok(
+      lineGraph.externalDependencies?.packages.includes("highcharts"),
+      "Should list highcharts as a required package"
+    )
+
+    const docs = generateComponentDocs("PbLineGraph", lineGraph, metadata)
+    assert.ok(
+      docs.includes("highcharts"),
+      "Docs should mention the required external package"
+    )
+  })
+
+  test("Should preserve description/example/responsive on richer global props", () => {
+    assert.ok(metadata.globalProps, "Metadata should have globalProps")
+    const alignContent = metadata.globalProps.align_content
+    assert.ok(alignContent, "Should have align_content global prop")
+    assert.ok(alignContent.description, "align_content should have a description")
+    assert.ok(alignContent.example, "align_content should have an example")
+    assert.strictEqual(alignContent.responsive, true)
+  })
+
+  test("Should resolve a Rails subcomponent to its parent kit", () => {
+    const subcomponent = findRailsSubcomponent(metadata, "table/table_row")
+    assert.ok(subcomponent, "Should resolve table/table_row")
+    assert.strictEqual(subcomponent.parent.rails, "table")
+    assert.strictEqual(subcomponent.subName, "table_row")
+  })
+
+  test("Should not resolve a subcomponent when the parent kit is invalid", () => {
+    const subcomponent = findRailsSubcomponent(metadata, "not_a_real_kit/sub")
+    assert.strictEqual(subcomponent, null)
   })
 })

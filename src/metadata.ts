@@ -8,6 +8,16 @@ export interface PropMetadata {
   values?: string[]
   platforms?: string[]
   required?: boolean
+  description?: string
+  example?: string
+  responsive?: boolean
+}
+
+export interface ExternalDependency {
+  packages: string[]
+  note?: string
+  optional?: boolean
+  docs?: string
 }
 
 export interface ComponentMetadata {
@@ -16,6 +26,9 @@ export interface ComponentMetadata {
   description: string
   hasChildren: boolean
   props: Record<string, PropMetadata>
+  platforms?: string[]
+  status?: string
+  externalDependencies?: ExternalDependency
 }
 
 export interface FormBuilderField {
@@ -39,11 +52,24 @@ interface RawPropData {
   default?: unknown
   values?: unknown[]
   platforms?: string[]
+  description?: string
+  example?: string
+  responsive?: boolean
+}
+
+interface RawExternalDependency {
+  packages?: string[]
+  note?: string
+  optional?: boolean
+  docs?: string
 }
 
 interface RawKit {
   name?: string
   description?: string
+  platforms?: string[]
+  status?: string
+  externalDependencies?: RawExternalDependency
   usage?: {
     rails?: {
       example?: string
@@ -82,6 +108,9 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         type: prop.type || "string",
         values: prop.values?.map((v: unknown) => String(v)),
         default: prop.default !== undefined ? String(prop.default) : undefined,
+        description: prop.description,
+        example: prop.example,
+        responsive: prop.responsive,
       }
     }
   }
@@ -147,6 +176,16 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         description: kit.description || `Playbook ${reactName} component`,
         hasChildren,
         props,
+        platforms: kit.platforms,
+        status: kit.status,
+        externalDependencies: kit.externalDependencies?.packages
+          ? {
+              packages: kit.externalDependencies.packages,
+              note: kit.externalDependencies.note,
+              optional: kit.externalDependencies.optional,
+              docs: kit.externalDependencies.docs,
+            }
+          : undefined,
       }
     }
   }
@@ -350,6 +389,26 @@ export function isPropValidForPlatform(
     : prop.platforms.includes("react")
 }
 
+/**
+ * Check if a whole component/kit supports the given platform context. Some
+ * kits are React-only (e.g. "map") or Rails-only (e.g. "form") — unlike
+ * props, this is a hard error, not a per-prop mismatch.
+ */
+export function isComponentValidForPlatform(
+  component: ComponentMetadata,
+  languageId: string
+): boolean {
+  if (!component.platforms || component.platforms.length === 0) {
+    return true
+  }
+  const isRailsContext = ["ruby", "erb", "html.erb", "html"].includes(
+    languageId
+  )
+  return isRailsContext
+    ? component.platforms.includes("rails")
+    : component.platforms.includes("react")
+}
+
 export function generateComponentDocs(
   componentName: string,
   component: ComponentMetadata,
@@ -359,8 +418,47 @@ export function generateComponentDocs(
 
   lines.push(`# ${componentName}`)
   lines.push("")
+
+  if (component.status && component.status !== "stable") {
+    if (component.status === "deprecated") {
+      lines.push(`⚠️ **Deprecated** — this component is no longer recommended.`)
+    } else {
+      lines.push(`**Status:** ${component.status}`)
+    }
+    lines.push("")
+  }
+
   lines.push(component.description)
   lines.push("")
+
+  if (component.platforms && component.platforms.length === 1) {
+    lines.push(
+      `_${component.platforms[0] === "react" ? "React" : "Rails"} only — no ${
+        component.platforms[0] === "react" ? "Rails" : "React"
+      } implementation exists for this kit._`
+    )
+    lines.push("")
+  }
+
+  if (component.externalDependencies) {
+    const dep = component.externalDependencies
+    lines.push("## Requires")
+    lines.push("")
+    lines.push(
+      `This kit wraps ${dep.packages.map(p => `\`${p}\``).join(", ")}. The host app must already have ${
+        dep.packages.length > 1 ? "these packages" : "this package"
+      } installed — do not install them automatically.`
+    )
+    if (dep.note) {
+      lines.push("")
+      lines.push(dep.note)
+    }
+    if (dep.docs) {
+      lines.push("")
+      lines.push(`Docs: ${dep.docs}`)
+    }
+    lines.push("")
+  }
 
   lines.push("**Rails/ERB:**")
   lines.push("```erb")
@@ -439,6 +537,10 @@ export function generateComponentDocs(
         propDesc += ` - \`${prop.type}\``
       }
 
+      if (prop.description) {
+        propDesc += ` — ${prop.description}`
+      }
+
       globalPropsList.push(propDesc)
     }
 
@@ -457,6 +559,11 @@ export function generatePropDocs(
   const lines: string[] = []
 
   lines.push(`**${propName}**${isGlobal ? " *(global prop)*" : ""}`)
+
+  if (prop.description) {
+    lines.push(prop.description)
+  }
+
   lines.push(`Type: \`${prop.type}\``)
 
   if (prop.values && prop.values.length > 0) {
@@ -465,6 +572,14 @@ export function generatePropDocs(
 
   if (prop.default !== undefined) {
     lines.push(`Default: \`${prop.default}\``)
+  }
+
+  if (prop.responsive) {
+    lines.push("Supports responsive breakpoint objects.")
+  }
+
+  if (prop.example) {
+    lines.push(`Example: \`${prop.example}\``)
   }
 
   if (prop.required) {
