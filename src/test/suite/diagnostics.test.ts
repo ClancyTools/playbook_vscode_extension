@@ -45,6 +45,42 @@ suite("Diagnostics Test Suite", () => {
     assert.ok(true, "Diagnostics handles unknown component")
   })
 
+  test("Should not warn 'unknown component' for a valid subcomponent", async () => {
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("table/table_row", props: { tag: "div" }) %>'
+    )
+
+    diagnosticsInstance.updateDiagnostics(document)
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const unknownComponentWarning = diagnostics.find(d =>
+      d.message.includes("Unknown Playbook component")
+    )
+
+    assert.ok(
+      !unknownComponentWarning,
+      "Should recognize table/table_row as a subcomponent of the known 'table' kit"
+    )
+  })
+
+  test("Should still warn 'unknown component' when the parent kit doesn't exist", async () => {
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("not_a_real_kit/some_sub", props: {}) %>'
+    )
+
+    diagnosticsInstance.updateDiagnostics(document)
+    const diagnostics = diagnosticsInstance.getDiagnostics(document.uri)
+    const unknownComponentWarning = diagnostics.find(d =>
+      d.message.includes('Unknown Playbook component: "not_a_real_kit/some_sub"')
+    )
+
+    assert.ok(
+      unknownComponentWarning,
+      "Should still flag subcomponent syntax when the parent kit is invalid"
+    )
+  })
+
   test("Should handle invalid props", async () => {
     const document = await createTestDocument(
       "erb",

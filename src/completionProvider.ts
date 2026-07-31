@@ -4,6 +4,7 @@ import {
   ComponentMetadata,
   getPropValues,
   isPropValidForPlatform,
+  isComponentValidForPlatform,
   PlaybookMetadata,
   PropMetadata,
 } from "./metadata"
@@ -239,6 +240,10 @@ export class PlaybookCompletionProvider
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
       metadata.components
     )) {
+      if (!isComponentValidForPlatform(component, "erb")) {
+        continue
+      }
+
       const item = new vscode.CompletionItem(
         component.rails,
         vscode.CompletionItemKind.Class
@@ -247,6 +252,11 @@ export class PlaybookCompletionProvider
       item.documentation = new vscode.MarkdownString(component.description)
 
       item.insertText = component.rails
+
+      if (component.status === "deprecated") {
+        item.tags = [vscode.CompletionItemTag.Deprecated]
+        item.documentation.appendMarkdown(`\n\n⚠️ Deprecated`)
+      }
 
       if (Object.keys(component.props).length > 0) {
         const propNames = Object.keys(component.props).slice(0, 3).join(", ")
@@ -269,12 +279,21 @@ export class PlaybookCompletionProvider
     for (const [componentName, component] of Object.entries<ComponentMetadata>(
       metadata.components
     )) {
+      if (!isComponentValidForPlatform(component, "typescriptreact")) {
+        continue
+      }
+
       const item = new vscode.CompletionItem(
         componentName,
         vscode.CompletionItemKind.Class
       )
       item.detail = `Playbook ${componentName}`
       item.documentation = new vscode.MarkdownString(component.description)
+
+      if (component.status === "deprecated") {
+        item.tags = [vscode.CompletionItemTag.Deprecated]
+        item.documentation.appendMarkdown(`\n\n⚠️ Deprecated`)
+      }
 
       const commonProps = Object.entries(component.props).slice(0, 2)
       if (commonProps.length > 0) {

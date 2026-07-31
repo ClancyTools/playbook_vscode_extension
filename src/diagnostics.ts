@@ -3,6 +3,7 @@ import {
   loadMetadata,
   findComponentByRailsName,
   findComponentByReactName,
+  findRailsSubcomponent,
   ComponentMetadata,
   PropMetadata,
   loadFormBuilderMetadata,
@@ -11,6 +12,7 @@ import {
   FormBuilderField,
   getPropValues,
   isPropValidForPlatform,
+  isComponentValidForPlatform,
   PlaybookMetadata,
 } from "./metadata"
 
@@ -113,7 +115,7 @@ export class PlaybookDiagnostics {
       const componentName = match[1]
       const component = findComponentByRailsName(metadata, componentName)
 
-      if (!component) {
+      if (component) {
         const startIndex = match.index + match[0].indexOf(componentName)
         const range = new vscode.Range(
           lineIndex,
@@ -121,15 +123,13 @@ export class PlaybookDiagnostics {
           lineIndex,
           startIndex + componentName.length
         )
-
-        const diagnostic = new vscode.Diagnostic(
+        this.validateComponentUsage(
+          component,
+          componentName,
           range,
-          `Unknown Playbook component: "${componentName}"`,
-          vscode.DiagnosticSeverity.Warning
+          document.languageId,
+          diagnostics
         )
-        diagnostic.source = "Playbook"
-        diagnostics.push(diagnostic)
-      } else {
         this.validateProps(
           document,
           lineIndex,
@@ -138,7 +138,33 @@ export class PlaybookDiagnostics {
           diagnostics,
           "rails"
         )
+        continue
       }
+
+      // Subcomponents (e.g. "table/table_row", "dialog/dialog_header") aren't
+      // published as their own schemas in Playbook's shared metadata, so we
+      // can only confirm the parent kit ("table", "dialog") is real. Skip
+      // prop validation rather than warn "unknown component" or validate
+      // against the wrong (parent) schema.
+      if (findRailsSubcomponent(metadata, componentName)) {
+        continue
+      }
+
+      const startIndex = match.index + match[0].indexOf(componentName)
+      const range = new vscode.Range(
+        lineIndex,
+        startIndex,
+        lineIndex,
+        startIndex + componentName.length
+      )
+
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        `Unknown Playbook component: "${componentName}"`,
+        vscode.DiagnosticSeverity.Warning
+      )
+      diagnostic.source = "Playbook"
+      diagnostics.push(diagnostic)
     }
   }
 
@@ -157,6 +183,20 @@ export class PlaybookDiagnostics {
       const component = findComponentByReactName(metadata, componentName)
 
       if (component) {
+        const startIndex = match.index + match[0].indexOf(componentName)
+        const range = new vscode.Range(
+          lineIndex,
+          startIndex,
+          lineIndex,
+          startIndex + componentName.length
+        )
+        this.validateComponentUsage(
+          component,
+          componentName,
+          range,
+          document.languageId,
+          diagnostics
+        )
         this.validateProps(
           document,
           lineIndex,
@@ -166,6 +206,39 @@ export class PlaybookDiagnostics {
           "react"
         )
       }
+    }
+  }
+
+  private validateComponentUsage(
+    component: ComponentMetadata,
+    componentName: string,
+    range: vscode.Range,
+    languageId: string,
+    diagnostics: vscode.Diagnostic[]
+  ): void {
+    if (!isComponentValidForPlatform(component, languageId)) {
+      const isRailsContext = ["ruby", "erb", "html.erb", "html"].includes(
+        languageId
+      )
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        `Component "${componentName}" doesn't have a ${
+          isRailsContext ? "Rails" : "React"
+        } implementation`,
+        vscode.DiagnosticSeverity.Warning
+      )
+      diagnostic.source = "Playbook"
+      diagnostics.push(diagnostic)
+    }
+
+    if (component.status === "deprecated") {
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        `Component "${componentName}" is deprecated`,
+        vscode.DiagnosticSeverity.Information
+      )
+      diagnostic.source = "Playbook"
+      diagnostics.push(diagnostic)
     }
   }
 

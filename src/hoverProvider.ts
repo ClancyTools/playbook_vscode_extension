@@ -3,7 +3,10 @@ import {
   loadMetadata,
   findComponentByRailsName,
   findComponentByReactName,
+  findRailsSubcomponent,
+  findReactSubcomponent,
   generateComponentDocs,
+  generateSubcomponentDocs,
   generatePropDocs,
   PlaybookMetadata
 } from "./metadata";
@@ -40,6 +43,12 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
         const docs = generateComponentDocs(railsComponent.componentName, component, metadata);
         return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range);
       }
+
+      const subcomponent = findRailsSubcomponent(metadata, railsComponent.componentName);
+      if (subcomponent) {
+        const docs = generateSubcomponentDocs(railsComponent.componentName, subcomponent);
+        return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range);
+      }
     }
 
     const reactComponent = parseReactComponent(document, position);
@@ -47,6 +56,12 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
       const component = findComponentByReactName(metadata, reactComponent.componentName);
       if (component) {
         const docs = generateComponentDocs(reactComponent.componentName, component, metadata);
+        return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range);
+      }
+
+      const subcomponent = findReactSubcomponent(metadata, reactComponent.componentName);
+      if (subcomponent) {
+        const docs = generateSubcomponentDocs(reactComponent.componentName, subcomponent);
         return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range);
       }
     }

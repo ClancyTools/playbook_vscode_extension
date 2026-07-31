@@ -5,6 +5,40 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-31
+
+### Fixed
+
+- **Subcomponent False Positives** 🐛
+  - `pb_rails("table/table_row", ...)`, `pb_rails("dialog/dialog_header", ...)`, and similar `kit/sub_name` calls no longer trigger a false `Unknown Playbook component` warning
+  - React dot-notation subcomponents (`<Table.Row>`, `<Dialog.Header>`) no longer cause prop-name completion to incorrectly suggest the *parent* kit's props (e.g. `Table`'s `striped`/`collapse`) while typing inside a `Table.Row` tag
+  - Hover and go-to-definition now resolve subcomponents to their parent kit's docs instead of silently returning nothing
+  - See `KNOWN_LIMITATIONS.md` (#1) for what's still not possible here — validating a subcomponent's own props — and why (blocked on Playbook's shared metadata, not this codebase)
+
+### Added
+
+- **Component-Level Platform Validation** 🎯
+  - Kits now carry their own `platforms` metadata, not just their props
+  - Diagnostics warn when a React-only kit is used from Rails (e.g. `pb_rails("map", ...)`) or a Rails-only kit is used from React (e.g. `<Form>`)
+  - Completions no longer suggest a kit on a platform it doesn't support
+
+- **Deprecated Component Warnings** ⚠️
+  - Kits flagged `"status": "deprecated"` upstream (e.g. `icon_button`) now show a deprecation notice in hover docs, an Information-level diagnostic on use, and a strikethrough + note in autocomplete
+
+- **External Dependency Hints** 📦
+  - Hovering a kit that wraps a host-supplied package (Highcharts-based charts, `map`, `rich_text_editor`) now shows a "## Requires" section listing the required packages and any upstream notes/docs link
+
+- **Richer Global Prop Docs** 📝
+  - Global props now surface their `description`, usage `example`, and `responsive` flag when Playbook's schema provides them (e.g. `alignContent` now shows its description and a responsive-object usage example), instead of only type/values/default
+
+### Changed
+
+- **Bundled Fallback Schema Refreshed** — `data/all-schemas.json` updated from 107 to 108 kits (added `full_screen`), matching the schema version currently installed via `playbook-ui`
+
+### Documentation
+
+- Added `KNOWN_LIMITATIONS.md` — tracks gaps that are blocked on Playbook's shared metadata rather than this codebase, each with a concrete command to re-check whether the blocker has been lifted upstream
+
 ## [2.0.0] - 2026-04-17
 
 ### Breaking Changes

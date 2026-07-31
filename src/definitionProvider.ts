@@ -1,5 +1,11 @@
 import * as vscode from "vscode";
-import { loadMetadata, findComponentByRailsName, findComponentByReactName } from "./metadata";
+import {
+  loadMetadata,
+  findComponentByRailsName,
+  findComponentByReactName,
+  findRailsSubcomponent,
+  findReactSubcomponent,
+} from "./metadata";
 import { parseRailsComponent, parseReactComponent } from "./parser";
 
 export class PlaybookDefinitionProvider implements vscode.DefinitionProvider {
@@ -24,6 +30,14 @@ export class PlaybookDefinitionProvider implements vscode.DefinitionProvider {
         const uri = vscode.Uri.parse(playbookUrl);
         return new vscode.Location(uri, new vscode.Position(0, 0));
       }
+
+      const subcomponent = findRailsSubcomponent(metadata, railsComponent.componentName);
+      if (subcomponent) {
+        const playbookUrl = `https://playbook.powerhrg.com/kits/${subcomponent.parent.rails}/react`;
+
+        const uri = vscode.Uri.parse(playbookUrl);
+        return new vscode.Location(uri, new vscode.Position(0, 0));
+      }
     }
 
     const reactComponent = parseReactComponent(document, position);
@@ -31,6 +45,14 @@ export class PlaybookDefinitionProvider implements vscode.DefinitionProvider {
       const component = findComponentByReactName(metadata, reactComponent.componentName);
       if (component) {
         const playbookUrl = `https://playbook.powerhrg.com/kits/${component.rails}/react`;
+
+        const uri = vscode.Uri.parse(playbookUrl);
+        return new vscode.Location(uri, new vscode.Position(0, 0));
+      }
+
+      const subcomponent = findReactSubcomponent(metadata, reactComponent.componentName);
+      if (subcomponent) {
+        const playbookUrl = `https://playbook.powerhrg.com/kits/${subcomponent.parent.rails}/react`;
 
         const uri = vscode.Uri.parse(playbookUrl);
         return new vscode.Location(uri, new vscode.Position(0, 0));
