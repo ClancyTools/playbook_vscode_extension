@@ -1,5 +1,9 @@
 .vscode/**
 .vscode-test/**
+.claude/**
+test-extraction-logic.js
+test-logic-manual.js
+test-workflow.sh
 src/**
 .gitignore
 .eslintrc.json
