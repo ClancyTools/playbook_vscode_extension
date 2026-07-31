@@ -4,6 +4,7 @@ import {
   findComponentByRailsName,
   findComponentByReactName,
   findRailsSubcomponent,
+  findGlobalPropForComponent,
   ComponentMetadata,
   PropMetadata,
   loadFormBuilderMetadata,
@@ -308,7 +309,8 @@ export class PlaybookDiagnostics {
 
         if (fullValue === "{") {
           const prop =
-            component.props[propName] || metadata.globalProps?.[propName]
+            component.props[propName] ||
+            findGlobalPropForComponent(metadata, component, propName)
           const isValidProp = prop || HARDCODED_GLOBAL_PROPS.has(propName)
 
           if (!isValidProp) {
@@ -382,7 +384,8 @@ export class PlaybookDiagnostics {
         const position = this.getPositionInPropsBlock(propsBlock, match.index)
 
         const prop =
-          component.props[propName] || metadata.globalProps?.[propName]
+          component.props[propName] ||
+          findGlobalPropForComponent(metadata, component, propName)
 
         if (!prop && !HARDCODED_GLOBAL_PROPS.has(propName)) {
           const range = new vscode.Range(
@@ -481,7 +484,7 @@ export class PlaybookDiagnostics {
 
           const prop =
             component.props[snakeCaseProp] ||
-            metadata.globalProps?.[snakeCaseProp]
+            findGlobalPropForComponent(metadata, component, snakeCaseProp)
 
           if (!prop && !HARDCODED_GLOBAL_PROPS.has(propName)) {
             const startIndex =

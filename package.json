@@ -2,11 +2,12 @@
   "name": "playbook-vscode",
   "displayName": "Playbook UI Helper",
   "description": "Developer experience enhancements for Playbook UI design system - snippets, autocomplete, and hover documentation for Rails and React",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "publisher": "ClancyTools",
   "icon": "enhanced_logo.png",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.75.0",
+    "node": ">=22"
   },
   "categories": [
     "Snippets",
@@ -82,7 +83,7 @@
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^6.x",
     "@typescript-eslint/parser": "^6.x",
-    "@vscode/test-electron": "^2.5.2",
+    "@vscode/test-electron": "^3.1.0",
     "eslint": "^8.x",
     "glob": "^8.1.0",
     "mocha": "^10.8.2",
