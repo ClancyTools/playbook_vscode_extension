@@ -3,6 +3,7 @@ import {
   loadMetadata,
   findComponentByRailsName,
   findComponentByReactName,
+  findRailsSubcomponent,
   ComponentMetadata,
   PropMetadata,
   loadFormBuilderMetadata,
@@ -113,23 +114,7 @@ export class PlaybookDiagnostics {
       const componentName = match[1]
       const component = findComponentByRailsName(metadata, componentName)
 
-      if (!component) {
-        const startIndex = match.index + match[0].indexOf(componentName)
-        const range = new vscode.Range(
-          lineIndex,
-          startIndex,
-          lineIndex,
-          startIndex + componentName.length
-        )
-
-        const diagnostic = new vscode.Diagnostic(
-          range,
-          `Unknown Playbook component: "${componentName}"`,
-          vscode.DiagnosticSeverity.Warning
-        )
-        diagnostic.source = "Playbook"
-        diagnostics.push(diagnostic)
-      } else {
+      if (component) {
         this.validateProps(
           document,
           lineIndex,
@@ -138,7 +123,33 @@ export class PlaybookDiagnostics {
           diagnostics,
           "rails"
         )
+        continue
       }
+
+      // Subcomponents (e.g. "table/table_row", "dialog/dialog_header") aren't
+      // published as their own schemas in Playbook's shared metadata, so we
+      // can only confirm the parent kit ("table", "dialog") is real. Skip
+      // prop validation rather than warn "unknown component" or validate
+      // against the wrong (parent) schema.
+      if (findRailsSubcomponent(metadata, componentName)) {
+        continue
+      }
+
+      const startIndex = match.index + match[0].indexOf(componentName)
+      const range = new vscode.Range(
+        lineIndex,
+        startIndex,
+        lineIndex,
+        startIndex + componentName.length
+      )
+
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        `Unknown Playbook component: "${componentName}"`,
+        vscode.DiagnosticSeverity.Warning
+      )
+      diagnostic.source = "Playbook"
+      diagnostics.push(diagnostic)
     }
   }
 

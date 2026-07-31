@@ -49,7 +49,9 @@ export function parseReactComponent(
 ): ComponentUsage | null {
   const line = document.lineAt(position.line).text;
 
-  const regex = /<\/?([A-Z][a-zA-Z0-9]*)/g;
+  // Subcomponents use dot notation (e.g. <Table.Row>), so the optional
+  // ".SubName" suffix is captured as part of the same component name.
+  const regex = /<\/?([A-Z][a-zA-Z0-9]*(?:\.[A-Z][a-zA-Z0-9]*)?)/g;
   let match;
 
   while ((match = regex.exec(line)) !== null) {
@@ -158,7 +160,7 @@ export function findComponentContext(
       };
     }
 
-    const reactMatch = lineText.match(/<([A-Z][a-zA-Z0-9]*)/);
+    const reactMatch = lineText.match(/<([A-Z][a-zA-Z0-9]*(?:\.[A-Z][a-zA-Z0-9]*)?)/);
     if (reactMatch) {
       const componentName = reactMatch[1];
       const startIndex = reactMatch.index! + 1;

@@ -222,6 +222,78 @@ export function findComponentByReactName(
   return metadata.components[reactName] || null
 }
 
+export interface SubcomponentMatch {
+  parent: ComponentMetadata
+  subName: string
+}
+
+function splitSubcomponentName(
+  name: string,
+  separator: string
+): { parentName: string; subName: string } | null {
+  const index = name.indexOf(separator)
+  if (index === -1) {
+    return null
+  }
+  return {
+    parentName: name.substring(0, index),
+    subName: name.substring(index + separator.length),
+  }
+}
+
+/**
+ * Rails subcomponents are invoked as pb_rails("<kit>/<sub_name>", ...), e.g.
+ * pb_rails("table/table_row"). Playbook's shared metadata doesn't ship a
+ * schema for the subcomponent itself, so this only confirms the parent kit
+ * exists rather than validating the subcomponent's own props.
+ */
+export function findRailsSubcomponent(
+  metadata: PlaybookMetadata,
+  railsName: string
+): SubcomponentMatch | null {
+  const split = splitSubcomponentName(railsName, "/")
+  if (!split) {
+    return null
+  }
+  const parent = findComponentByRailsName(metadata, split.parentName)
+  return parent ? { parent, subName: split.subName } : null
+}
+
+/**
+ * React subcomponents use dot notation, e.g. <Table.Row>. Same caveat as
+ * findRailsSubcomponent: only the parent kit is validated.
+ */
+export function findReactSubcomponent(
+  metadata: PlaybookMetadata,
+  reactName: string
+): SubcomponentMatch | null {
+  const split = splitSubcomponentName(reactName, ".")
+  if (!split) {
+    return null
+  }
+  const parent = findComponentByReactName(metadata, split.parentName)
+  return parent ? { parent, subName: split.subName } : null
+}
+
+export function generateSubcomponentDocs(
+  fullName: string,
+  match: SubcomponentMatch
+): string {
+  const lines: string[] = []
+  lines.push(`# ${fullName}`)
+  lines.push("")
+  lines.push(
+    `Subcomponent of **${match.parent.react}** (\`${match.parent.rails}\`).`
+  )
+  lines.push("")
+  lines.push(match.parent.description)
+  lines.push("")
+  lines.push(
+    `_Playbook's shared metadata doesn't publish per-subcomponent props for "${match.subName}" yet, so only the parent kit's info is shown here._`
+  )
+  return lines.join("\n")
+}
+
 let cachedFormBuilderMetadata: FormBuilderMetadata | null = null
 
 export function loadFormBuilderMetadata(
