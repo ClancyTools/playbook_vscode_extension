@@ -2,9 +2,12 @@ import * as vscode from "vscode"
 import { PlaybookMetadata, loadMetadata } from "./metadata"
 
 export interface InlineAnnotation {
-  /** Offset the label is shown at (just after a value). */
+  /** Offset the hint is shown at (just after a value). */
   offset: number
-  label: string
+  /** Faint text after the value, e.g. "24px". */
+  label?: string
+  /** A CSS color to show as a small box, e.g. "#4B546B". */
+  swatch?: string
 }
 
 export type Annotator = (
@@ -12,6 +15,31 @@ export type Annotator = (
   languageId: string,
   metadata: PlaybookMetadata
 ) => InlineAnnotation[]
+
+function renderOptionsFor(a: InlineAnnotation): vscode.DecorationInstanceRenderOptions {
+  if (a.swatch) {
+    // A square that scales with the font. VS Code makes the attachment inline-block
+    // when width/height are set, and an inline-block with no content sits on the
+    // text baseline, so it can't push the lines apart. 0.85em stays under the line height.
+    return {
+      after: {
+        contentText: "",
+        backgroundColor: a.swatch,
+        border: "1px solid rgba(128,128,128,0.55)",
+        margin: "0 0 0 0.5em",
+        width: "0.85em",
+        height: "0.85em",
+      },
+    }
+  }
+  return {
+    after: {
+      contentText: ` ${a.label ?? ""}`,
+      color: new vscode.ThemeColor("editorCodeLens.foreground"),
+      fontStyle: "italic",
+    },
+  }
+}
 
 /**
  * Shows faint text after values in open files (the pixel value after a spacing
@@ -55,13 +83,7 @@ export class InlineHints implements vscode.Disposable {
       const position = document.positionAt(a.offset)
       return {
         range: new vscode.Range(position, position),
-        renderOptions: {
-          after: {
-            contentText: ` ${a.label}`,
-            color: new vscode.ThemeColor("editorCodeLens.foreground"),
-            fontStyle: "italic",
-          },
-        },
+        renderOptions: renderOptionsFor(a),
       }
     })
   }

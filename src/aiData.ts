@@ -86,6 +86,39 @@ export function compareVersions(a: string, b: string): number {
 }
 
 /**
+ * Directories named `subpath` (relative to a package's node_modules) that contain
+ * `probe`, under each workspace root and its monorepo component folders.
+ */
+export function discoverPackageDirs(roots: string[], subpath: string[], probe: string): string[] {
+  const found: string[] = []
+  for (const root of roots) {
+    const candidates = [path.join(root, "node_modules", ...subpath)]
+    for (const parent of MONOREPO_PARENTS) {
+      let children: string[] = []
+      try {
+        children = fs.readdirSync(path.join(root, parent))
+      } catch {
+        continue
+      }
+      for (const child of children) {
+        candidates.push(path.join(root, parent, child, "node_modules", ...subpath))
+      }
+    }
+    for (const dir of candidates) {
+      if (fs.existsSync(path.join(dir, probe)) && !found.includes(dir)) {
+        found.push(dir)
+      }
+    }
+  }
+  return found
+}
+
+/** The workspace folders to search (or the test override). */
+export function workspaceRoots(): string[] {
+  return rootsOverride ?? (vscode.workspace.workspaceFolders || []).map((f) => f.uri.fsPath)
+}
+
+/**
  * Every `playbook-ui/dist/ai` directory under the given workspace roots:
  * `<root>/node_modules/...` and `<root>/{components,packages,apps}/*\/node_modules/...`.
  */

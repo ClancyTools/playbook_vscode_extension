@@ -17,6 +17,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import { scanDeprecations } from "../src/deprecationScan"
+import { buildKitColors, readTokenDirectory } from "../src/scssColors"
 
 const FILES_TO_COPY = [
   "all-schemas.json",
@@ -57,6 +58,22 @@ function main(): void {
   }
   const version = JSON.parse(fs.readFileSync(path.join(from, "index.json"), "utf-8")).version
   console.log(`Copied Playbook AI metadata v${version} (${FILES_TO_COPY.length} files + ${playgrounds.length} playgrounds) from ${from}`)
+
+  const tokenDir = path.join(repo, "app", "pb_kits", "playbook", "tokens")
+  if (fs.existsSync(tokenDir)) {
+    const tokens = readTokenDirectory(tokenDir)
+    fs.writeFileSync(path.join(dest, "color-tokens.json"), JSON.stringify(tokens, null, 2) + "\n")
+    console.log(`Wrote ${Object.keys(tokens).length} color tokens from ${tokenDir}`)
+    // Icon's color prop has no enum in the schema; its names come from the stylesheet.
+    const iconScss = path.join(repo, "app", "pb_kits", "playbook", "pb_icon", "_icon.scss")
+    if (fs.existsSync(iconScss)) {
+      const kitColors = buildKitColors(tokenDir, fs.readFileSync(iconScss, "utf-8"))
+      fs.writeFileSync(path.join(dest, "kit-colors.json"), JSON.stringify(kitColors, null, 2) + "\n")
+      console.log(`Wrote kit colors: ${Object.entries(kitColors).map(([k, v]) => `${k} ${Object.keys(v).length}`).join(", ")}`)
+    }
+  } else {
+    console.warn(`No tokens at ${tokenDir}; data/ai/color-tokens.json not written`)
+  }
 
   if (fs.existsSync(path.join(repo, "app", "pb_kits", "playbook"))) {
     const deprecations = scanDeprecations(repo)
