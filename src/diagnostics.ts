@@ -8,16 +8,52 @@ import {
   ComponentMetadata,
   PropMetadata,
   loadFormBuilderMetadata,
-  findFormBuilderField,
-  FormBuilderMetadata,
-  FormBuilderField,
   getPropValues,
   isPropValidForPlatform,
   isComponentValidForPlatform,
   PlaybookMetadata,
+  snakeToCamel,
 } from "./metadata"
+import { loadPlayground } from "./playgrounds"
+import { checkFormBuilderUsages, checkUsages, Finding } from "./usageRules"
+import { packageAvailability } from "./workspacePackages"
 
 const HARDCODED_GLOBAL_PROPS = new Set(["id", "key"])
+
+function toDiagnostic(document: vscode.TextDocument, finding: Finding): vscode.Diagnostic {
+  const diagnostic = new vscode.Diagnostic(
+    new vscode.Range(document.positionAt(finding.start), document.positionAt(finding.end)),
+    finding.message,
+    finding.severity === "warning"
+      ? vscode.DiagnosticSeverity.Warning
+      : vscode.DiagnosticSeverity.Information
+  )
+  diagnostic.source = "Playbook"
+  diagnostic.code = finding.code
+  if (finding.deprecated) {
+    diagnostic.tags = [vscode.DiagnosticTag.Deprecated]
+  }
+  return diagnostic
+}
+
+/**
+ * Tags the older line-based diagnostics with a stable code so quick fixes can
+ * recognise them without parsing message text everywhere.
+ */
+export function assignDiagnosticCodes(diagnostics: vscode.Diagnostic[]): void {
+  for (const diagnostic of diagnostics) {
+    if (diagnostic.code !== undefined) {
+      continue
+    }
+    if (diagnostic.message.startsWith("Unknown prop ")) {
+      diagnostic.code = "unknown-prop"
+    } else if (diagnostic.message.startsWith("Invalid value ")) {
+      diagnostic.code = "invalid-value"
+    } else if (diagnostic.message.startsWith("Unknown Playbook component")) {
+      diagnostic.code = "unknown-component"
+    }
+  }
+}
 
 export class PlaybookDiagnostics {
   private diagnosticCollection: vscode.DiagnosticCollection
@@ -65,15 +101,18 @@ export class PlaybookDiagnostics {
 
       this.validateReactLine(line, lineIndex, document, metadata, diagnostics)
 
-      this.validateFormBuilderLine(
-        line,
-        lineIndex,
-        document,
-        formBuilderMetadata,
-        metadata,
-        diagnostics
-      )
     }
+
+    for (const finding of checkFormBuilderUsages(
+      text,
+      metadata,
+      formBuilderMetadata,
+      document.languageId
+    )) {
+      diagnostics.push(toDiagnostic(document, finding))
+    }
+    this.addUsageRuleDiagnostics(document, metadata, diagnostics)
+    assignDiagnosticCodes(diagnostics)
 
     this.diagnosticCollection.set(document.uri, diagnostics)
     console.log(
@@ -85,6 +124,30 @@ export class PlaybookDiagnostics {
           `[PlaybookDiagnostics]   ${i + 1}. ${d.severity === vscode.DiagnosticSeverity.Warning ? "WARNING" : "ERROR"}: ${d.message} at line ${d.range.start.line + 1}`
         )
       })
+    }
+  }
+
+  /** Whole-usage rules: deprecated props, prop dependencies, missing packages. */
+  private addUsageRuleDiagnostics(
+    document: vscode.TextDocument,
+    metadata: PlaybookMetadata,
+    diagnostics: vscode.Diagnostic[]
+  ): void {
+    const config = vscode.workspace.getConfiguration("playbook.diagnostics")
+    const findings = checkUsages(document.getText(), {
+      languageId: document.languageId,
+      metadata,
+      getPlayground: (railsName) => loadPlayground(this.extensionPath, railsName),
+      isPackageAvailable:
+        document.uri.scheme === "file" ? packageAvailability(document.uri.fsPath) : undefined,
+      options: {
+        deprecations: config.get<boolean>("deprecations", true),
+        propDependencies: config.get<boolean>("propDependencies", true),
+        externalDependencies: config.get<boolean>("externalDependencies", true),
+      },
+    })
+    for (const finding of findings) {
+      diagnostics.push(toDiagnostic(document, finding))
     }
   }
 
@@ -425,7 +488,8 @@ export class PlaybookDiagnostics {
             match[0],
             position.character,
             position.line,
-            diagnostics
+            diagnostics,
+            document.languageId
           )
         }
       }
@@ -526,6 +590,24 @@ export class PlaybookDiagnostics {
           } else if (prop) {
             const adjustedStartIndex =
               i === 0 ? match.index + componentBlock.startChar : match.index
+            if (propName.includes("_")) {
+              // React props are camelCase; the lookup above normalised to
+              // snake_case, so a Rails-style spelling would otherwise pass.
+              const camelName = snakeToCamel(propName)
+              const wrongCase = new vscode.Diagnostic(
+                new vscode.Range(
+                  actualLineIndex,
+                  adjustedStartIndex,
+                  actualLineIndex,
+                  adjustedStartIndex + propName.length
+                ),
+                `Prop "${propName}" should be written "${camelName}" in React`,
+                vscode.DiagnosticSeverity.Warning
+              )
+              wrongCase.source = "Playbook"
+              wrongCase.code = "wrong-prop-case"
+              diagnostics.push(wrongCase)
+            }
             this.validatePropValue(
               propName,
               propValue || "",
@@ -533,7 +615,8 @@ export class PlaybookDiagnostics {
               match[0],
               adjustedStartIndex,
               actualLineIndex,
-              diagnostics
+              diagnostics,
+              document.languageId
             )
           }
         }
@@ -681,9 +764,10 @@ export class PlaybookDiagnostics {
     fullMatch: string,
     startCharacter: number,
     lineIndex: number,
-    diagnostics: vscode.Diagnostic[]
+    diagnostics: vscode.Diagnostic[],
+    languageId: string
   ): void {
-    const validValues = getPropValues(prop)
+    const validValues = getPropValues(prop, languageId)
 
     if (validValues && validValues.length > 0) {
       const cleanValue = propValue.replace(/["']/g, "").trim()
@@ -753,292 +837,6 @@ export class PlaybookDiagnostics {
             continue
           }
         }
-        propsStartLine = i
-        propsStartChar = propsMatch.index! + propsMatch[0].length
-        break
-      }
-    }
-
-    if (propsStartLine === -1) {
-      return null
-    }
-
-    let braceCount = 1
-    let endChar = propsStartChar
-    const lines: string[] = []
-
-    for (
-      let i = propsStartLine;
-      i < Math.min(propsStartLine + 50, document.lineCount);
-      i++
-    ) {
-      const line = document.lineAt(i).text
-      const startChar = i === propsStartLine ? propsStartChar : 0
-
-      for (let j = startChar; j < line.length; j++) {
-        if (line[j] === "{") {
-          braceCount++
-        }
-        if (line[j] === "}") {
-          braceCount--
-          if (braceCount === 0) {
-            endChar = j
-            if (i === propsStartLine) {
-              lines.push(line.substring(propsStartChar, endChar))
-            } else {
-              lines.push(line.substring(0, endChar))
-            }
-            return {
-              text: lines.join("\n"),
-              startLine: propsStartLine,
-              startChar: propsStartChar,
-              lines: lines,
-            }
-          }
-        }
-      }
-
-      if (i === propsStartLine) {
-        lines.push(line.substring(propsStartChar))
-      } else {
-        lines.push(line)
-      }
-    }
-
-    return null
-  }
-
-  private validateFormBuilderLine(
-    line: string,
-    lineIndex: number,
-    document: vscode.TextDocument,
-    formBuilderMetadata: FormBuilderMetadata,
-    playbookMetadata: PlaybookMetadata,
-    diagnostics: vscode.Diagnostic[]
-  ): void {
-    const formBuilderRegex = /(\w+)\.(\w+)\s*\(/g
-    let match
-
-    console.log(
-      `[FormBuilder] Checking line ${lineIndex + 1}: ${line.substring(0, 50)}`
-    )
-
-    while ((match = formBuilderRegex.exec(line)) !== null) {
-      const variableName = match[1]
-      const methodName = match[2]
-
-      console.log(
-        `[FormBuilder] Found method call: ${variableName}.${methodName}`
-      )
-
-      const formVariables = ["f", "form", "builder"]
-
-      if (!formVariables.includes(variableName)) {
-        console.log(
-          `[FormBuilder] Skipping - not a form variable: ${variableName}`
-        )
-        continue
-      }
-
-      const field = findFormBuilderField(formBuilderMetadata, methodName)
-
-      if (!field) {
-        console.log(
-          `[FormBuilder] Skipping - unknown form builder method: ${methodName}`
-        )
-        continue
-      }
-
-      console.log(
-        `[PlaybookDiagnostics] Found form builder field: ${variableName}.${methodName} on line ${lineIndex + 1}`
-      )
-
-      this.validateFormBuilderProps(
-        document,
-        lineIndex,
-        field,
-        playbookMetadata,
-        diagnostics
-      )
-    }
-  }
-
-  private validateFormBuilderProps(
-    document: vscode.TextDocument,
-    startLineIndex: number,
-    field: FormBuilderField,
-    metadata: PlaybookMetadata,
-    diagnostics: vscode.Diagnostic[]
-  ): void {
-    const propsBlock = this.extractFormBuilderPropsBlock(
-      document,
-      startLineIndex
-    )
-    if (!propsBlock) {
-      console.log(
-        `[PlaybookDiagnostics] No props block found for form builder field: ${field.name}`
-      )
-      return
-    }
-
-    console.log(
-      `[PlaybookDiagnostics] Validating form builder props for ${field.name}: ${propsBlock.text.substring(0, 50)}...`
-    )
-
-    const propRegex = /(\w+):\s*("([^"]*)"|'([^']*)'|([^,}\s]+)|\{)/g
-    let match
-    let parenDepth = 0
-    let braceDepth = 0
-    let lastIndex = 0
-
-    while (
-      (match = propRegex.exec(
-        propRegex.lastIndex > 0 ? propsBlock.text : propsBlock.text
-      )) !== null
-    ) {
-      const betweenText = propsBlock.text.substring(lastIndex, match.index)
-      for (const char of betweenText) {
-        if (char === "(") {
-          parenDepth++
-        }
-        if (char === ")") {
-          parenDepth--
-        }
-        if (char === "{") {
-          braceDepth++
-        }
-        if (char === "}") {
-          braceDepth--
-        }
-      }
-      lastIndex = match.index
-
-      const propName = match[1]
-      const fullValue = match[2]
-      const doubleQuotedValue = match[3]
-      const singleQuotedValue = match[4]
-      const unquotedValue = match[5]
-
-      if (parenDepth > 0 || braceDepth > 0) {
-        continue
-      }
-
-      if (propName === "props") {
-        continue
-      }
-
-      if (["do", "end", "if", "unless"].includes(propName)) {
-        continue
-      }
-
-      if (fullValue === "{") {
-        const isValidProp =
-          field.props[propName] ||
-          metadata.globalProps?.[propName] ||
-          HARDCODED_GLOBAL_PROPS.has(propName)
-
-        if (!isValidProp) {
-          const position = this.getPositionInPropsBlock(propsBlock, match.index)
-          const range = new vscode.Range(
-            position.line,
-            position.character,
-            position.line,
-            position.character + propName.length
-          )
-
-          const diagnostic = new vscode.Diagnostic(
-            range,
-            `Unknown prop "${propName}" for form builder field "${field.name}"`,
-            vscode.DiagnosticSeverity.Warning
-          )
-          diagnostic.source = "Playbook"
-          diagnostics.push(diagnostic)
-        }
-
-        let nestedBraceCount = 1
-        let searchIndex = propRegex.lastIndex
-
-        while (nestedBraceCount > 0 && searchIndex < propsBlock.text.length) {
-          const char = propsBlock.text[searchIndex]
-          if (char === "{") {
-            nestedBraceCount++
-          }
-          if (char === "}") {
-            nestedBraceCount--
-          }
-          searchIndex++
-        }
-
-        propRegex.lastIndex = searchIndex
-        continue
-      }
-
-      const propValue =
-        doubleQuotedValue !== undefined
-          ? `"${doubleQuotedValue}"`
-          : singleQuotedValue !== undefined
-            ? `'${singleQuotedValue}'`
-            : unquotedValue
-
-      const position = this.getPositionInPropsBlock(propsBlock, match.index)
-
-      if (
-        !field.props[propName] &&
-        !metadata.globalProps?.[propName] &&
-        !HARDCODED_GLOBAL_PROPS.has(propName)
-      ) {
-        const range = new vscode.Range(
-          position.line,
-          position.character,
-          position.line,
-          position.character + propName.length
-        )
-
-        const diagnostic = new vscode.Diagnostic(
-          range,
-          `Unknown prop "${propName}" for form builder field "${field.name}"`,
-          vscode.DiagnosticSeverity.Warning
-        )
-        diagnostic.source = "Playbook"
-        diagnostics.push(diagnostic)
-      } else {
-        const prop = field.props[propName] || metadata.globalProps?.[propName]
-        if (prop) {
-          this.validatePropValue(
-            propName,
-            propValue,
-            prop,
-            match[0],
-            position.character,
-            position.line,
-            diagnostics
-          )
-        }
-      }
-    }
-  }
-
-  private extractFormBuilderPropsBlock(
-    document: vscode.TextDocument,
-    startLineIndex: number
-  ): {
-    text: string
-    startLine: number
-    startChar: number
-    lines: string[]
-  } | null {
-    let propsStartLine = -1
-    let propsStartChar = -1
-
-    for (
-      let i = startLineIndex;
-      i < Math.min(startLineIndex + 10, document.lineCount);
-      i++
-    ) {
-      const line = document.lineAt(i).text
-
-      const propsMatch = line.match(/props:\s*\{/)
-      if (propsMatch) {
         propsStartLine = i
         propsStartChar = propsMatch.index! + propsMatch[0].length
         break

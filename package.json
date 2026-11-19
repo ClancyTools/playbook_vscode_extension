@@ -74,7 +74,27 @@
       {
         "id": "html.erb"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Playbook UI Helper",
+      "properties": {
+        "playbook.diagnostics.deprecations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag deprecated Playbook props (shown struck through)."
+        },
+        "playbook.diagnostics.propDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag props that have no effect without another prop (for example formPillProps without multiSelect)."
+        },
+        "playbook.diagnostics.externalDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag kits whose required host packages (Highcharts, maplibre-gl, ...) are not installed."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
