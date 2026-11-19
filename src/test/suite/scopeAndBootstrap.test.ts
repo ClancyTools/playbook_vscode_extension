@@ -49,7 +49,7 @@ suite("Scope and Bootstrap Test Suite", () => {
       fs.mkdirSync(path.join(tmp, "components", "billing"), { recursive: true })
       const scope = scopeFromArgument({ path: "components/billing" }, ["/not/here", tmp])!
       assert.strictEqual(scope.kind, "folder")
-      assert.ok(scope.kind === "folder" && scope.uri.fsPath === path.join(tmp, "components", "billing"))
+      assert.ok(scope.kind === "folder" && scope.uri.fsPath === vscode.Uri.file(path.join(tmp, "components", "billing")).fsPath)
     })
 
     test("a file argument becomes a file scope", () => {
@@ -207,7 +207,7 @@ suite("Scope and Bootstrap Test Suite", () => {
       const outcome = await sweepScope(extensionPath, { kind: "file", uri: vscode.Uri.file(file), label: "a.erb" }, NO_PROGRESS, NOT_CANCELLED)
       assert.strictEqual(outcome.filesScanned, 1)
       assert.deepStrictEqual(outcome.results.map((r) => [r.kit, r.prop]), [["flex", "horizontal"]])
-      assert.strictEqual(outcome.results[0].uri.fsPath, file)
+      assert.strictEqual(outcome.results[0].uri.fsPath, vscode.Uri.file(file).fsPath)
     })
 
     test("a file with no Playbook usage is not counted as scanned", async () => {
