@@ -185,8 +185,15 @@ export function mergeScssMaps(scss: string, maps: Record<string, ColorTokens>): 
  * The color names a kit accepts, from its stylesheet. Only kits whose color prop
  * has no enum in the schema need this (Icon, Legend).
  */
-export function buildKitColors(tokenDir: string, iconScss: string): Record<string, ColorTokens> {
+export function buildKitColors(tokenDir: string, iconScss: string, kitsDir?: string): Record<string, ColorTokens> {
   const tokens = readTokenDirectory(tokenDir)
+  const read = (...parts: string[]): string => {
+    try {
+      return fs.readFileSync(path.join(kitsDir ?? "", ...parts), "utf-8")
+    } catch {
+      return ""
+    }
+  }
   const tokenScss = ["_colors.scss", "colors.scss", "_colors_accessible.scss", "colors_accessible.scss"]
     .map((f) => {
       try {
@@ -198,8 +205,41 @@ export function buildKitColors(tokenDir: string, iconScss: string): Record<strin
     .join("\n")
   const base = { ...parseScssMaps(tokenScss, tokens), ...parseScssMaps(iconScss, tokens) }
   const merged = mergeScssMaps(iconScss, base)
-  return {
+  const colors: Record<string, ColorTokens> = {
     icon: merged.icon_colors ?? {},
     legend: base.data_colors ?? {},
   }
+  if (!kitsDir) {
+    return colors
+  }
+
+  // Kits whose values are semantic names (`light`, `link`, `dark`) with their own
+  // color, not the same-named token. Each is read from the map the kit's styles loop over.
+  const map = (scss: string, name: string): ColorTokens => parseScssMaps(scss, tokens)[name] ?? {}
+  const semantic: Array<[string, ColorTokens]> = [
+    ["body", map(read("pb_body", "_body_mixins.scss"), "pb_body_colors")],
+    ["caption", map(read("pb_caption", "_caption_mixin.scss"), "pb_caption_colors")],
+    ["title", map(read("pb_title", "_title_mixin.scss"), "pb_title_colors")],
+    ["detail", map(read("pb_detail", "_detail_mixins.scss"), "pb_detail_colors")],
+    ["link", map(read("tokens", "_typography.scss"), "pb_link_colors")],
+    ["overlay", map(read("pb_overlay", "_overlay.scss"), "overlay_colors")],
+  ]
+  for (const [kit, entries] of semantic) {
+    if (Object.keys(entries).length > 0) {
+      colors[kit] = entries
+    }
+  }
+  // Card: background is the product colors plus a few extras; the header takes the
+  // product, additional, category and status colors.
+  const extras = map(read("pb_card", "_card_mixin.scss"), "additional_colors")
+  if (Object.keys(extras).length > 0 && base.product_colors) {
+    colors["card.background"] = { ...base.product_colors, ...extras }
+    colors["card.header_color"] = {
+      ...base.product_colors,
+      ...extras,
+      ...(base.category_colors ?? {}),
+      ...(base.status_colors ?? {}),
+    }
+  }
+  return colors
 }

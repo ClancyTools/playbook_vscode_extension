@@ -32,7 +32,18 @@ export function loadKitColors(extensionPath: string): KitColors {
   return cached
 }
 
+/** The key in kit-colors.json for a kit's prop: the kit for `color`, else `<kit>.<prop>`. */
+export function kitColorKey(kit: string, snakeProp: string): string {
+  return snakeProp === "color" ? kit : `${kit}.${snakeProp}`
+}
+
+/** Whether this prop's values mean the kit's own colors (swatches, hover). */
 function usesKitColor(kit: string, snakeProp: string, colors: KitColors): boolean {
+  return !!colors[kitColorKey(kit, snakeProp)]
+}
+
+/** Whether names are checked against the stylesheet (only props with no enum). */
+function checksKitColor(kit: string, snakeProp: string, colors: KitColors): boolean {
   return KITS_WITH_COLOR_PROP.has(kit) && snakeProp === "color" && !!colors[kit]
 }
 
@@ -64,7 +75,13 @@ export function isKnownKitColor(kit: string, value: string, colors: KitColors): 
   return kit === "icon" && Object.keys(known).some((key) => value.startsWith(key))
 }
 
-/** Color boxes for Icon/Legend `color` values. */
+/**
+ * Subcomponents have no schema, but Card's header takes the colors Card's data
+ * describes (`header_color`), so it is mapped to its kit by hand.
+ */
+const SUBCOMPONENT_KITS: Record<string, string> = { "card/card_header": "card", "Card.Header": "card" }
+
+/** Color boxes for color props that take a kit's own colors (Icon, Legend, Body, Card, …). */
 export function kitColorAnnotations(
   text: string,
   languageId: string,
@@ -74,16 +91,18 @@ export function kitColorAnnotations(
   const annotations: InlineAnnotation[] = []
   for (const usage of scanUsages(text, languageId)) {
     const component = resolveComponent(metadata, usage)
-    if (!component) {
+    const subKit = SUBCOMPONENT_KITS[usage.component]
+    const kit = component?.rails ?? subKit
+    if (!kit) {
       continue
     }
     for (const prop of usage.props) {
       const snake = usage.platform === "react" ? camelToSnake(prop.name) : prop.name
       const value = literalValue(prop)
-      if (!usesKitColor(component.rails, snake, colors) || typeof value !== "string" || prop.valueEnd === undefined) {
+      if (!usesKitColor(kit, snake, colors) || typeof value !== "string" || prop.valueEnd === undefined) {
         continue
       }
-      const css = kitColorCss(component.rails, value, colors)
+      const css = kitColorCss(kitColorKey(kit, snake), value, colors)
       if (css) {
         annotations.push({ offset: prop.valueEnd, swatch: css })
       }
@@ -103,7 +122,7 @@ export function kitColorFor(
   if (!usesKitColor(kit, snakeProp, colors) || !metadata.components) {
     return undefined
   }
-  const css = kitColorCss(kit, value, colors)
+  const css = kitColorCss(kitColorKey(kit, snakeProp), value, colors)
   return css ? { css } : undefined
 }
 
@@ -128,7 +147,7 @@ export function checkKitColors(
       const snake = usage.platform === "react" ? camelToSnake(prop.name) : prop.name
       const value = literalValue(prop)
       if (
-        !usesKitColor(component.rails, snake, colors) ||
+        !checksKitColor(component.rails, snake, colors) ||
         typeof value !== "string" ||
         prop.valueStart === undefined ||
         prop.valueEnd === undefined ||

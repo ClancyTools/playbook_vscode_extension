@@ -67,7 +67,7 @@ function main(): void {
     // Icon's color prop has no enum in the schema; its names come from the stylesheet.
     const iconScss = path.join(repo, "app", "pb_kits", "playbook", "pb_icon", "_icon.scss")
     if (fs.existsSync(iconScss)) {
-      const kitColors = buildKitColors(tokenDir, fs.readFileSync(iconScss, "utf-8"))
+      const kitColors = buildKitColors(tokenDir, fs.readFileSync(iconScss, "utf-8"), path.join(repo, "app", "pb_kits", "playbook"))
       fs.writeFileSync(path.join(dest, "kit-colors.json"), JSON.stringify(kitColors, null, 2) + "\n")
       console.log(`Wrote kit colors: ${Object.entries(kitColors).map(([k, v]) => `${k} ${Object.keys(v).length}`).join(", ")}`)
     }

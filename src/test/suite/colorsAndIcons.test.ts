@@ -629,6 +629,58 @@ suite("Colors and Icons Test Suite", () => {
       assert.strictEqual(kitColorCss("icon", "#123456", colors()), undefined, "Icon takes names, not hex")
     })
 
+    test("kits with semantic color names show their own color, not the same-named token", () => {
+      // Token `default` is #93a8b8; Body's default is the default *text* color.
+      assert.strictEqual(annotate("typescriptreact", '<Body color="default" />')[0].swatch, "#242B42")
+      assert.strictEqual(annotate("typescriptreact", '<Body color="link" text="x" />')[0].swatch, "#0056CF")
+      assert.strictEqual(annotate("typescriptreact", '<Caption color="lighter" />')[0].swatch, "#617290")
+      assert.strictEqual(annotate("typescriptreact", '<Title color="success" />')[0].swatch, "#158149")
+      assert.strictEqual(annotate("typescriptreact", '<Detail color="light" />')[0].swatch, "#4B546B")
+      assert.strictEqual(annotate("typescriptreact", '<Link color="muted" href="/" />')[0].swatch, "#687887")
+      assert.strictEqual(annotate("typescriptreact", '<Overlay color="bg_light" />')[0].swatch, "#F3F7FB")
+      assert.strictEqual(annotate("erb", '<%= pb_rails("body", props: { color: "light" }) %>')[0].swatch, "#4B546B")
+    })
+
+    test("Card background shows the product and extra colors", () => {
+      assert.strictEqual(annotate("typescriptreact", '<Card background="dark" />')[0].swatch, "#0a0527")
+      assert.strictEqual(annotate("typescriptreact", '<Card background="windows" />')[0].swatch, "#003DB2")
+      assert.strictEqual(annotate("erb", '<%= pb_rails("card", props: { background: "light" }) %>')[0].swatch, "#F3F7FB")
+      assert.deepStrictEqual(annotate("typescriptreact", '<Card background="none" />'), [])
+    })
+
+    test("Card header_color shows a swatch on the header subcomponent", () => {
+      assert.strictEqual(annotate("erb", '<%= pb_rails("card/card_header", props: { header_color: "dark" }) %>')[0].swatch, "#0a0527")
+      assert.strictEqual(annotate("typescriptreact", '<Card.Header headerColor="category_1" />')[0]?.swatch?.startsWith("#"), true)
+      assert.deepStrictEqual(annotate("erb", '<%= pb_rails("card/card_header", props: { header_color: "blue" }) %>'), [])
+      assert.deepStrictEqual(annotate("erb", '<%= pb_rails("table/table_row", props: { header_color: "dark" }) %>'), [])
+    })
+
+    test("a value in an unrelated prop of those kits gets none", () => {
+      assert.deepStrictEqual(annotate("typescriptreact", '<Body color="nope" />'), [])
+      assert.deepStrictEqual(annotate("typescriptreact", '<Body size="light" />'), [])
+    })
+
+    test("the kit's color wins over the same-named token (one swatch, not two)", async () => {
+      const hints = new ColorSwatches(extensionPath)
+      try {
+        const document = await createTestDocument("typescriptreact", '<Card background="light" />')
+        const decorations = hints.compute(document)
+        assert.strictEqual(decorations.length, 1)
+        assert.strictEqual(decorations[0].renderOptions?.after?.backgroundColor, "#F3F7FB")
+      } finally {
+        hints.dispose()
+      }
+    })
+
+    test("hovering a Body color shows the kit's color", async () => {
+      const provider = new PlaybookHoverProvider(extensionPath)
+      const content = '<Body color="default" text="x" />'
+      const document = await createTestDocument("typescriptreact", content)
+      const hover = (await provider.provideHover(document, document.positionAt(content.indexOf('"default"') + 2))) as vscode.Hover
+      const text = (hover.contents[0] as vscode.MarkdownString).value
+      assert.ok(text.includes("#242B42") && !text.includes("#93a8b8"), text)
+    })
+
     test("dynamic values, other props and other kits get none", () => {
       assert.deepStrictEqual(annotate("typescriptreact", "<Icon icon=\"x\" color={c} />"), [])
       assert.deepStrictEqual(annotate("typescriptreact", '<Icon icon="x" size="1x" />'), [])
