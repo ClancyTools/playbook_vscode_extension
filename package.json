@@ -82,7 +82,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "sync:data": "ts-node scripts/sync-playbook-data.ts"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

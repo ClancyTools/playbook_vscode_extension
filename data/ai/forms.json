@@ -1,0 +1,1032 @@
+{
+  "metadataVersion": 1,
+  "version": "18.3.0",
+  "builder": {
+    "class": "Playbook::Forms::Builder",
+    "helper": "pb_form_with",
+    "platforms": [
+      "rails"
+    ],
+    "setup": "<%= pb_form_with model: @user do |f| %>\n  <%= f.text_field :email, props: { label: \"Email\", required: true } %>\n<% end %>",
+    "formWith": "<%= form_with model: @user, builder: Playbook::Forms::Builder do |f| %>\n  <%= f.text_field :email, props: { label: \"Email\" } %>\n<% end %>",
+    "validation": "pb_form_with defaults validate to false. validate: true sets data-pb-form-validation for Playbook client validation. PbFormValidation finds the field kit via a *_kit classname, or via data-pb-dropdown / data-pb-multi-level-select for those kits. It binds invalid in capture on the form (not a one-time [required] snapshot) so controls that toggle required after mount still get data-message. Server/model validation remains the host application responsibility. Most builder fields also map record.errors into props.error unless the caller sets error explicitly (including nil).",
+    "lifecycle": "pb_form_with invokes formHelper when available. PbFormValidation is registered with PbKitRegistry; its MutationObserver handles dynamically added forms, including Turbo navigation. Load the Playbook Rails bundle in the host.",
+    "simpleForm": "No Simple Form adapter is declared by this contract. These methods belong to Playbook::Forms::Builder.",
+    "sources": [
+      "lib/playbook/pb_forms_helper.rb",
+      "lib/playbook/forms/builder.rb",
+      "lib/playbook/forms/builder/attribute_defaults.rb"
+    ]
+  },
+  "methods": [
+    {
+      "name": "email_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.email_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "email_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "number_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.number_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "number_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "search_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.search_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "search_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "telephone_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.telephone_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "telephone_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "text_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.text_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "text_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "password_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.password_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "password_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "url_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.url_field :email, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "text_input",
+      "signature": "url_field(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "text_area",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes.",
+        "value": "The Rails helper uses the model value unless overridden; explicit props.value is forwarded as the HTML value option. There is no builder defaultValue argument."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The current Rails-generated input or textarea value under the model-scoped name."
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Pass HTML attributes as builder keyword arguments, outside props, or in props.input_options. The Rails helper renders the input and receives both.",
+        "examples": {
+          "maxlength": 255,
+          "min": 0,
+          "step": "0.01",
+          "autocomplete": "email",
+          "data": {
+            "controller": "field"
+          }
+        },
+        "overrides": "The builder sets placeholder from props (default empty), forwards props.required when true, and forwards explicit props.type, value, disabled, autocomplete, mask and validation. props.input_options is merged last, so it overrides those and the keyword options: input_options.classname is appended to class, input_options.data is merged key by key, and a literal input_options.class is ignored. It derives props.input_options.id from the rendered input."
+      },
+      "validation": {
+        "required": "props.required: true sets required on the Rails-generated input. required: true as a builder HTML option also works.",
+        "indicator": "props.required_indicator is a visual label indicator, not validation.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation.pattern becomes pattern; props.validation.message becomes data-message. These do not replace props.error."
+      },
+      "block": {
+        "supported": true,
+        "description": "Forwarded to the underlying Rails helper. The builder itself supplies the kit block containing the Rails-generated field; this is not a custom kit-content block."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.text_area :bio, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "textarea",
+      "signature": "text_area(name, props: {}, **options, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/form_field_builder.rb"
+      ]
+    },
+    {
+      "name": "check_box",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes."
+      },
+      "submission": {
+        "submits": true,
+        "value": "checked_value and unchecked_value are extracted from keyword options and passed positionally to Rails check_box. Set both explicitly; this wrapper passes nil when omitted.",
+        "example": "checked_value: \"1\", unchecked_value: \"0\""
+      },
+      "htmlOptions": {
+        "argument": "**options",
+        "description": "Remaining keywords are passed as Rails check_box options. props.input_options is merged over them last, with classname appended to class and data merged key by key."
+      },
+      "validation": {
+        "required": "props.required sets the HTML required option.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": false,
+          "prop": "props.error",
+          "type": "boolean",
+          "example": "@user.errors[:terms].any?",
+          "description": "Checkbox does not auto-map record.errors. Pass a boolean styling flag; render any error message separately."
+        },
+        "client": "props.validation_message becomes data-message on the checkbox input."
+      },
+      "block": {
+        "supported": false,
+        "description": "The builder supplies the Rails checkbox as kit content; caller blocks are not forwarded."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.check_box :terms, checked_value: \"1\", unchecked_value: \"0\", props: { label: true, required: true, validation_message: \"Please accept the terms\", error: @user.errors[:terms].any? } %>\n<% end %>",
+      "kit": "checkbox",
+      "signature": "check_box(name, props: {}, **options)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/checkbox_field.rb"
+      ]
+    },
+    {
+      "name": "collection_select",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes."
+      },
+      "submission": {
+        "submits": true,
+        "value": "Selected option value(s) from the Rails select helper.",
+        "multi": "For multiple selection, set html_options.multiple. Rails controls array naming and auxiliary hidden inputs."
+      },
+      "htmlOptions": {
+        "argument": "html_options",
+        "description": "Pass input attributes in the positional html_options hash. props.input_options forwards only id, class and data. An explicitly supplied props.blank_selection sets options.prompt (nil becomes empty), overriding any explicit prompt. Otherwise options.prompt is preserved, including false or nil to omit the prompt; when neither is supplied, the prompt defaults to empty."
+      },
+      "validation": {
+        "required": "props.required sets html_options.required.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes data-message."
+      },
+      "block": {
+        "supported": false,
+        "description": "Caller blocks are not forwarded."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.collection_select :country_id, @countries, :id, :name, {}, {}, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "select",
+      "signature": "collection_select(name, collection, value_method, text_method, options = {}, html_options = {}, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/collection_select_field.rb"
+      ]
+    },
+    {
+      "name": "date_picker",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The builder sets props.name to object_name[attribute] and props.picker_id to object_name_attribute, then renders a model-bound text_field.",
+        "value": "Unless props.default_date is set, the builder serializes the model attribute as wall-clock YYYY-MM-DDT00:00:00 (or YYYY-MM-DDTHH:MM:SS when enable_time). Prefer *_before_type_cast when the value came from the user so invalid input is re-rendered. Explicit default_date wins."
+      },
+      "htmlOptions": {
+        "argument": "props",
+        "description": "input_data and input_aria become field data and aria; disable_input becomes disabled. No arbitrary HTML keyword pass-through."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The underlying model-bound text field value."
+      },
+      "validation": {
+        "required": "props.required is passed to the nested text_field.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message is forwarded as the nested text field validation.message."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.date_picker :birthday, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "date_picker",
+      "signature": "date_picker(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/date_picker_field.rb"
+      ]
+    },
+    {
+      "name": "dropdown_field",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is assigned directly to props.name. Pass the model attribute (e.g. :country) so auto-bound values and errors can read @object; supply user[country] explicitly when you need a nested parameter name instead.",
+        "value": "Unless props.default_value is set, the builder reads the model attribute and resolves it against props.options to an option hash (or array of hashes for multi_select). Unmatched ids are left unset; bare ids are never passed through."
+      },
+      "htmlOptions": {
+        "supported": false,
+        "description": "This method accepts props only, not arbitrary HTML keyword arguments."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "Selected option id in a CSS-hidden input (not input type=hidden).",
+        "multi": "syncHiddenInputs emits one hidden input per selected id in selection order, adds [] to the name only if absent and clears the original CSS-hidden input and removes its name while selections exist, so no blank array entry is submitted. When empty, the original name and required state are restored, including after Turbo reconnects. These submission fixes apply whether or not allow_option_creation is enabled. With enable_pill_reorder, drag or keyboard reordering updates that same selection order before syncHiddenInputs runs, so submitted values and pb:dropdown:reordered / pb:dropdown:selected details match the pill order. Comma-joining is used for default-value encoding, not as an additional submitted selection.",
+        "dynamicOptions": "props.options_by_context with props.context_selector replaces the rendered options when the referenced element fires change, and props.clear_on_context_change (default true) then clears the selection, so a context change can submit an empty value. A pb:dropdown:updateOptions event, or an event named in props.options_event_type, replaces options the same way; clearSelection: false keeps only selections whose id exists in the replacement options."
+      },
+      "validation": {
+        "required": "props.required sets required on the CSS-hidden input. Do not assume a focusable native validation UI.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes data-message on the CSS-hidden input (single and multi-select)."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.dropdown_field :country, props: { label: \"Country\", options: [{ id: \"ca\", value: \"canada\", label: \"Canada\" }], required: true, validation_message: \"Please select a country\" } %>\n<% end %>",
+      "kit": "dropdown",
+      "signature": "dropdown_field(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/dropdown_field.rb"
+      ]
+    },
+    {
+      "name": "select",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes."
+      },
+      "submission": {
+        "submits": true,
+        "value": "Selected option value(s) from the Rails select helper.",
+        "multi": "For multiple selection, set html_options.multiple. Rails controls array naming and auxiliary hidden inputs."
+      },
+      "htmlOptions": {
+        "argument": "html_options",
+        "description": "Pass input attributes in the positional html_options hash. props.input_options forwards only id, class and data. An explicitly supplied props.blank_selection sets options.prompt (nil becomes empty), overriding any explicit prompt. Otherwise options.prompt is preserved, including false or nil to omit the prompt; when neither is supplied, the prompt defaults to empty."
+      },
+      "validation": {
+        "required": "props.required sets html_options.required.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes data-message."
+      },
+      "block": {
+        "supported": true,
+        "description": "Passed to Rails select to construct option tags."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.select :country, [[\"Canada\", \"ca\"]], {}, {}, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "select",
+      "signature": "select(name, choices = nil, options = {}, html_options = {}, props: {}, &block)",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/select_field.rb"
+      ]
+    },
+    {
+      "name": "intl_telephone",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is converted to a string and assigned directly. id defaults to object_name_attribute, which does not imply a model-scoped name.",
+        "value": "Unless props.value is set, the builder stringifies the model attribute when present."
+      },
+      "htmlOptions": {
+        "supported": false,
+        "description": "This method accepts props only, not arbitrary HTML keyword arguments."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The named phone text input.",
+        "additionalFields": "With hidden_inputs: true, intl-tel-input is configured with literal names `${name}_full` and `${name}_country_code`. These suffixes are appended to the entire name string."
+      },
+      "validation": {
+        "required": "props.required is forwarded to the nested text_input.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message replaces the kit-owned required empty-field copy (default \"Missing phone number\"). Format errors remain kit-owned. PbFormValidation skips phone fields."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.intl_telephone :phone, props: { label: \"Phone\", required: true, validation_message: \"Phone number is required\" } %>\n<% end %>",
+      "kit": "phone_number_input",
+      "signature": "intl_telephone(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/intl_telephone_field.rb"
+      ]
+    },
+    {
+      "name": "multi_level_select",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is assigned directly to props.name. Pass the model attribute (e.g. :country) so auto-bound values and errors can read @object; supply user[country] explicitly when you need a nested parameter name instead.",
+        "value": "Unless props.selected_ids is set, the builder sets selected_ids from Array(model attribute).map(&:to_s) when present so string and numeric tree ids match."
+      },
+      "htmlOptions": {
+        "supported": false,
+        "description": "This method accepts props only, not arbitrary HTML keyword arguments."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "JavaScript renders one hidden input per selected item id, named name[]. This also applies to variant: single.",
+        "multi": "Pass user[regions], without [], to submit user[regions][] entries."
+      },
+      "validation": {
+        "required": "props.required is used by the kit. The search input is required when empty; kit JS removes required from the search input once currentSelected() is non-empty. Hidden selected-value inputs also receive required, but type=hidden is not constraint-validated.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes data-message on the search input. Kit JS clears custom validity when the selection changes."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.multi_level_select :regions, props: { label: \"Regions\", tree_data: @regions, required: true, validation_message: \"Please select a region\" } %>\n<% end %>",
+      "kit": "multi_level_select",
+      "signature": "multi_level_select(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/multi_level_select_field.rb"
+      ]
+    },
+    {
+      "name": "phone_number_field",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is converted to a string and assigned directly. id defaults to object_name_attribute, which does not imply a model-scoped name.",
+        "value": "Unless props.value is set, the builder stringifies the model attribute when present."
+      },
+      "htmlOptions": {
+        "supported": false,
+        "description": "This method accepts props only, not arbitrary HTML keyword arguments."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The named phone text input.",
+        "additionalFields": "With hidden_inputs: true, intl-tel-input is configured with literal names `${name}_full` and `${name}_country_code`. These suffixes are appended to the entire name string."
+      },
+      "validation": {
+        "required": "props.required is forwarded to the nested text_input.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message replaces the kit-owned required empty-field copy (default \"Missing phone number\"). Format errors remain kit-owned. PbFormValidation skips phone fields."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.phone_number_field :phone, props: { label: \"Phone\", required: true, validation_message: \"Phone number is required\" } %>\n<% end %>",
+      "kit": "phone_number_input",
+      "signature": "phone_number_field(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/phone_number_field.rb"
+      ]
+    },
+    {
+      "name": "star_rating_field",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is assigned directly to props.name. Pass the model attribute (e.g. :country) so auto-bound values and errors can read @object; supply user[country] explicitly when you need a nested parameter name instead.",
+        "value": "Unless props.default_value or props.rating is set, the builder sets default_value from the model attribute. props.rating still controls display rendering when supplied."
+      },
+      "htmlOptions": {
+        "argument": "props.input_options",
+        "description": "The kit merges input_options first, then overrides data, name, required, style and value."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "when": "variant: interactive",
+        "value": "The interactive rating input value. The default display variant does not render this input."
+      },
+      "validation": {
+        "required": "props.required sets required on the CSS-hidden rating input.",
+        "error": {
+          "supported": false,
+          "automatic": false,
+          "description": "This kit has no error prop. Render model errors separately."
+        },
+        "client": "props.validation_message becomes data-message on the CSS-hidden rating input."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.star_rating_field :rating, props: { label: \"Rating\", variant: \"interactive\", required: true, validation_message: \"Please provide a rating\" } %>\n<% end %>",
+      "kit": "star_rating",
+      "signature": "star_rating_field(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/star_rating_field.rb"
+      ]
+    },
+    {
+      "name": "time_zone_select_field",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The Rails helper derives the input name from the builder object name and attribute, including nested form scopes."
+      },
+      "submission": {
+        "submits": true,
+        "value": "Selected option value(s) from the Rails select helper.",
+        "multi": "For multiple selection, set html_options.multiple. Rails controls array naming and auxiliary hidden inputs."
+      },
+      "htmlOptions": {
+        "argument": "html_options",
+        "description": "Pass input attributes in the positional html_options hash. props.input_options forwards only id, class and data. props.blank_selection sets options.prompt (default empty), overriding any explicit prompt."
+      },
+      "validation": {
+        "required": "props.required sets html_options.required.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes data-message."
+      },
+      "block": {
+        "supported": false,
+        "description": "Caller blocks are not forwarded."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.time_zone_select_field :time_zone, nil, {}, {}, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "select",
+      "signature": "time_zone_select_field(name, choices = {}, options = {}, html_options = {}, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/time_zone_select_field.rb"
+      ]
+    },
+    {
+      "name": "time_picker",
+      "binding": {
+        "modelScopedName": true,
+        "modelValue": true,
+        "name": "The builder sets props.name to object_name[attribute] and props.id to object_name_attribute.",
+        "value": "Unless props.default_time or props.value is set, the builder serializes the model attribute as HH:MM."
+      },
+      "htmlOptions": {
+        "supported": false,
+        "description": "This method accepts props only, not arbitrary HTML keyword arguments."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "The named time text field. The kit also renders hour, minute and meridiem controls with picker-specific names."
+      },
+      "validation": {
+        "required": "props.required is passed to the nested text_input.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Unless props.error is set (including explicit nil), the builder sets it from record.errors.full_messages_for(attribute).first when present."
+        },
+        "client": "props.validation_message becomes the nested text_input validation.message."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.time_picker :appointment_time, props: { label: true, required: true } %>\n<% end %>",
+      "kit": "time_picker",
+      "signature": "time_picker(name, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/time_picker_field.rb"
+      ]
+    },
+    {
+      "name": "typeahead",
+      "binding": {
+        "modelScopedName": false,
+        "modelValue": true,
+        "name": "The name argument is assigned directly to props.name. Pass the model attribute (e.g. :country) so auto-bound values and errors can read @object; supply user[country] explicitly when you need a nested parameter name instead.",
+        "value": "Unless props.default_options is set, the builder auto-binds only when the model attribute is already option-shaped ({label,value} or an array of those). A bare id still needs explicit default_options."
+      },
+      "htmlOptions": {
+        "argument": "props.input_options",
+        "description": "The positional _options and _html_options are ignored. input_options.id defaults to name_input. Other input_options behavior depends on the native/React rendering branch."
+      },
+      "block": {
+        "supported": false,
+        "description": "This builder method does not forward a caller block to the kit."
+      },
+      "submission": {
+        "submits": true,
+        "value": "Depends on the rendering branch. Native Rails renders a named search text_input; the React-backed branch delegates selection submission to Typeahead.",
+        "multi": {
+          "status": "unknown",
+          "description": "No uniform array serialization contract is declared here across both rendering branches."
+        }
+      },
+      "validation": {
+        "required": "props.required is handled by the kit rendering branch.",
+        "indicator": "props.required_indicator is visual only.",
+        "error": {
+          "automatic": true,
+          "prop": "props.error",
+          "type": "string",
+          "example": "Omit props.error, or pass an explicit message / nil to override",
+          "description": "Auto-mapped or explicit error is set on props. The React-backed branch receives it; the native Rails template does not forward error to its nested text_input."
+        },
+        "client": "props.validation.message is copied to input_options.data.validation_message; the kit also receives validation."
+      },
+      "example": "<%= pb_form_with model: @user do |f| %>\n  <%= f.typeahead :country, props: { label: \"Country\", is_multi: false, options: [{ label: \"Canada\", value: \"ca\" }], required: true } %>\n<% end %>",
+      "kit": "typeahead",
+      "signature": "typeahead(name, _options = {}, _html_options = {}, props: {})",
+      "sources": [
+        "lib/playbook/forms/builder.rb",
+        "lib/playbook/forms/builder/typeahead_field.rb"
+      ]
+    }
+  ],
+  "actions": {
+    "description": "Yields an ActionArea inside ol.pb-form-actions. submit defaults props.type to submit and props.text to the supplied value or Rails submit_default_value. button renders supplied props in an li.",
+    "example": "<%= f.actions do |action| %>\n  <%= action.submit \"Save\" %>\n<% end %>",
+    "name": "actions",
+    "signature": "actions",
+    "kit": "button",
+    "methods": [
+      "submit(value = nil, props: {})",
+      "button(_value = nil, props:)"
+    ],
+    "sources": [
+      "lib/playbook/forms/builder.rb",
+      "lib/playbook/forms/builder/action_area.rb"
+    ]
+  },
+  "faqs": [
+    {
+      "id": "forms.setup",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "Can I use this kit in a Rails form?",
+        "How do I use pb_form_with or form_with?"
+      ],
+      "answer": "Use Playbook-owned pb_form_with, or form_with with builder: Playbook::Forms::Builder. See the listed methods and examples for this kit. Builder arguments are a separate API from standalone kit props.",
+      "contractPaths": [
+        "form.rails.builder.setup",
+        "form.rails.builder.formWith"
+      ]
+    },
+    {
+      "id": "forms.validation",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "How do I show ActiveRecord errors?",
+        "Does required_indicator validate?",
+        "How do I enable client validation?",
+        "How do I set a custom required-field message?"
+      ],
+      "answer": "Most builder fields auto-map record.errors.full_messages_for(attribute) into props.error unless error is set explicitly (including nil to opt out). Checkbox still needs an explicit boolean error flag, and StarRating has no error prop. A required indicator is visual only. pb_form_with validate: true enables Playbook client validation; it does not run model validations. Custom required messages use props.validation.message on text-style fields (including text_area and telephone_field) and props.validation_message on selection-style fields (select, dropdown_field, check_box, phone_number_field, star_rating_field, multi_level_select, and similar). Phone kits own their UI and use validation_message for the empty required copy only.",
+      "contractPaths": [
+        "form.rails.builder.validation",
+        "form.rails.builder.methods"
+      ],
+      "props": [
+        "error",
+        "required",
+        "requiredIndicator",
+        "validation",
+        "validationMessage"
+      ]
+    },
+    {
+      "id": "forms.binding",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "How does the value POST?",
+        "Are names model scoped?",
+        "Does the builder read the model value?"
+      ],
+      "answer": "Check the method binding and submission fields. With a bound model, most fields auto-populate values (default_date, default_value, selected_ids, default_options, etc.) unless those props are set. Rails-helper wrappers use model-scoped names; direct kit wrappers assign the name argument to props.name verbatim—pass the attribute for auto-bind, or a nested string like user[country] when you need that parameter shape.",
+      "contractPaths": [
+        "form.rails.builder.methods"
+      ],
+      "props": [
+        "name",
+        "value",
+        "defaultValue"
+      ]
+    },
+    {
+      "id": "forms.html-options",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "Where do name id required maxlength min step autocomplete and data attributes go?",
+        "What can I put in input_options?"
+      ],
+      "answer": "Use the method htmlOptions contract. Text field wrappers accept HTML keyword arguments outside props; select wrappers accept positional html_options. Direct wrappers generally accept only props. Text field wrappers and check_box also merge props.input_options into the Rails-generated field; other methods do not.",
+      "contractPaths": [
+        "form.rails.builder.methods"
+      ],
+      "props": [
+        "inputOptions",
+        "required",
+        "name",
+        "id"
+      ]
+    },
+    {
+      "id": "forms.turbo",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "Does pb_form_with initialize after Turbo navigation?",
+        "Do I need a Stimulus controller to initialize the form?"
+      ],
+      "answer": "pb_form_with invokes formHelper when available, and Playbook registers PbFormValidation with PbKitRegistry for dynamically added forms. This requires the Playbook Rails bundle. No host-specific Stimulus controller is part of this contract.",
+      "contractPaths": [
+        "form.rails.builder.lifecycle"
+      ]
+    },
+    {
+      "id": "forms.simple-form",
+      "platforms": [
+        "rails"
+      ],
+      "questions": [
+        "Can I use these methods with Simple Form?"
+      ],
+      "answer": "The documented methods belong to Playbook::Forms::Builder. This metadata does not declare a Simple Form adapter; host integrations must be documented separately.",
+      "contractPaths": [
+        "form.rails.builder.simpleForm"
+      ]
+    }
+  ]
+}

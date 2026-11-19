@@ -1,6 +1,30 @@
-import * as fs from "fs"
-import * as path from "path"
-import * as vscode from "vscode"
+import {
+  readAiJson,
+  readBundledJson,
+  resetAiData,
+  resolveAiSource,
+  forceBundledSource,
+  AiSource,
+} from "./aiData"
+import type { Playground } from "./playgrounds"
+
+export type Platform = "rails" | "react"
+
+/** Rails-flavoured languages; everything else is treated as React. */
+export function platformFor(languageId: string): Platform {
+  return ["ruby", "erb", "html.erb", "html"].includes(languageId) ? "rails" : "react"
+}
+
+export interface PlatformSplit<T> {
+  react?: T
+  rails?: T
+}
+
+export interface DeprecationInfo {
+  message?: string
+  replacement?: string
+  platforms: Platform[]
+}
 
 export interface NestedPropShape {
   type: string
@@ -8,9 +32,15 @@ export interface NestedPropShape {
 }
 
 export interface PropMetadata {
+  /** React's type when the platforms differ (see typeByPlatform). */
   type: string
   default?: string
+  /** Union of every platform's values; use getPropValues for a platform's own. */
   values?: string[]
+  typeByPlatform?: PlatformSplit<string>
+  valuesByPlatform?: PlatformSplit<string[]>
+  defaultByPlatform?: PlatformSplit<string>
+  deprecated?: DeprecationInfo
   platforms?: string[]
   required?: boolean
   description?: string
@@ -24,6 +54,21 @@ export interface ExternalDependency {
   note?: string
   optional?: boolean
   docs?: string
+}
+
+export interface KitVisualInfo {
+  looksLike?: string[]
+  /** Kits people confuse this one with (and should use instead). */
+  not?: string[]
+  gotchas?: string[]
+  typicalProps?: string[]
+}
+
+export interface KitFaq {
+  id: string
+  platforms?: string[]
+  questions: string[]
+  answer: string
 }
 
 export interface ComponentMetadata {
@@ -42,12 +87,25 @@ export interface ComponentMetadata {
   railsExample?: string
   railsNote?: string
   examplePreset?: string
+  visual?: KitVisualInfo
+  faqs?: KitFaq[]
+  /** Deprecated props keyed by snake_case name. */
+  deprecatedProps?: Record<string, DeprecationInfo>
+}
+
+/** What Playbook publishes about a `Playbook::Forms::Builder` method. */
+export interface FormMethodContract {
+  signature?: string
+  example?: string
+  /** Prose from the contract, keyed by topic (binding, validation, ...). */
+  notes: Array<{ topic: string; text: string }>
 }
 
 export interface FormBuilderField {
   name: string
   kit: string
   props: Record<string, PropMetadata>
+  contract?: FormMethodContract
 }
 
 export interface FormBuilderMetadata {
@@ -60,6 +118,9 @@ export interface DomSafeWarning {
 }
 
 export interface PlaybookMetadata {
+  /** Playbook version and origin of the data these docs came from. */
+  version?: string
+  source?: AiSource
   globalProps?: Record<string, PropMetadata>
   components: Record<string, ComponentMetadata>
   formBuilders?: FormBuilderMetadata
@@ -73,10 +134,12 @@ interface RawNestedPropShape {
   values?: unknown[]
 }
 
+type RawSplit<T> = T | PlatformSplit<T>
+
 interface RawPropData {
-  type?: string
+  type?: RawSplit<string>
   default?: unknown
-  values?: unknown[]
+  values?: RawSplit<unknown[]>
   platforms?: string[]
   description?: string
   example?: string
@@ -112,9 +175,18 @@ interface RawKit {
     }
   }
   props?: Record<string, RawPropData>
+  faqs?: KitFaq[]
+}
+
+interface RawVisualKit {
+  looksLike?: string[]
+  not?: string[]
+  gotchas?: string[]
+  cues?: { typicalProps?: string[] }
 }
 
 interface RawSchema {
+  version?: string
   globalProps?: {
     props?: Record<string, RawPropData>
     spacing?: {
@@ -133,11 +205,157 @@ interface RawSchema {
 
 let cachedMetadata: PlaybookMetadata | null = null
 
-function camelToSnake(str: string): string {
+/** Forget loaded metadata so the next lookup re-discovers the Playbook source. */
+export function resetMetadataCache(): void {
+  cachedMetadata = null
+  cachedFormBuilderMetadata = null
+  resetAiData()
+}
+
+export function camelToSnake(str: string): string {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase()
 }
 
-function transformSchema(raw: RawSchema): PlaybookMetadata {
+export function snakeToCamel(str: string): string {
+  return str.replace(/_([a-z0-9])/g, (_, c: string) => c.toUpperCase())
+}
+
+/** True for Playbook's `{ react, rails }` platform-split representation. */
+function isSplit(value: unknown): value is PlatformSplit<unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false
+  }
+  const keys = Object.keys(value)
+  return keys.length > 0 && keys.every((k) => k === "react" || k === "rails")
+}
+
+function stringifyDefault(value: unknown): string {
+  return typeof value === "object" && value !== null ? JSON.stringify(value) : String(value)
+}
+
+function stringValues(values: unknown[]): string[] {
+  return values.map((v) => String(v))
+}
+
+function transformValues(raw: RawSplit<unknown[]> | undefined): {
+  values?: string[]
+  valuesByPlatform?: PlatformSplit<string[]>
+} {
+  if (Array.isArray(raw)) {
+    return { values: stringValues(raw) }
+  }
+  if (isSplit(raw)) {
+    const byPlatform: PlatformSplit<string[]> = {}
+    if (Array.isArray(raw.react)) {
+      byPlatform.react = stringValues(raw.react)
+    }
+    if (Array.isArray(raw.rails)) {
+      byPlatform.rails = stringValues(raw.rails)
+    }
+    const union = Array.from(new Set([...(byPlatform.react || []), ...(byPlatform.rails || [])]))
+    return { values: union, valuesByPlatform: byPlatform }
+  }
+  return {}
+}
+
+function transformProp(
+  raw: RawPropData,
+  deprecation?: DeprecationInfo
+): PropMetadata {
+  const prop: PropMetadata = { type: "string" }
+
+  if (isSplit(raw.type)) {
+    const byPlatform: PlatformSplit<string> = {}
+    if (raw.type.react !== undefined) {
+      byPlatform.react = String(raw.type.react)
+    }
+    if (raw.type.rails !== undefined) {
+      byPlatform.rails = String(raw.type.rails)
+    }
+    prop.type = byPlatform.react ?? byPlatform.rails ?? "string"
+    prop.typeByPlatform = byPlatform
+  } else if (typeof raw.type === "string" && raw.type) {
+    prop.type = raw.type
+  }
+
+  Object.assign(prop, transformValues(raw.values))
+
+  if (isSplit(raw.default)) {
+    const byPlatform: PlatformSplit<string> = {}
+    if (raw.default.react !== undefined) {
+      byPlatform.react = stringifyDefault(raw.default.react)
+    }
+    if (raw.default.rails !== undefined) {
+      byPlatform.rails = stringifyDefault(raw.default.rails)
+    }
+    prop.default = byPlatform.react ?? byPlatform.rails
+    prop.defaultByPlatform = byPlatform
+  } else if (raw.default !== undefined) {
+    prop.default = stringifyDefault(raw.default)
+  }
+
+  if (raw.platforms) {
+    prop.platforms = raw.platforms
+  }
+  if (raw.description !== undefined) {
+    prop.description = raw.description
+  }
+  if (raw.example !== undefined) {
+    prop.example = raw.example
+  }
+  if (raw.responsive !== undefined) {
+    prop.responsive = raw.responsive
+  }
+  if (raw.properties) {
+    prop.properties = Object.fromEntries(
+      Object.entries(raw.properties).map(([nestedName, nested]) => [
+        nestedName,
+        {
+          type: nested.type || "string",
+          values: nested.values?.map((v: unknown) => String(v)),
+        },
+      ])
+    )
+  }
+  if (deprecation) {
+    prop.deprecated = deprecation
+  }
+  return prop
+}
+
+/**
+ * Places where Playbook's published schema is wrong for one platform. Each
+ * entry removes the enum values for that platform so valid code isn't flagged.
+ * Found by running the extension over Nitro's real code; fix upstream, then
+ * delete the entry.
+ */
+const SCHEMA_CORRECTIONS: ReadonlyArray<{
+  kit: string
+  prop: string
+  platform: Platform
+  reason: string
+}> = [
+  {
+    kit: "tooltip",
+    prop: "position",
+    platform: "rails",
+    reason:
+      "React's position is the CSS strategy (absolute | fixed). Rails passes position to pb_tooltip_position as the placement (\"top\", \"bottom\", ...), but the schema publishes React's values for both.",
+  },
+]
+
+interface RawDeprecations {
+  props?: Record<string, Record<string, DeprecationInfo>>
+}
+
+interface RawVisualIndex {
+  kits?: Record<string, RawVisualKit>
+}
+
+function transformSchema(
+  raw: RawSchema,
+  extensionPath: string
+): PlaybookMetadata {
   const metadata: PlaybookMetadata = {
     components: {},
     globalProps: {},
@@ -149,27 +367,7 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
       if (camelName.startsWith("$")) {
         continue
       }
-      const snakeName = camelToSnake(camelName)
-      const properties: Record<string, NestedPropShape> | undefined = prop.properties
-        ? Object.fromEntries(
-            Object.entries(prop.properties).map(([nestedName, nestedProp]) => [
-              nestedName,
-              {
-                type: nestedProp.type || "string",
-                values: nestedProp.values?.map((v: unknown) => String(v)),
-              },
-            ])
-          )
-        : undefined
-      metadata.globalProps![snakeName] = {
-        type: prop.type || "string",
-        values: prop.values?.map((v: unknown) => String(v)),
-        default: prop.default !== undefined ? String(prop.default) : undefined,
-        description: prop.description,
-        example: prop.example,
-        responsive: prop.responsive,
-        properties,
-      }
+      metadata.globalProps![camelToSnake(camelName)] = transformProp(prop)
     }
   }
 
@@ -204,6 +402,9 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
     }
   }
 
+  const visualIndex = readAiJson<RawVisualIndex>(extensionPath, "visual-index.json")
+  const deprecations = readBundledJson<RawDeprecations>(extensionPath, "deprecations.json")
+
   // Transform kits → components
   if (raw.kits) {
     for (const [kitName, kit] of Object.entries(raw.kits)) {
@@ -223,6 +424,8 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         hasChildren = kit.usage.rails.example.includes("do %>")
       }
 
+      const kitDeprecations = deprecations?.props?.[kitName]
+
       // Transform props: camelCase → snake_case, preserve platform info
       const props: Record<string, PropMetadata> = {}
       if (kit.props) {
@@ -231,17 +434,21 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
             continue
           }
           const propSnake = camelToSnake(propCamel)
-          props[propSnake] = {
-            type: propData.type || "string",
-            values: propData.values?.map((v: unknown) => String(v)),
-            default:
-              propData.default !== undefined
-                ? String(propData.default)
-                : undefined,
-            platforms: propData.platforms,
+          props[propSnake] = transformProp(propData, kitDeprecations?.[propSnake])
+        }
+      }
+
+      for (const fix of SCHEMA_CORRECTIONS) {
+        const target = fix.kit === kitName ? props[fix.prop] : undefined
+        if (target) {
+          target.valuesByPlatform = { ...target.valuesByPlatform, [fix.platform]: [] }
+          if (fix.platform === "react" || !target.valuesByPlatform.react) {
+            target.valuesByPlatform.react = target.valuesByPlatform.react ?? target.values
           }
         }
       }
+
+      const visual = visualIndex?.kits?.[kitName]
 
       metadata.components[reactName] = {
         rails: railsName,
@@ -257,6 +464,16 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
         railsExample: kit.usage?.rails?.example,
         railsNote: kit.usage?.rails?.note,
         examplePreset: kit.usage?.react?.preset || kit.usage?.rails?.preset,
+        visual: visual
+          ? {
+              looksLike: visual.looksLike,
+              not: visual.not,
+              gotchas: visual.gotchas,
+              typicalProps: visual.cues?.typicalProps,
+            }
+          : undefined,
+        faqs: kit.faqs,
+        deprecatedProps: kitDeprecations,
         // Every kit currently opts in; only treat it as false when the
         // schema explicitly says so, so a future opt-out is respected.
         hasGlobalProps: kit.globalProps !== false,
@@ -275,48 +492,37 @@ function transformSchema(raw: RawSchema): PlaybookMetadata {
   return metadata
 }
 
+function loadFromCurrentSource(extensionPath: string): PlaybookMetadata {
+  const source = resolveAiSource(extensionPath)
+  const raw = readAiJson<RawSchema>(extensionPath, "all-schemas.json")
+  if (!raw) {
+    throw new Error(`No readable all-schemas.json in ${source.dir}`)
+  }
+  const metadata = transformSchema(raw, extensionPath)
+  metadata.source = source
+  metadata.version = source.version
+  console.log(
+    `[Playbook] Loaded metadata (${source.bundled ? "bundled" : "workspace"} v${source.version ?? "?"}) from ${source.dir}`
+  )
+  return metadata
+}
+
 export function loadMetadata(extensionPath: string): PlaybookMetadata {
   if (cachedMetadata) {
     return cachedMetadata
   }
 
-  // Try loading from workspace's node_modules first
-  const workspaceFolders = vscode.workspace.workspaceFolders
-  if (workspaceFolders) {
-    for (const folder of workspaceFolders) {
-      const wsPath = path.join(
-        folder.uri.fsPath,
-        "node_modules",
-        "playbook-ui",
-        "dist",
-        "ai",
-        "all-schemas.json"
-      )
-      if (fs.existsSync(wsPath)) {
-        try {
-          const content = fs.readFileSync(wsPath, "utf-8")
-          const raw = JSON.parse(content)
-          cachedMetadata = transformSchema(raw)
-          console.log(`[Playbook] Loaded metadata from workspace: ${wsPath}`)
-          return cachedMetadata
-        } catch (error) {
-          console.error(
-            `[Playbook] Failed to load workspace metadata: ${error}`
-          )
-        }
-      }
-    }
+  try {
+    cachedMetadata = loadFromCurrentSource(extensionPath)
+    return cachedMetadata
+  } catch (error) {
+    console.error(`[Playbook] Failed to load metadata: ${error}`)
   }
 
-  // Fall back to bundled schema
-  const bundledPath = path.join(extensionPath, "data", "all-schemas.json")
+  // The workspace's copy was unreadable or an unexpected shape: use ours.
   try {
-    const content = fs.readFileSync(bundledPath, "utf-8")
-    const raw = JSON.parse(content)
-    cachedMetadata = transformSchema(raw)
-    console.log(
-      `[Playbook] Loaded metadata from bundled schema: ${bundledPath}`
-    )
+    forceBundledSource(extensionPath)
+    cachedMetadata = loadFromCurrentSource(extensionPath)
     return cachedMetadata
   } catch (error) {
     console.error("Failed to load Playbook metadata:", error)
@@ -424,6 +630,51 @@ export function generateSubcomponentDocs(
 
 let cachedFormBuilderMetadata: FormBuilderMetadata | null = null
 
+interface RawFormMethod {
+  name: string
+  kit?: string
+  signature?: string
+  example?: string
+  binding?: { name?: string; value?: string }
+  submission?: { value?: string }
+  htmlOptions?: { description?: string; overrides?: string }
+  validation?: { required?: string; indicator?: string; client?: string; error?: { description?: string } }
+  block?: { description?: string }
+}
+
+interface RawForms {
+  methods?: RawFormMethod[]
+}
+
+function contractFor(method: RawFormMethod): FormMethodContract {
+  const notes: Array<{ topic: string; text: string }> = []
+  const add = (topic: string, text?: string) => {
+    if (text) {
+      notes.push({ topic, text })
+    }
+  }
+  add("Binding", method.binding?.value)
+  add("HTML options", method.htmlOptions?.description)
+  add("Required", method.validation?.required)
+  add("Errors", method.validation?.error?.description)
+  add("Client validation", method.validation?.client)
+  return { signature: method.signature, example: method.example, notes }
+}
+
+/**
+ * data/form-builders.json was gathered from Playbook's file names, which differ
+ * from the method names for these (`checkbox_field.rb` defines `check_box`).
+ */
+const LEGACY_FIELD_NAMES: Record<string, string> = {
+  check_box: "checkbox_field",
+}
+
+/**
+ * Builder methods come from Playbook's own contract (`forms.json`), so the
+ * names match what `Playbook::Forms::Builder` really defines (`check_box`,
+ * `select`, `date_picker`, ...). Each method's props are its kit's Rails
+ * props plus the builder-level props gathered in data/form-builders.json.
+ */
 export function loadFormBuilderMetadata(
   extensionPath: string
 ): FormBuilderMetadata {
@@ -431,17 +682,60 @@ export function loadFormBuilderMetadata(
     return cachedFormBuilderMetadata
   }
 
-  const metadataPath = path.join(extensionPath, "data", "form-builders.json")
+  const legacy = readBundledJson<FormBuilderMetadata>(extensionPath, "form-builders.json")
+  const forms = readAiJson<RawForms>(extensionPath, "forms.json")
 
-  try {
-    const content = fs.readFileSync(metadataPath, "utf-8")
-    const data = JSON.parse(content)
-    cachedFormBuilderMetadata = data
-    return data
-  } catch (error) {
-    console.error("Failed to load form builder metadata:", error)
-    return { fields: [] }
+  if (!forms?.methods) {
+    cachedFormBuilderMetadata = legacy || { fields: [] }
+    return cachedFormBuilderMetadata
   }
+
+  const metadata = loadMetadata(extensionPath)
+  const fields: FormBuilderField[] = forms.methods
+    .filter((m) => m.kit)
+    .map((method) => {
+      const kit = method.kit as string
+      const legacyNames = [method.name, `${method.name}_field`, LEGACY_FIELD_NAMES[method.name]]
+      const legacyField = legacy?.fields.find((f) => legacyNames.includes(f.name))
+      const props: Record<string, PropMetadata> = { ...(legacyField?.props || {}) }
+      const component = findComponentByRailsName(metadata, kit)
+      for (const [name, prop] of Object.entries(component?.props || {})) {
+        if (isPropValidForPlatform(prop, "erb")) {
+          props[name] = prop
+        }
+      }
+      return { name: method.name, kit, props, contract: contractFor(method) }
+    })
+
+  cachedFormBuilderMetadata = { fields }
+  return cachedFormBuilderMetadata
+}
+
+/** Markdown for hovering a form builder method such as `f.check_box`. */
+export function generateFormMethodDocs(field: FormBuilderField): string {
+  const lines: string[] = []
+  lines.push(`# ${field.name}`)
+  lines.push("")
+  lines.push(`Playbook form builder method, rendering the \`${field.kit}\` kit.`)
+  lines.push("")
+  if (field.contract?.signature) {
+    lines.push("```ruby")
+    lines.push(field.contract.signature)
+    lines.push("```")
+    lines.push("")
+  }
+  if (field.contract?.example) {
+    lines.push("```erb")
+    lines.push(field.contract.example)
+    lines.push("```")
+    lines.push("")
+  }
+  for (const note of field.contract?.notes || []) {
+    lines.push(`**${note.topic}:** ${note.text}`)
+    lines.push("")
+  }
+  lines.push(`Props are the \`${field.kit}\` kit's Rails props; HTML attributes go in \`props: { input_options: { ... } }\`.`)
+  return lines.join("\n")
 }
 
 export function findFormBuilderField(
@@ -456,8 +750,61 @@ export function findFormBuilderField(
  * @param prop The prop metadata
  * @returns The appropriate values array for the context
  */
-export function getPropValues(prop: PropMetadata): string[] | undefined {
+export function getPropValues(
+  prop: PropMetadata,
+  languageId?: string
+): string[] | undefined {
+  if (languageId && prop.valuesByPlatform) {
+    const own = prop.valuesByPlatform[platformFor(languageId)]
+    if (own) {
+      return own
+    }
+  }
   return prop.values
+}
+
+/** The prop's type as seen from the given language (React vs Rails). */
+export function getPropType(prop: PropMetadata, languageId?: string): string {
+  if (languageId && prop.typeByPlatform) {
+    return prop.typeByPlatform[platformFor(languageId)] ?? prop.type
+  }
+  return prop.type
+}
+
+/** True when "boolean" is the prop's type or one member of a union type. */
+export function isBooleanProp(prop: PropMetadata, languageId?: string): boolean {
+  return getPropType(prop, languageId)
+    .split("|")
+    .some((t) => t.trim() === "boolean")
+}
+
+export function getPropDefault(
+  prop: PropMetadata,
+  languageId?: string
+): string | undefined {
+  if (languageId && prop.defaultByPlatform) {
+    const own = prop.defaultByPlatform[platformFor(languageId)]
+    if (own !== undefined) {
+      return own
+    }
+  }
+  return prop.default
+}
+
+/**
+ * The prop's deprecation if it applies to the given language. Deprecations
+ * that are recorded only for the other platform return undefined.
+ */
+export function getPropDeprecation(
+  component: ComponentMetadata,
+  snakeProp: string,
+  languageId: string
+): DeprecationInfo | undefined {
+  const info = component.props[snakeProp]?.deprecated ?? component.deprecatedProps?.[snakeProp]
+  if (!info) {
+    return undefined
+  }
+  return info.platforms.includes(platformFor(languageId)) ? info : undefined
 }
 
 /**
@@ -516,6 +863,10 @@ export function findGlobalPropForComponent(
 
 const PLAYBOOK_DOCS_BASE = "https://playbook.powerapp.cloud/kits"
 
+export function docsUrlFor(component: ComponentMetadata, platform: Platform): string {
+  return `${PLAYBOOK_DOCS_BASE}/${component.rails}/${platform}`
+}
+
 function docsLinksFor(component: ComponentMetadata): string {
   const platforms =
     component.platforms && component.platforms.length > 0
@@ -529,10 +880,112 @@ function docsLinksFor(component: ComponentMetadata): string {
     .join(" · ")
 }
 
+/**
+ * Guidance Playbook publishes alongside a kit: what it is easily confused with,
+ * known gotchas, named presets, and answers to common questions.
+ */
+export function kitGuidanceLines(
+  component: ComponentMetadata,
+  playground?: Playground
+): string[] {
+  const lines: string[] = []
+  const visual = component.visual
+
+  if (visual?.not && visual.not.length > 0) {
+    lines.push(
+      `_Often confused with:_ ${visual.not.map(n => `\`${n}\``).join(", ")}`
+    )
+    lines.push("")
+  }
+
+  if (visual?.gotchas && visual.gotchas.length > 0) {
+    lines.push("**Good to know**")
+    for (const gotcha of visual.gotchas) {
+      lines.push(`- ${gotcha}`)
+    }
+    lines.push("")
+  }
+
+  const presets = playground?.presets?.map(p => p.name) || []
+  if (presets.length > 0) {
+    const shown = presets.slice(0, 6).map(n => `\`${n}\``).join(", ")
+    const more = presets.length > 6 ? ` and ${presets.length - 6} more` : ""
+    lines.push(`**Presets:** ${shown}${more} — insert one from the completion list.`)
+    lines.push("")
+  }
+
+  if (component.faqs && component.faqs.length > 0) {
+    lines.push("**FAQ**")
+    for (const faq of component.faqs) {
+      lines.push(`- _${faq.questions[0]}_ ${faq.answer}`)
+    }
+    lines.push("")
+  }
+
+  const deprecated = Object.entries(component.deprecatedProps || {})
+  if (deprecated.length > 0) {
+    lines.push(
+      `⚠️ **Deprecated props:** ${deprecated
+        .map(([name, d]) => (d.replacement ? `\`${name}\` → \`${d.replacement}\`` : `\`${name}\``))
+        .join(", ")}`
+    )
+    lines.push("")
+  }
+  return lines
+}
+
+/**
+ * Extra hover lines for one prop: deprecation, what it pairs with, and the
+ * playground hints that apply when it is set.
+ */
+export function propGuidanceLines(
+  component: ComponentMetadata,
+  snakeProp: string,
+  playground: Playground | undefined,
+  languageId: string
+): string[] {
+  const lines: string[] = []
+  const platform = platformFor(languageId)
+  const name = (snake: string) => (platform === "rails" ? snake : snakeToCamel(snake))
+
+  const deprecation = getPropDeprecation(component, snakeProp, languageId)
+  if (deprecation) {
+    let line = "⚠️ **Deprecated.**"
+    if (deprecation.replacement) {
+      line += ` Use \`${name(deprecation.replacement)}\` instead.`
+    } else if (deprecation.message) {
+      line += ` ${deprecation.message}`
+    }
+    lines.push(line)
+  }
+
+  const camel = snakeToCamel(snakeProp)
+  const requires = playground?.conditionals?.[camel]?.requires
+  if (requires) {
+    const parts =
+      typeof requires === "string"
+        ? [`\`${name(camelToSnake(requires))}\``]
+        : Object.entries(requires).map(([key, value]) =>
+            value === true
+              ? `\`${name(camelToSnake(key))}\``
+              : `\`${name(camelToSnake(key))}\` = \`${JSON.stringify(value)}\``
+          )
+    lines.push(`Used together with ${parts.join(" and ")}.`)
+  }
+
+  for (const hint of Object.values(playground?.hints || {})) {
+    if (hint.when && Object.prototype.hasOwnProperty.call(hint.when, camel)) {
+      lines.push(`${hint.type === "warning" ? "⚠️" : "ℹ️"} ${hint.message}`)
+    }
+  }
+  return lines
+}
+
 export function generateComponentDocs(
   componentName: string,
   component: ComponentMetadata,
-  metadata: PlaybookMetadata
+  metadata: PlaybookMetadata,
+  playground?: Playground
 ): string {
   const lines: string[] = []
 
@@ -555,6 +1008,8 @@ export function generateComponentDocs(
     lines.push(`_Category: ${component.category}_`)
     lines.push("")
   }
+
+  lines.push(...kitGuidanceLines(component, playground))
 
   const supportsReact =
     !component.platforms || component.platforms.includes("react")
@@ -670,6 +1125,10 @@ export function generateComponentDocs(
         lines.push("- **Required**")
       }
 
+      if (prop.deprecated) {
+        lines.push("- ⚠️ **Deprecated**")
+      }
+
       lines.push("")
     }
   }
@@ -718,9 +1177,12 @@ export function generatePropDocs(
   propName: string,
   prop: PropMetadata,
   isGlobal: boolean = false,
-  metadata?: PlaybookMetadata
+  metadata?: PlaybookMetadata,
+  languageId?: string
 ): string {
   const lines: string[] = []
+  const values = getPropValues(prop, languageId)
+  const defaultValue = getPropDefault(prop, languageId)
 
   lines.push(`**${propName}**${isGlobal ? " *(global prop)*" : ""}`)
 
@@ -728,12 +1190,12 @@ export function generatePropDocs(
     lines.push(prop.description)
   }
 
-  lines.push(`Type: \`${prop.type}\``)
+  lines.push(`Type: \`${getPropType(prop, languageId)}\``)
 
-  if (prop.values && prop.values.length > 0) {
+  if (values && values.length > 0) {
     const spacingTokens = metadata?.spacingTokens
     lines.push(
-      `Values: ${prop.values
+      `Values: ${values
         .map(v => {
           const px = spacingTokens?.[v]
           return px ? `\`${v}\` (${px})` : `\`${v}\``
@@ -742,8 +1204,8 @@ export function generatePropDocs(
     )
   }
 
-  if (prop.default !== undefined) {
-    lines.push(`Default: \`${prop.default}\``)
+  if (defaultValue !== undefined) {
+    lines.push(`Default: \`${defaultValue}\``)
   }
 
   if (prop.properties && Object.keys(prop.properties).length > 0) {

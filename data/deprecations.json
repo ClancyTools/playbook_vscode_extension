@@ -1,0 +1,106 @@
+{
+  "generatedFrom": "playbook",
+  "props": {
+    "body": {
+      "status": {
+        "platforms": [
+          "react",
+          "rails"
+        ],
+        "message": "status prop is deprecated, use color instead please",
+        "replacement": "color"
+      }
+    },
+    "button": {
+      "type": {
+        "platforms": [
+          "react"
+        ],
+        "message": "Adds `pb_button_${type}` only (default `inline`). Use `fullWidth` for layout and `variant` for appearance. HTML type is `htmlType`."
+      }
+    },
+    "caption": {
+      "variant": {
+        "platforms": [
+          "react",
+          "rails"
+        ],
+        "message": "variant prop is deprecated, use color instead",
+        "replacement": "color"
+      }
+    },
+    "date_picker": {
+      "plugins": {
+        "platforms": [
+          "react",
+          "rails"
+        ]
+      }
+    },
+    "date_time_stacked": {
+      "date": {
+        "platforms": [
+          "react",
+          "rails"
+        ]
+      }
+    },
+    "flex": {
+      "horizontal": {
+        "platforms": [
+          "rails"
+        ]
+      },
+      "spacing": {
+        "platforms": [
+          "rails"
+        ]
+      },
+      "vertical": {
+        "platforms": [
+          "rails"
+        ]
+      }
+    },
+    "form": {
+      "form_system": {
+        "platforms": [
+          "rails"
+        ],
+        "message": "Playbook only supports form_with and this prop is ignored"
+      },
+      "form_system_options": {
+        "platforms": [
+          "rails"
+        ],
+        "message": "Use options instead"
+      }
+    },
+    "time_stacked": {
+      "date": {
+        "platforms": [
+          "react"
+        ],
+        "message": "date prop is deprecated, use time instead",
+        "replacement": "time"
+      }
+    },
+    "title": {
+      "variant": {
+        "platforms": [
+          "react",
+          "rails"
+        ],
+        "message": "variant prop is deprecated, use color instead",
+        "replacement": "color"
+      }
+    },
+    "tooltip": {
+      "trigger_element_id": {
+        "platforms": [
+          "rails"
+        ]
+      }
+    }
+  }
+}
