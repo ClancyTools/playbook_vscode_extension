@@ -185,6 +185,18 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               railsProp.range
             );
           }
+        } else {
+          const hover = this.subcomponentGlobalPropHover(
+            metadata,
+            componentContext.type,
+            componentContext.componentName,
+            railsProp.propName,
+            railsProp.range,
+            document.languageId
+          );
+          if (hover) {
+            return hover;
+          }
         }
       }
     }
@@ -221,10 +233,54 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               reactProp.range
             );
           }
+        } else {
+          const hover = this.subcomponentGlobalPropHover(
+            metadata,
+            "react",
+            componentContext.componentName,
+            reactProp.propName.replace(/([A-Z])/g, "_$1").toLowerCase(),
+            reactProp.range,
+            document.languageId,
+            reactProp.propName
+          );
+          if (hover) {
+            return hover;
+          }
         }
       }
     }
 
     return null;
+  }
+
+  /**
+   * Subcomponents (card/card_body, Card.Body) have no schema of their own, but
+   * every component takes the global props, so those are documented through the
+   * parent kit.
+   */
+  private subcomponentGlobalPropHover(
+    metadata: PlaybookMetadata,
+    type: string,
+    componentName: string,
+    snakeProp: string,
+    range: vscode.Range,
+    languageId: string,
+    displayName: string = snakeProp
+  ): vscode.Hover | null {
+    const sub =
+      type === "rails"
+        ? findRailsSubcomponent(metadata, componentName)
+        : findReactSubcomponent(metadata, componentName);
+    const prop = sub && findGlobalPropForComponent(metadata, sub.parent, snakeProp);
+    if (!sub || !prop) {
+      return null;
+    }
+    const docs = generatePropDocs(displayName, prop, true, metadata, languageId);
+    return new vscode.Hover(
+      new vscode.MarkdownString(
+        [docs, `Global prop, available on \`${componentName}\` like on every Playbook component.`].join("  \n")
+      ),
+      range
+    );
   }
 }
