@@ -427,7 +427,7 @@ suite("Diagnostics Test Suite", () => {
 
   test("Should allow React-specific props in React components", async () => {
     const content = `<Tooltip placement="top" text="Save to My Favorites" zIndex={10}>
-      <IconButton icon="heart" size="md" variant="link" />
+      <CircleIconButton icon="heart" size="sm" variant="link" />
     </Tooltip>`
 
     const document = await createTestDocument("typescriptreact", content)

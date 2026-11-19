@@ -335,12 +335,21 @@ suite("Metadata Test Suite", () => {
     )
   })
 
-  test("Should surface deprecated status on icon_button", () => {
-    const iconButton = findComponentByRailsName(metadata, "icon_button")
-    assert.ok(iconButton, "icon_button component should exist")
-    assert.strictEqual(iconButton.status, "deprecated")
+  test("Should surface deprecated status in docs", () => {
+    const deprecatedComponent = {
+      rails: "fake_deprecated",
+      react: "FakeDeprecated",
+      description: "A component kept only to test deprecation surfacing.",
+      hasChildren: false,
+      props: {},
+      status: "deprecated",
+    }
 
-    const docs = generateComponentDocs("IconButton", iconButton, metadata)
+    const docs = generateComponentDocs(
+      "FakeDeprecated",
+      deprecatedComponent,
+      metadata
+    )
     assert.ok(
       docs.includes("Deprecated"),
       "Docs should call out the deprecated status"

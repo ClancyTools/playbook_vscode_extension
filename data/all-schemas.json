@@ -1585,7 +1585,7 @@
       "globalProps": true,
       "usage": {
         "react": {
-          "import": "import { AdvancedTable } from 'playbook-ui'",
+          "import": "import { AdvancedTable } from 'playbook-ui/advanced-table'",
           "example": "const columnDefinitions = [\n  {\n    \"accessor\": \"year\",\n    \"label\": \"Year\",\n    \"cellAccessors\": [\n      \"quarter\",\n      \"month\"\n    ]\n  },\n  {\n    \"accessor\": \"newEnrollments\",\n    \"label\": \"New Enrollments\"\n  },\n  {\n    \"accessor\": \"attendanceRate\",\n    \"label\": \"Attendance Rate\"\n  }\n]\n\nconst tableData = [\n  {\n    \"year\": \"2021\",\n    \"quarter\": null,\n    \"month\": null,\n    \"newEnrollments\": \"20\",\n    \"attendanceRate\": \"51%\",\n    \"children\": [\n      {\n        \"year\": \"2021\",\n        \"quarter\": \"Q1\",\n        \"month\": null,\n        \"newEnrollments\": \"2\",\n        \"attendanceRate\": \"32%\",\n        \"children\": [\n          {\n            \"year\": \"2021\",\n            \"quarter\": \"Q1\",\n            \"month\": \"January\",\n            \"newEnrollments\": \"16\",\n            \"attendanceRate\": \"11%\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"year\": \"2022\",\n    \"quarter\": null,\n    \"month\": null,\n    \"newEnrollments\": \"35\",\n    \"attendanceRate\": \"64%\"\n  }\n]\n\n<AdvancedTable\n  columnDefinitions={columnDefinitions}\n  tableData={tableData}\n/>",
           "preset": "Default"
         },
@@ -2568,6 +2568,8 @@
             "product_10_highlight",
             "product_11_background",
             "product_11_highlight",
+            "product_12_background",
+            "product_12_highlight",
             "windows",
             "siding",
             "doors",
@@ -3181,6 +3183,60 @@
         }
       },
       "category": "form_and_dashboard_text_patterns",
+      "status": "stable"
+    },
+    "container": {
+      "$schema": "https://playbook.powerapp.cloud/schemas/kit-schema.json",
+      "name": "Container",
+      "description": "Container component",
+      "platforms": [
+        "react",
+        "rails"
+      ],
+      "props": {
+        "tag": {
+          "type": "enum",
+          "platforms": [
+            "react",
+            "rails"
+          ],
+          "values": [
+            "div",
+            "span",
+            "a",
+            "button",
+            "option",
+            "table",
+            "tbody",
+            "thead",
+            "tfoot",
+            "tr",
+            "td",
+            "th",
+            "img",
+            "section",
+            "article",
+            "main",
+            "header",
+            "footer",
+            "nav",
+            "aside"
+          ],
+          "default": "div"
+        }
+      },
+      "globalProps": true,
+      "usage": {
+        "react": {
+          "import": "import { Container } from 'playbook-ui'",
+          "example": "<Container tag=\"div\"></Container>"
+        },
+        "rails": {
+          "import": null,
+          "example": "<%= pb_rails(\"container\", props: { tag: \"div\" }) %>"
+        }
+      },
+      "category": "layout_and_structure",
       "status": "stable"
     },
     "copy_button": {
@@ -5273,8 +5329,10 @@
         "customMessage": {
           "type": "string",
           "platforms": [
-            "react"
-          ]
+            "react",
+            "rails"
+          ],
+          "default": ""
         },
         "dark": {
           "type": "boolean",
@@ -6622,126 +6680,6 @@
       "category": "icons_and_images",
       "status": "stable"
     },
-    "icon_button": {
-      "$schema": "https://playbook.powerapp.cloud/schemas/kit-schema.json",
-      "name": "IconButton",
-      "description": "Buttons are used primarily for actions, such as “Save” and “Cancel”. Link Buttons are used for less important or less commonly used actions, such as “view shipping settings”.",
-      "platforms": [
-        "react",
-        "rails"
-      ],
-      "props": {
-        "htmlType": {
-          "type": "enum",
-          "platforms": [
-            "react"
-          ],
-          "values": [
-            "submit",
-            "reset",
-            "button"
-          ]
-        },
-        "icon": {
-          "type": "string",
-          "platforms": [
-            "react",
-            "rails"
-          ],
-          "default": "bars"
-        },
-        "link": {
-          "type": "string",
-          "platforms": [
-            "react",
-            "rails"
-          ]
-        },
-        "newWindow": {
-          "type": "boolean",
-          "platforms": [
-            "react",
-            "rails"
-          ],
-          "default": false
-        },
-        "onClick": {
-          "type": "function",
-          "platforms": [
-            "react"
-          ]
-        },
-        "size": {
-          "type": "enum",
-          "platforms": [
-            "react",
-            "rails"
-          ],
-          "values": [
-            "lg",
-            "xs",
-            "sm",
-            "1x",
-            "2x",
-            "3x",
-            "4x",
-            "5x",
-            "6x",
-            "7x",
-            "8x",
-            "9x",
-            "10x"
-          ],
-          "default": "2x"
-        },
-        "target": {
-          "type": "string",
-          "platforms": [
-            "react",
-            "rails"
-          ]
-        },
-        "variant": {
-          "type": "enum",
-          "platforms": [
-            "react",
-            "rails"
-          ],
-          "values": [
-            "default",
-            "link"
-          ],
-          "default": "default"
-        },
-        "type": {
-          "platforms": [
-            "rails"
-          ],
-          "type": "enum",
-          "values": [
-            "button",
-            "submit",
-            "reset"
-          ],
-          "default": "button"
-        }
-      },
-      "globalProps": true,
-      "usage": {
-        "react": {
-          "import": "import { IconButton } from 'playbook-ui'",
-          "example": "<IconButton icon=\"bars\" size=\"2x\" variant=\"default\" />",
-          "preset": "Default"
-        },
-        "rails": {
-          "import": null,
-          "example": "<%= pb_rails(\"icon_button\", props: { icon: \"bars\", size: \"2x\", variant: \"default\" }) %>",
-          "preset": "Default"
-        }
-      },
-      "category": "buttons",
-      "status": "deprecated"
-    },
     "icon_circle": {
       "$schema": "https://playbook.powerapp.cloud/schemas/kit-schema.json",
       "name": "IconCircle",
@@ -7459,6 +7397,13 @@
             "rails"
           ]
         },
+        "rel": {
+          "type": "string",
+          "platforms": [
+            "react",
+            "rails"
+          ]
+        },
         "tabIndex": {
           "type": "number",
           "platforms": [
@@ -7927,6 +7872,12 @@
             "rails"
           ],
           "default": ""
+        },
+        "formatSelectedDisplay": {
+          "type": "function",
+          "platforms": [
+            "react"
+          ]
         },
         "inputDisplay": {
           "type": "enum",
@@ -9148,6 +9099,14 @@
         "rails"
       ],
       "props": {
+        "notification": {
+          "type": "boolean",
+          "platforms": [
+            "react",
+            "rails"
+          ],
+          "default": false
+        },
         "size": {
           "type": "enum",
           "platforms": [
@@ -9758,6 +9717,14 @@
             "react",
             "rails"
           ]
+        },
+        "markdownSupport": {
+          "type": "MarkdownDependencies",
+          "platforms": [
+            "react",
+            "rails"
+          ],
+          "default": false
         },
         "extensions": {
           "type": "GenericObject",
@@ -11222,6 +11189,14 @@
           ],
           "default": "default"
         },
+        "contrastBorder": {
+          "type": "boolean",
+          "platforms": [
+            "react",
+            "rails"
+          ],
+          "default": false
+        },
         "verticalBorder": {
           "type": "boolean",
           "platforms": [
@@ -11229,6 +11204,12 @@
             "rails"
           ],
           "default": false
+        },
+        "colSpan": {
+          "type": "number",
+          "platforms": [
+            "react"
+          ]
         },
         "text": {
           "platforms": [

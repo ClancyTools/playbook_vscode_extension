@@ -38,22 +38,47 @@ If this starts returning hits, add real prop validation for subcomponents in
 `ComponentMetadata`/`transformSchema` in `metadata.ts` to carry the
 subcomponent's own prop list.
 
-## 2. `table.schema.json`'s Rails usage example is JSX, not `pb_rails`
+## 2. 15 of 108 kits' Rails usage examples are JSX, not `pb_rails`
 
-`kits/table.schema.json`'s `usage.rails.example` embeds `<Table.Head>` /
-`<Table.Row>` JSX inside an `.erb` code block instead of the real
-`pb_rails("table/table_row", ...)` nested-helper syntax used in actual Rails
-code. This looks like an upstream documentation bug, separate from #1.
+Not just `table` — as of this audit, 15 of 108 kits in `all-schemas.json`
+have a `usage.rails.example` that embeds raw JSX children (e.g.
+`<Caption text="A" />`, `<Table.Row>`, `<NavItem link="#" text="Photos" />`)
+inside the `.erb` code block, instead of the real nested `pb_rails(...)`
+syntax actual Rails code would use. Affected kits: `bread_crumbs`,
+`button_toolbar`, `flex`, `form_group`, `full_screen`, `layout`, `list`,
+`nav`, `overlay`, `progress_step`, `radio`, `selectable_card`,
+`selectable_list`, `table`, `timeline`. All of them are container-style kits
+whose example has nested children — the leak looks specific to however
+Playbook's doc generator renders a kit's *children* into the Rails example,
+not something specific to `table`.
+
+Since `generateComponentDocs` shows a kit's real `railsExample` verbatim
+(see CHANGELOG "Real Usage Examples in Hover Docs"), hovering any of these
+15 kits currently shows broken/misleading Rails code. This extension
+intentionally does not paper over it with a heuristic filter — the example
+data itself should be corrected upstream so every consumer of the schema
+(not just this extension) gets the fix.
+
+**Why:** upstream schema/doc-generation bug in Playbook, not this codebase.
 
 **Recheck:**
 
 ```bash
-grep -A2 '"rails"' node_modules/playbook-ui/dist/ai/kits/table.schema.json | grep -i '<table'
+# Flags any kit whose rails example contains a bare <Uppercase...> tag —
+# real ERB never has one (Rails helpers are invoked through <%= %>).
+node -e '
+  const data = require("./data/all-schemas.json");
+  for (const [name, kit] of Object.entries(data.kits || {})) {
+    if (name.startsWith("$")) continue;
+    const ex = kit.usage?.rails?.example || "";
+    if (/<[A-Z][\w.]*[\s/>]/.test(ex)) console.log(name);
+  }
+'
 ```
 
-If this returns nothing, the example has been fixed to real Rails syntax —
-worth checking whether the fix shipped alongside real subcomponent schemas
-(see #1).
+Run the same check against `node_modules/playbook-ui/dist/ai/all-schemas.json`
+in a consuming app for the live (non-bundled) schema. If either returns
+nothing, the leak has been fixed upstream.
 
 ## 3. No authoritative list of subcomponent names to offer as completions
 

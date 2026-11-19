@@ -5,6 +5,31 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Container kit** 📦
+  - New `Container` kit added upstream ([PLAY-3163](https://github.com/powerhome/playbook/pull/6546)) — a single `tag` enum prop (`div`, `span`, `section`, etc., default `div`), global props enabled. Now included in `data/all-schemas.json` and available as a snippet (`pbContainer` / `pb_container`)
+- New props picked up from upstream Playbook changes since the last sync (2026-07-31):
+  - `Table`: `colSpan` (React) and `contrastBorder` (React + Rails)
+  - `FileUpload`: `customMessage` extended from React-only to React + Rails
+  - `Link`: `rel` string prop
+  - `MultiLevelSelect`: `formatSelectedDisplay` function prop (React)
+  - `Pill`: `notification` boolean prop
+  - `RichTextEditor`: `markdownSupport` boolean prop
+  - `Card`: `product_12_background` / `product_12_highlight` color values
+
+### Removed
+
+- **IconButton kit** 🗑️
+  - Playbook fully removed the standalone `IconButton` kit upstream ([PLAY-3096](https://github.com/powerhome/playbook/pull/6466)) in favor of `Button`/`CircleIconButton`. Removed from `data/all-schemas.json` and both snippet files so the extension no longer suggests a component that doesn't exist
+
+### Fixed
+
+- **AdvancedTable React import path**
+  - Upstream moved `AdvancedTable` to its own entrypoint to enable tree-shaking ([PLAY-3129](https://github.com/powerhome/playbook/pull/6478)); hover docs and completions now show `import { AdvancedTable } from 'playbook-ui/advanced-table'` instead of the old `'playbook-ui'` path
+
 ## [2.1.1] - 2026-07-31
 
 ### Added

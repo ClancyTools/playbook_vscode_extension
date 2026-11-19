@@ -177,6 +177,13 @@
     ],
     "description": "Playbook Contact component for React"
   },
+  "Playbook Container": {
+    "prefix": "pbContainer",
+    "body": [
+      "<Container $0/>"
+    ],
+    "description": "Playbook Container component for React"
+  },
   "Playbook CopyButton": {
     "prefix": "pbCopyButton",
     "body": [
@@ -487,13 +494,6 @@
       "<Icon $0/>"
     ],
     "description": "Playbook Icon component for React"
-  },
-  "Playbook IconButton": {
-    "prefix": "pbIconButton",
-    "body": [
-      "<IconButton $0/>"
-    ],
-    "description": "Playbook IconButton component for React"
   },
   "Playbook IconCircle": {
     "prefix": "pbIconCircle",
