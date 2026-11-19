@@ -1,4 +1,5 @@
 import { PlaybookMetadata } from "./metadata"
+import { lineColumn } from "./textPosition"
 import { checkUsages, resolveComponent, scanUsages } from "./usageRules"
 
 export interface DeprecatedUsage {
@@ -10,16 +11,6 @@ export interface DeprecatedUsage {
   column: number
   message: string
   replacement?: string
-}
-
-function lineColumn(text: string, offset: number): { line: number; column: number } {
-  let line = 0
-  let lineStart = 0
-  for (let i = text.indexOf("\n"); i !== -1 && i < offset; i = text.indexOf("\n", i + 1)) {
-    line++
-    lineStart = i + 1
-  }
-  return { line, column: offset - lineStart }
 }
 
 /** Deprecated kits and props used in one file's text. */

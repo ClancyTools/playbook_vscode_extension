@@ -1,93 +1,63 @@
-import * as path from "path"
 import * as vscode from "vscode"
 import { DeprecatedUsage, summarize, sweepText } from "./deprecationSweep"
+import { mightUsePlaybook, scanFiles } from "./fileScan"
 import { loadMetadata } from "./metadata"
+import { SweepScope, chooseScope, filesInScope } from "./scope"
 
-const LANGUAGE_BY_EXTENSION: Record<string, string> = {
-  ".erb": "erb",
-  ".rb": "ruby",
-  ".tsx": "typescriptreact",
-  ".jsx": "javascriptreact",
-  ".ts": "typescript",
-  ".js": "javascript",
-}
+export { languageIdForFile, mightUsePlaybook } from "./fileScan"
 
 const FILE_GLOB = "**/*.{erb,rb,tsx,jsx,ts,js}"
-const EXCLUDE_GLOB =
-  "**/{node_modules,vendor,tmp,log,dist,build,public,coverage,.git,.yarn}/**"
-const MAX_FILES = 20000
 const MAX_LISTED = 500
-
-export function languageIdForFile(file: string): string | undefined {
-  return LANGUAGE_BY_EXTENSION[path.extname(file)]
-}
-
-/** Cheap check so we don't scan files that can't use Playbook. */
-export function mightUsePlaybook(text: string): boolean {
-  return /pb_rails\(|playbook-ui|<[A-Z][A-Za-z]*[\s/>]/.test(text)
-}
 
 export interface LocatedDeprecation extends DeprecatedUsage {
   uri: vscode.Uri
 }
 
-export async function sweepWorkspace(
+export async function sweepScope(
   extensionPath: string,
+  scope: SweepScope,
   progress: vscode.Progress<{ message?: string }>,
   token: vscode.CancellationToken
 ): Promise<{ results: LocatedDeprecation[]; filesScanned: number }> {
   const metadata = loadMetadata(extensionPath)
-  const files = await vscode.workspace.findFiles(FILE_GLOB, EXCLUDE_GLOB, MAX_FILES)
-  const results: LocatedDeprecation[] = []
-  const decoder = new TextDecoder()
-  let scanned = 0
-
-  for (const uri of files) {
-    if (token.isCancellationRequested) {
-      break
-    }
-    const languageId = languageIdForFile(uri.fsPath)
-    if (!languageId) {
-      continue
-    }
-    let text: string
-    try {
-      text = decoder.decode(await vscode.workspace.fs.readFile(uri))
-    } catch {
-      continue
-    }
-    if (!mightUsePlaybook(text)) {
-      continue
-    }
-    scanned++
-    for (const usage of sweepText(text, languageId, metadata)) {
-      results.push({ ...usage, uri })
-    }
-    if (scanned % 100 === 0) {
-      progress.report({ message: `${scanned} files, ${results.length} deprecated usages` })
-    }
-  }
-  return { results, filesScanned: scanned }
+  const files = await filesInScope(scope, FILE_GLOB)
+  return scanFiles<LocatedDeprecation>(
+    files,
+    (text, languageId, uri) =>
+      mightUsePlaybook(text)
+        ? sweepText(text, languageId, metadata).map((usage) => ({ ...usage, uri }))
+        : undefined,
+    progress,
+    token
+  )
 }
 
 interface UsagePickItem extends vscode.QuickPickItem {
   usage?: LocatedDeprecation
 }
 
-/** Scan the workspace and list every deprecated Playbook kit/prop, grouped, jump-to-location. */
-export async function findDeprecatedUsages(extensionPath: string): Promise<void> {
+/**
+ * Scan for deprecated Playbook kits/props and list them, grouped and jump-to-
+ * location. `arg` may be a file or folder (a Uri from the Explorer, a path, or
+ * `{ path }`) to scan just that; with none, you are asked.
+ */
+export async function findDeprecatedUsages(extensionPath: string, arg?: unknown): Promise<void> {
+  const scope = await chooseScope(arg, "Find deprecated Playbook usages in…")
+  if (!scope) {
+    return
+  }
   const outcome = await vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
-      title: "Playbook: scanning for deprecated usages",
+      title: `Playbook: scanning ${scope.label} for deprecated usages`,
       cancellable: true,
     },
-    (progress, token) => sweepWorkspace(extensionPath, progress, token)
+    (progress, token) => sweepScope(extensionPath, scope, progress, token)
   )
 
   if (outcome.results.length === 0) {
     vscode.window.showInformationMessage(
-      `No deprecated Playbook usages found in ${outcome.filesScanned} files.`
+      `No deprecated Playbook usages found in ${scope.label} (${outcome.filesScanned} files).`
     )
     return
   }
@@ -113,7 +83,7 @@ export async function findDeprecatedUsages(extensionPath: string): Promise<void>
 
   const more = outcome.results.length > MAX_LISTED ? ` (showing first ${MAX_LISTED})` : ""
   const picked = await vscode.window.showQuickPick(items, {
-    title: `${outcome.results.length} deprecated usages in ${outcome.filesScanned} files${more}`,
+    title: `${outcome.results.length} deprecated usages in ${scope.label} (${outcome.filesScanned} files)${more}`,
     placeHolder: "Pick one to open it",
     matchOnDescription: true,
   })
