@@ -767,6 +767,45 @@ suite("Colors and Icons Test Suite", () => {
         assert.deepStrictEqual(flagged("typescriptreact", '<Title color="gray" />'), [])
       })
 
+      test("flags a Card header_color Playbook doesn't define, on the header subcomponent", () => {
+        const text = '<%= pb_rails("card/card_header", props: { header_color: "blue" }) %>'
+        const [finding] = flagged("erb", text)
+        assert.ok(finding.message.startsWith('card/card_header has no color named "blue", so none is applied.'), finding.message)
+        assert.strictEqual(text.slice(finding.start, finding.end), '"blue"')
+        assert.strictEqual(flagged("typescriptreact", '<Card.Header headerColor="green" />').length, 1)
+      })
+
+      test("accepts the Card header colors Playbook does define", () => {
+        for (const name of ["white", "light", "dark", "neutral", "none", "category_1", "windows", "success"]) {
+          assert.deepStrictEqual(flagged("erb", `<%= pb_rails("card/card_header", props: { header_color: "${name}" }) %>`), [], name)
+        }
+      })
+
+      test("only the Card header's header_color is checked on subcomponents", () => {
+        assert.deepStrictEqual(flagged("erb", '<%= pb_rails("card/card_body", props: { header_color: "blue" }) %>'), [])
+        assert.deepStrictEqual(flagged("erb", '<%= pb_rails("table/table_row", props: { color: "blue" }) %>'), [])
+        assert.deepStrictEqual(flagged("erb", '<%= pb_rails("card/card_header", props: { header_color: "#{c}" }) %>'), [])
+      })
+
+      test("the quick fix offers the closest header color", async () => {
+        const diagnostics = new PlaybookDiagnostics(extensionPath)
+        const fixes = new PlaybookQuickFixProvider(extensionPath)
+        try {
+          const document = await createTestDocument("erb", '<%= pb_rails("card/card_header", props: { header_color: "categry_1" }) %>')
+          diagnostics.updateDiagnostics(document)
+          const diagnostic = diagnostics.getDiagnostics(document.uri).find((d) => d.code === "unknown-kit-color")!
+          assert.ok(diagnostic)
+          const [action] = fixes.provideCodeActions(document, diagnostic.range, {
+            diagnostics: [diagnostic],
+            only: undefined,
+            triggerKind: vscode.CodeActionTriggerKind.Invoke,
+          })
+          assert.strictEqual(action.title, 'Change to "category_1"')
+        } finally {
+          diagnostics.dispose()
+        }
+      })
+
       test("isKnownKitColor treats a kit with no color list as unknowable", () => {
         assert.ok(isKnownKitColor("button", "anything", colors()))
         assert.ok(isKnownKitColor("icon", "", colors()))

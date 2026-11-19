@@ -19,7 +19,7 @@ import { migrationForUsage, migrationText } from "./flexAxis"
 import { findCombinableSpacing } from "./spacingCombine"
 import { findRequiredIndicatorIssues } from "./requiredIndicator"
 import { enabled } from "./settings"
-import { KitColors, kitColorSuggestions, loadKitColors } from "./kitColors"
+import { KitColors, colorKitFor, kitColorKey, kitColorSuggestions, loadKitColors } from "./kitColors"
 import { IconIndex, iconSuggestions, loadIconIndex } from "./playbookIcons"
 import { ScannedProp, ScannedUsage, scanFormBuilderUsages } from "./usageScanner"
 
@@ -286,13 +286,14 @@ function unknownKitColorFixes(
   request: FixRequest
 ): Fix[] {
   const found = findProp(usages, (p) => p.valueStart === request.start && p.valueEnd === request.end)
-  const component = found && resolveComponent(metadata, found.usage)
+  const kit = found && colorKitFor(metadata, found.usage)
   const quoted = /(["'])([^"']*)\1/.exec(text.slice(request.start, request.end))
-  if (!component || !quoted) {
+  if (!found || !kit || !quoted) {
     return []
   }
+  const snake = found.usage.platform === "react" ? camelToSnake(found.prop.name) : found.prop.name
   const nameStart = request.start + quoted.index + 1
-  return kitColorSuggestions(component.rails, quoted[2], kitColors).map((name, index) => ({
+  return kitColorSuggestions(kitColorKey(kit, snake), quoted[2], kitColors).map((name, index) => ({
     title: `Change to "${name}"`,
     start: nameStart,
     end: nameStart + quoted[2].length,

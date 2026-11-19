@@ -4,7 +4,7 @@ import { PlaybookMetadata, camelToSnake } from "./metadata"
 import { ColorTokens } from "./scssColors"
 import { suggest } from "./suggestions"
 import { resolveComponent, scanUsages, Finding } from "./usageRules"
-import { literalValue } from "./usageScanner"
+import { ScannedUsage, literalValue } from "./usageScanner"
 
 /**
  * Kits whose `color` prop has no enum in Playbook's schema (Icon, Legend): the
@@ -42,9 +42,19 @@ function usesKitColor(kit: string, snakeProp: string, colors: KitColors): boolea
   return !!colors[kitColorKey(kit, snakeProp)]
 }
 
-/** Whether names are checked against the stylesheet (only props with no enum). */
+/**
+ * Whether names are checked against the stylesheet: props with no enum in the
+ * schema (Icon and Legend `color`, the Card header's `header_color`). The others
+ * are already validated against their enum.
+ */
 function checksKitColor(kit: string, snakeProp: string, colors: KitColors): boolean {
-  return KITS_WITH_COLOR_PROP.has(kit) && snakeProp === "color" && !!colors[kit]
+  const key = kitColorKey(kit, snakeProp)
+  return !!colors[key] && ((KITS_WITH_COLOR_PROP.has(kit) && snakeProp === "color") || key === "card.header_color")
+}
+
+/** The kit a usage's colors belong to: its own, or its parent's for the few subcomponents that take them. */
+export function colorKitFor(metadata: PlaybookMetadata, usage: ScannedUsage): string | undefined {
+  return resolveComponent(metadata, usage)?.rails ?? SUBCOMPONENT_KITS[usage.component]
 }
 
 /** The color to draw for a value, or undefined (no swatch). */
@@ -139,28 +149,30 @@ export function checkKitColors(
 ): Finding[] {
   const findings: Finding[] = []
   for (const usage of scanUsages(text, languageId)) {
-    const component = resolveComponent(metadata, usage)
-    if (!component || usage.hasSpread) {
+    const kit = colorKitFor(metadata, usage)
+    if (!kit || usage.hasSpread) {
       continue
     }
+    const label = resolveComponent(metadata, usage)?.react ?? usage.component
     for (const prop of usage.props) {
       const snake = usage.platform === "react" ? camelToSnake(prop.name) : prop.name
       const value = literalValue(prop)
+      const key = kitColorKey(kit, snake)
       if (
-        !checksKitColor(component.rails, snake, colors) ||
+        !checksKitColor(kit, snake, colors) ||
         typeof value !== "string" ||
         prop.valueStart === undefined ||
         prop.valueEnd === undefined ||
-        isKnownKitColor(component.rails, value, colors)
+        isKnownKitColor(key, value, colors)
       ) {
         continue
       }
-      const close = suggest(value, Object.keys(colors[component.rails]), 1)[0]
+      const close = suggest(value, Object.keys(colors[key]), 1)[0]
       findings.push({
         start: prop.valueStart,
         end: prop.valueEnd,
         message:
-          `${component.react} has no color named "${value}", so none is applied.` +
+          `${label} has no color named "${value}", so none is applied.` +
           (close ? ` Did you mean "${close}"?` : ""),
         severity: "information",
         code: "unknown-kit-color",
