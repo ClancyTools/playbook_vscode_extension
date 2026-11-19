@@ -21,6 +21,10 @@ import { loadPlayground } from "./playgrounds"
 import { renderPresets } from "./presets"
 import { axisLabel, axisLabelBothWays, axisRole, resolveOrientation } from "./flexAxis"
 import { usageAt } from "./usageRules"
+import { iconPreviewDataUri, loadIconIndex } from "./playbookIcons"
+
+/** Which icon a completion item stands for, so its preview can be built on demand. */
+const iconNames = new WeakMap<vscode.CompletionItem, string>()
 
 export class PlaybookCompletionProvider
   implements vscode.CompletionItemProvider
@@ -663,6 +667,42 @@ export class PlaybookCompletionProvider
     return items
   }
 
+  /** Icon names from the workspace's playbook-icons (never bundled; the repo is private). */
+  private iconItems(insideString: boolean): vscode.CompletionItem[] {
+    const index = loadIconIndex()
+    if (!index) {
+      return []
+    }
+    const items: vscode.CompletionItem[] = []
+    const add = (name: string, category: string, canonical?: string) => {
+      const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Reference)
+      item.detail = canonical ? `alias of ${canonical}` : category
+      item.insertText = insideString ? name : `"${name}"`
+      item.sortText = (canonical ? "1" : "0") + name
+      iconNames.set(item, name)
+      items.push(item)
+    }
+    for (const info of index.icons.values()) {
+      add(info.name, info.category)
+    }
+    for (const [alias, canonical] of index.aliases) {
+      add(alias, index.icons.get(canonical)?.category ?? "", canonical)
+    }
+    return items
+  }
+
+  /** The icon preview is only built for the item being looked at, not for all ~800. */
+  resolveCompletionItem(item: vscode.CompletionItem): vscode.CompletionItem {
+    const name = iconNames.get(item)
+    const index = name ? loadIconIndex() : undefined
+    const info = name && index ? (index.icons.get(name) ?? index.icons.get(index.aliases.get(name) ?? "")) : undefined
+    const preview = info && iconPreviewDataUri(info)
+    if (preview && name) {
+      item.documentation = new vscode.MarkdownString(`![${name}](${preview})`)
+    }
+    return item
+  }
+
   private providePropValueCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
@@ -764,6 +804,10 @@ export class PlaybookCompletionProvider
 
         items.push(item)
       }
+    }
+
+    if (/^icon(_right|_left)?$/.test(propName) && component.props[propName]) {
+      items.push(...this.iconItems(insideString))
     }
 
     if (isBooleanProp(prop, document.languageId)) {

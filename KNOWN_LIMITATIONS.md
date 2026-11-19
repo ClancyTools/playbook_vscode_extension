@@ -154,3 +154,21 @@ node -e '
 
 Any output means the leak is back — it needs fixing upstream, not papering over
 with a filter here.
+
+## 9. Icons: the Font Awesome fallback can't be checked
+
+The Icon kit resolves a name to a custom SVG from `@powerhome/playbook-icons` when one exists and otherwise falls back to a Font Awesome class. The extension can enumerate the first set but not Font Awesome, so an icon name that isn't in playbook-icons may still be valid. Unknown names are therefore only flagged when they have a close match (a probable typo).
+
+The playbook-icons package is private, so its icons are never bundled; icon completions, previews and checks need it on disk (installed in the workspace, or `playbook.icons.path`). **Fix:** if Font Awesome's icon list is made available alongside the icons, validate against both and flag any name missing from both.
+
+## 10. Color swatches only cover color props we can verify
+
+Token names are matched to colors only on props whose name says color or background *and* whose values are mostly token names. Semantic values (`Body color="default"`, `Pill variant="primary"`) mean something kit-specific that isn't the same-named token, so they get no swatch rather than a wrong one. Icon and Legend `color` are the exception: they have no enum, so their names are derived from the kit's SCSS (`npm run sync:data`) and checked exactly. Other kits with an untyped color prop would need the same. **Fix:** a token reference per prop value in Playbook's metadata would let every color prop show a swatch without per-kit extraction.
+
+## 11. Bootstrap detection is by class name
+
+`row`, `table`, `card` and similar names are also used by apps' own CSS, so *Find Bootstrap Markup* results are leads to review. It reads `class=`, `className=` and `class:` strings; classes assembled at runtime (`<%= %>`, `#{}`, `${}`) are skipped rather than guessed at.
+
+## 12. required_indicator: apps' own input wrappers
+
+A wrapper such as an app's own `InputField` may or may not forward `requiredIndicator`, so a `*` in its label is left alone. **Fix:** list known wrappers that forward it (or read it from their prop types).

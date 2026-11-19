@@ -6,10 +6,16 @@ import { PlaybookCompletionProvider } from "./completionProvider";
 import { PlaybookQuickFixProvider } from "./quickFixes";
 import { SpacingHints } from "./spacingHints";
 import { AxisHints } from "./axisHints";
+import { ColorSwatches } from "./previewHints";
+import { resetIconIndex } from "./playbookIcons";
+import { resetColorTokens } from "./colorTokens";
+import { resetKitColors } from "./kitColors";
 import { PlaybookStatusBar } from "./statusBar";
 import { KitTreeProvider, browseKits, runKitActions } from "./kitBrowser";
 import { findDeprecatedUsages } from "./deprecatedUsages";
-import { resetMetadataCache } from "./metadata";
+import { findBootstrapMarkup } from "./bootstrapSweep";
+import { generateGlobalPropsDocs, loadMetadata, resetMetadataCache } from "./metadata";
+import { platformForEditor } from "./kitBrowser";
 
 export function activate(context: vscode.ExtensionContext) {
   const timestamp = new Date().toISOString();
@@ -105,11 +111,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   const spacingHints = new SpacingHints(context.extensionPath);
   const axisHints = new AxisHints(context.extensionPath);
+  const colorSwatches = new ColorSwatches(context.extensionPath);
   const statusBar = new PlaybookStatusBar(context.extensionPath);
   const kitTree = new KitTreeProvider(context.extensionPath);
   context.subscriptions.push(
     spacingHints,
     axisHints,
+    colorSwatches,
     statusBar,
     vscode.window.registerTreeDataProvider("playbookKits", kitTree)
   );
@@ -117,11 +125,15 @@ export function activate(context: vscode.ExtensionContext) {
   /** Re-discover which Playbook version is in use and refresh everything built from it. */
   const reload = () => {
     resetMetadataCache();
+    resetIconIndex();
+    resetColorTokens();
+    resetKitColors();
     vscode.workspace.textDocuments.forEach((document) => diagnostics.updateDiagnostics(document));
     statusBar.update();
     kitTree.refresh();
     spacingHints.refreshAll();
     axisHints.refreshAll();
+    colorSwatches.refreshAll();
   };
 
   context.subscriptions.push(
@@ -131,9 +143,23 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("playbook.kitActions", (railsName: string) =>
       runKitActions(context.extensionPath, railsName)
     ),
-    vscode.commands.registerCommand("playbook.findDeprecated", () =>
-      findDeprecatedUsages(context.extensionPath)
+    vscode.commands.registerCommand("playbook.findDeprecated", (arg?: unknown) =>
+      findDeprecatedUsages(context.extensionPath, arg)
     ),
+    vscode.commands.registerCommand("playbook.findBootstrap", (arg?: unknown) =>
+      findBootstrapMarkup(arg)
+    ),
+    vscode.commands.registerCommand("playbook.showGlobalProps", async () => {
+      const platform = platformForEditor(vscode.window.activeTextEditor) ?? "react";
+      const content = generateGlobalPropsDocs(loadMetadata(context.extensionPath), platform);
+      const document = await vscode.workspace.openTextDocument({ language: "markdown", content });
+      await vscode.window.showTextDocument(document, { preview: false });
+      // Tables read far better rendered; fall back to the source if no preview is available.
+      await Promise.resolve(vscode.commands.executeCommand("markdown.showPreview", document.uri)).then(
+        undefined,
+        () => undefined
+      );
+    }),
     vscode.commands.registerCommand("playbook.reloadMetadata", () => {
       reload();
       vscode.window.showInformationMessage("Playbook metadata reloaded.");
@@ -143,6 +169,8 @@ export function activate(context: vscode.ExtensionContext) {
         [
           { label: "$(symbol-class) Browse kits", command: "playbook.browseKits" },
           { label: "$(warning) Find deprecated usages", command: "playbook.findDeprecated" },
+          { label: "$(search) Find Bootstrap markup", command: "playbook.findBootstrap" },
+          { label: "$(symbol-property) Show global props", command: "playbook.showGlobalProps" },
           { label: "$(refresh) Reload Playbook metadata", command: "playbook.reloadMetadata" }
         ],
         { title: statusBar.describe().text.replace("$(book) ", ""), placeHolder: statusBar.describe().tooltip.split("\n")[0] }
@@ -165,6 +193,9 @@ export function activate(context: vscode.ExtensionContext) {
     manifestWatcher.onDidDelete(reload),
     vscode.workspace.onDidChangeWorkspaceFolders(reload),
     vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration("playbook.icons")) {
+        reload();
+      }
       if (event.affectsConfiguration("playbook.diagnostics")) {
         vscode.workspace.textDocuments.forEach((document) =>
           diagnostics.updateDiagnostics(document)

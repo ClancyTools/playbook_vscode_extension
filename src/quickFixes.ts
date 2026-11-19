@@ -16,6 +16,10 @@ import {
 import { suggest } from "./suggestions"
 import { displayName, resolveComponent, scanUsages } from "./usageRules"
 import { migrationForUsage, migrationText } from "./flexAxis"
+import { findCombinableSpacing } from "./spacingCombine"
+import { findRequiredIndicatorIssues } from "./requiredIndicator"
+import { KitColors, kitColorSuggestions, loadKitColors } from "./kitColors"
+import { IconIndex, iconSuggestions, loadIconIndex } from "./playbookIcons"
 import { ScannedProp, ScannedUsage, scanFormBuilderUsages } from "./usageScanner"
 
 export interface FixRequest {
@@ -30,6 +34,8 @@ export interface Fix {
   start: number
   end: number
   newText: string
+  /** More edits that belong to the same fix (e.g. removing the second prop of a pair). */
+  extraEdits?: Array<{ start: number; end: number; newText: string }>
   /** The best guess; VS Code applies it for "Auto Fix". */
   preferred: boolean
 }
@@ -45,7 +51,9 @@ export function computeFixes(
   languageId: string,
   metadata: PlaybookMetadata,
   requests: FixRequest[],
-  forms: FormBuilderMetadata = { fields: [] }
+  forms: FormBuilderMetadata = { fields: [] },
+  icons?: IconIndex,
+  kitColors: KitColors = {}
 ): Fix[] {
   const usages = [...scanUsages(text, languageId), ...scanFormBuilderUsages(text)]
   const context: FixContext = { metadata, forms, languageId }
@@ -63,6 +71,19 @@ export function computeFixes(
         break
       case "deprecated-prop":
         fixes.push(...deprecatedPropFixes(usages, context, request))
+        break
+      case "required-indicator":
+      case "double-required-indicator":
+        fixes.push(...requiredIndicatorFixes(text, languageId, metadata, forms, request))
+        break
+      case "combine-spacing":
+        fixes.push(...combineSpacingFixes(text, languageId, metadata, request))
+        break
+      case "unknown-kit-color":
+        fixes.push(...unknownKitColorFixes(text, usages, metadata, kitColors, request))
+        break
+      case "unknown-icon":
+        fixes.push(...unknownIconFixes(text, icons, request))
         break
       case "wrong-prop-case":
         fixes.push(...wrongPropCaseFixes(text, request))
@@ -220,6 +241,84 @@ function unknownComponentFixes(
     }))
 }
 
+/** Remove a hand-written "*" from a label and let required_indicator draw it. */
+function requiredIndicatorFixes(
+  text: string,
+  languageId: string,
+  metadata: PlaybookMetadata,
+  forms: FormBuilderMetadata,
+  request: FixRequest
+): Fix[] {
+  const issue = findRequiredIndicatorIssues(text, languageId, metadata, forms).find(
+    (i) => i.start === request.start && i.edits.length > 0
+  )
+  if (!issue?.title) {
+    return []
+  }
+  const [first, ...rest] = issue.edits
+  return [{ title: issue.title, start: first.start, end: first.end, newText: first.newText, extraEdits: rest, preferred: true }]
+}
+
+/** Merge two side props with the same value into one axis prop. */
+function combineSpacingFixes(
+  text: string,
+  languageId: string,
+  metadata: PlaybookMetadata,
+  request: FixRequest
+): Fix[] {
+  const match = findCombinableSpacing(text, languageId, metadata).find((c) => c.start === request.start)
+  if (!match) {
+    return []
+  }
+  const [first, ...rest] = match.edits
+  return [{ title: match.title, start: first.start, end: first.end, newText: first.newText, extraEdits: rest, preferred: true }]
+}
+
+/** Closest color names the kit does define, replacing just the name inside the quotes. */
+function unknownKitColorFixes(
+  text: string,
+  usages: ScannedUsage[],
+  metadata: PlaybookMetadata,
+  kitColors: KitColors,
+  request: FixRequest
+): Fix[] {
+  const found = findProp(usages, (p) => p.valueStart === request.start && p.valueEnd === request.end)
+  const component = found && resolveComponent(metadata, found.usage)
+  const quoted = /(["'])([^"']*)\1/.exec(text.slice(request.start, request.end))
+  if (!component || !quoted) {
+    return []
+  }
+  const nameStart = request.start + quoted.index + 1
+  return kitColorSuggestions(component.rails, quoted[2], kitColors).map((name, index) => ({
+    title: `Change to "${name}"`,
+    start: nameStart,
+    end: nameStart + quoted[2].length,
+    newText: name,
+    preferred: index === 0,
+  }))
+}
+
+/** Closest icon names for a typo, replacing just the name inside the value's quotes. */
+function unknownIconFixes(text: string, icons: IconIndex | undefined, request: FixRequest): Fix[] {
+  if (!icons) {
+    return []
+  }
+  const written = text.slice(request.start, request.end)
+  const quoted = /(["'])([^"']*)\1/.exec(written)
+  if (!quoted) {
+    return []
+  }
+  const nameStart = request.start + quoted.index + 1
+  const nameEnd = nameStart + quoted[2].length
+  return iconSuggestions(icons, quoted[2]).map((name, index) => ({
+    title: `Change to "${name}"`,
+    start: nameStart,
+    end: nameEnd,
+    newText: name,
+    preferred: index === 0,
+  }))
+}
+
 /** `margin_bottom` → `marginBottom` for a React prop written Rails-style. */
 function wrongPropCaseFixes(text: string, request: FixRequest): Fix[] {
   const camel = snakeToCamel(text.slice(request.start, request.end))
@@ -276,16 +375,26 @@ function deprecatedPropFixes(
   ]
 }
 
+const FIX_ALL_KIND = vscode.CodeActionKind.SourceFixAll.append("playbook")
+
 const FIXABLE = new Set([
   "unknown-prop",
   "invalid-value",
   "unknown-component",
   "deprecated-prop",
   "wrong-prop-case",
+  "unknown-icon",
+  "unknown-kit-color",
+  "combine-spacing",
+  "required-indicator",
+  "double-required-indicator",
 ])
 
 export class PlaybookQuickFixProvider implements vscode.CodeActionProvider {
-  static readonly providedCodeActionKinds = [vscode.CodeActionKind.QuickFix]
+  static readonly providedCodeActionKinds = [
+    vscode.CodeActionKind.QuickFix,
+    vscode.CodeActionKind.SourceFixAll.append("playbook"),
+  ]
 
   constructor(private readonly extensionPath: string) {}
 
@@ -303,6 +412,8 @@ export class PlaybookQuickFixProvider implements vscode.CodeActionProvider {
 
     const metadata = loadMetadata(this.extensionPath)
     const forms = loadFormBuilderMetadata(this.extensionPath)
+    const icons = loadIconIndex()
+    const kitColors = loadKitColors(this.extensionPath)
     const actions: vscode.CodeAction[] = []
     for (const diagnostic of relevant) {
       const fixes = computeFixes(document.getText(), document.languageId, metadata, [
@@ -311,20 +422,56 @@ export class PlaybookQuickFixProvider implements vscode.CodeActionProvider {
           start: document.offsetAt(diagnostic.range.start),
           end: document.offsetAt(diagnostic.range.end),
         },
-      ], forms)
+      ], forms, icons, kitColors)
       for (const fix of fixes) {
         const action = new vscode.CodeAction(fix.title, vscode.CodeActionKind.QuickFix)
         action.diagnostics = [diagnostic]
         action.isPreferred = fix.preferred
         action.edit = new vscode.WorkspaceEdit()
-        action.edit.replace(
-          document.uri,
-          new vscode.Range(document.positionAt(fix.start), document.positionAt(fix.end)),
-          fix.newText
-        )
+        for (const edit of [{ start: fix.start, end: fix.end, newText: fix.newText }, ...(fix.extraEdits ?? [])]) {
+          action.edit.replace(
+            document.uri,
+            new vscode.Range(document.positionAt(edit.start), document.positionAt(edit.end)),
+            edit.newText
+          )
+        }
         actions.push(action)
       }
     }
-    return actions
+    return actions.concat(this.combineAllActions(document, metadata, context))
+  }
+
+  /**
+   * "Combine all N paired spacing props in this file", as a quick fix when one of
+   * them is in view and as a source.fixAll.playbook action (for codeActionsOnSave).
+   */
+  private combineAllActions(
+    document: vscode.TextDocument,
+    metadata: PlaybookMetadata,
+    context: vscode.CodeActionContext
+  ): vscode.CodeAction[] {
+    // Only when asked for our own kind, so a generic source.fixAll on save never rewrites code unasked.
+    const asFixAll = !!context.only && FIX_ALL_KIND.contains(context.only)
+    const hasHint = context.diagnostics.some((d) => d.code === "combine-spacing")
+    if (!hasHint && !asFixAll) {
+      return []
+    }
+    const all = findCombinableSpacing(document.getText(), document.languageId, metadata)
+    if (all.length < (asFixAll ? 1 : 2)) {
+      return []
+    }
+    const action = new vscode.CodeAction(
+      `Combine all ${all.length} paired spacing props in this file`,
+      asFixAll ? FIX_ALL_KIND : vscode.CodeActionKind.QuickFix
+    )
+    action.edit = new vscode.WorkspaceEdit()
+    for (const edit of all.flatMap((c) => c.edits)) {
+      action.edit.replace(
+        document.uri,
+        new vscode.Range(document.positionAt(edit.start), document.positionAt(edit.end)),
+        edit.newText
+      )
+    }
+    return [action]
   }
 }

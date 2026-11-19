@@ -16,6 +16,12 @@ import {
 } from "./metadata"
 import { loadPlayground } from "./playgrounds"
 import { checkFormBuilderUsages, checkUsages, Finding } from "./usageRules"
+import { checkIcons } from "./iconRules"
+import { loadIconIndex } from "./playbookIcons"
+import { checkKitColors, loadKitColors } from "./kitColors"
+import { findCombinableSpacing } from "./spacingCombine"
+import { describeHit, scanBootstrap } from "./bootstrapCatalog"
+import { findRequiredIndicatorIssues } from "./requiredIndicator"
 import { packageAvailability } from "./workspacePackages"
 
 const HARDCODED_GLOBAL_PROPS = new Set(["id", "key"])
@@ -26,7 +32,9 @@ function toDiagnostic(document: vscode.TextDocument, finding: Finding): vscode.D
     finding.message,
     finding.severity === "warning"
       ? vscode.DiagnosticSeverity.Warning
-      : vscode.DiagnosticSeverity.Information
+      : finding.severity === "hint"
+        ? vscode.DiagnosticSeverity.Hint
+        : vscode.DiagnosticSeverity.Information
   )
   diagnostic.source = "Playbook"
   diagnostic.code = finding.code
@@ -146,6 +154,50 @@ export class PlaybookDiagnostics {
         externalDependencies: config.get<boolean>("externalDependencies", true),
       },
     })
+    if (config.get<boolean>("requiredIndicator", true)) {
+      const forms = loadFormBuilderMetadata(this.extensionPath)
+      for (const issue of findRequiredIndicatorIssues(document.getText(), document.languageId, metadata, forms)) {
+        findings.push({
+          start: issue.start,
+          end: issue.end,
+          message: issue.message,
+          severity: issue.kind === "double" ? "warning" : issue.kind === "caption" ? "hint" : "information",
+          code: issue.kind === "double" ? "double-required-indicator" : issue.kind === "caption" ? "required-indicator-caption" : "required-indicator",
+        })
+      }
+    }
+    // Opt-in: Bootstrap classes are everywhere in an app mid-migration.
+    if (config.get<boolean>("bootstrap", false)) {
+      for (const hit of scanBootstrap(document.getText())) {
+        findings.push({
+          start: hit.start,
+          end: hit.end,
+          message: describeHit(hit),
+          severity: "hint",
+          code: "bootstrap-class",
+        })
+      }
+    }
+    if (config.get<boolean>("combineSpacing", true)) {
+      for (const c of findCombinableSpacing(document.getText(), document.languageId, metadata)) {
+        findings.push({
+          start: c.start,
+          end: c.end,
+          message: c.message,
+          severity: "hint",
+          code: "combine-spacing",
+        })
+      }
+    }
+    if (config.get<boolean>("unknownColors", true)) {
+      findings.push(
+        ...checkKitColors(document.getText(), document.languageId, metadata, loadKitColors(this.extensionPath))
+      )
+    }
+    const icons = config.get<boolean>("unknownIcons", true) ? loadIconIndex() : undefined
+    if (icons) {
+      findings.push(...checkIcons(document.getText(), document.languageId, metadata, icons))
+    }
     for (const finding of findings) {
       diagnostics.push(toDiagnostic(document, finding))
     }

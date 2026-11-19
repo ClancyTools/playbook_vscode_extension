@@ -21,6 +21,10 @@ import {
 import { loadPlayground } from "./playgrounds";
 import { axisGuidanceLines, migrationForUsage, resolveOrientation, migrationText } from "./flexAxis";
 import { propAt } from "./usageRules";
+import { valueHover } from "./valueHover";
+import { loadColorTokens } from "./colorTokens";
+import { loadIconIndex } from "./playbookIcons";
+import { loadKitColors } from "./kitColors";
 import {
   parseRailsComponent,
   parseReactComponent,
@@ -80,6 +84,23 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
       }
     }
 
+    const value = valueHover(
+      document.getText(),
+      document.languageId,
+      document.offsetAt(position),
+      metadata,
+      loadColorTokens(this.extensionPath),
+      loadIconIndex(),
+      loadKitColors(this.extensionPath)
+    );
+    if (value) {
+      const markdown = new vscode.MarkdownString(value.markdown);
+      return new vscode.Hover(
+        markdown,
+        new vscode.Range(document.positionAt(value.start), document.positionAt(value.end))
+      );
+    }
+
     const railsComponent = parseRailsComponent(document, position);
     if (railsComponent) {
       const component = findComponentByRailsName(metadata, railsComponent.componentName);
@@ -88,7 +109,8 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           railsComponent.componentName,
           component,
           metadata,
-          loadPlayground(this.extensionPath, component.rails)
+          loadPlayground(this.extensionPath, component.rails),
+          document.languageId
         );
         return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range);
       }
@@ -108,7 +130,8 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           reactComponent.componentName,
           component,
           metadata,
-          loadPlayground(this.extensionPath, component.rails)
+          loadPlayground(this.extensionPath, component.rails),
+          document.languageId
         );
         return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range);
       }

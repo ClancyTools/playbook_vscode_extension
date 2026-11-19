@@ -107,6 +107,11 @@ Errors appear as:
 
 Deprecated props are struck through with the replacement named. *Playbook: Find Deprecated Usages* lists every one in the workspace.
 
+### 🔎 Sweeps and References
+
+- **Find Deprecated Usages** and **Find Bootstrap Markup** ask what to scan (this file, its folder, a folder you pick, or the whole workspace), or take a path: right-click a folder in the Explorer, or run the command with an argument.
+- **Show Global Props** opens the complete global props reference.
+
 ### 🔄 Always the Right Version
 
 The extension reads the newest `playbook-ui` installed in your workspace (monorepo `components/*` too). The status bar shows which version it is using, or "bundled" if none was found.
@@ -117,6 +122,14 @@ The extension reads the newest `playbook-ui` installed in your workspace (monore
 |---|---|---|
 | `playbook.spacingHints` | `true` | Pixel values after spacing tokens |
 | `playbook.axisHints` | `true` | Which way `justify`/`align` values point |
+| `playbook.colorSwatches` | `true` | A square with the real color after color tokens and Icon/Legend colors (turn off to hide) |
+| `playbook.diagnostics.unknownColors` | `true` | Flag an Icon/Legend color Playbook doesn't define |
+| `playbook.icons.path` | _empty_ | Folder with `icons/` and `aliases.json`, e.g. a checkout of playbook-icons |
+| `playbook.icons.previewColor` | _empty_ | Color of icon previews in hovers (empty follows the theme) |
+| `playbook.diagnostics.unknownIcons` | `true` | Flag icon names that look like a typo |
+| `playbook.diagnostics.combineSpacing` | `true` | Hint when `paddingTop`+`paddingBottom` can be `paddingY` |
+| `playbook.diagnostics.requiredIndicator` | `true` | Suggest `required_indicator` instead of a `*` in a label |
+| `playbook.diagnostics.bootstrap` | `false` | Hint on Bootstrap classes with the Playbook equivalent |
 | `playbook.diagnostics.deprecations` | `true` | Flag deprecated props |
 | `playbook.diagnostics.propDependencies` | `true` | Flag props that do nothing without another |
 | `playbook.diagnostics.externalDependencies` | `true` | Flag kits whose Highcharts/maplibre-gl isn't installed |

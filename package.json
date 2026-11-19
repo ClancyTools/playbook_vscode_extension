@@ -42,7 +42,9 @@
     "onCommand:playbook.browseKits",
     "onCommand:playbook.findDeprecated",
     "onCommand:playbook.reloadMetadata",
-    "onCommand:playbook.showInfo"
+    "onCommand:playbook.showInfo",
+    "onCommand:playbook.findBootstrap",
+    "onCommand:playbook.showGlobalProps"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -107,6 +109,46 @@
           "type": "boolean",
           "default": true,
           "description": "Show which way a flex value points after justify/align (and justifyContent/alignItems), for example \"↔ center\" in a row or \"↕ middle\" in a column."
+        },
+        "playbook.colorSwatches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a small square with the real color after Playbook color values: color tokens (backgroundColor=\"bg_light\"), Icon color and Legend color. Turn this off to hide them."
+        },
+        "playbook.icons.path": {
+          "type": "string",
+          "default": "",
+          "description": "Folder containing the playbook-icons icons/ directory and aliases.json (for example a checkout of the playbook-icons repo, ~/Documents/Playbook/playbook-icons). Leave empty to use the package installed in the workspace. Used for icon name completions and the preview in hovers. The icons are private and are never bundled with this extension."
+        },
+        "playbook.diagnostics.unknownIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag icon names that look like a typo of a playbook-icons icon. Names with no close match are never flagged, since they may be Font Awesome icons."
+        },
+        "playbook.diagnostics.combineSpacing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hint when two side props have the same value and can be one axis prop (paddingTop + paddingBottom → paddingY)."
+        },
+        "playbook.diagnostics.bootstrap": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hint on Bootstrap classes (btn btn-primary, panel, col-md-6, …) with the Playbook equivalent. Off by default: an app mid-migration has a lot of them. Use Playbook: Find Bootstrap Markup to scan a folder instead."
+        },
+        "playbook.diagnostics.requiredIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Suggest required_indicator when a label on a Playbook input ends in a hand-written \"*\"."
+        },
+        "playbook.icons.previewColor": {
+          "type": "string",
+          "default": "",
+          "description": "Color of the icon previews in hovers and completions, e.g. #4fc3f7 or white. Leave empty to match the theme (light gray on dark themes, dark gray on light ones)."
+        },
+        "playbook.diagnostics.unknownColors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag a color name that Icon or Legend doesn't define (for example Icon color=\"secondary\"), which means no color is applied."
         }
       }
     },
@@ -138,6 +180,18 @@
         "command": "playbook.kitActions",
         "title": "Kit Actions",
         "category": "Playbook"
+      },
+      {
+        "command": "playbook.findBootstrap",
+        "title": "Find Bootstrap Markup",
+        "category": "Playbook",
+        "icon": "$(search)"
+      },
+      {
+        "command": "playbook.showGlobalProps",
+        "title": "Show Global Props",
+        "category": "Playbook",
+        "icon": "$(symbol-property)"
       }
     ],
     "views": {
@@ -165,12 +219,29 @@
           "command": "playbook.reloadMetadata",
           "when": "view == playbookKits",
           "group": "navigation@3"
+        },
+        {
+          "command": "playbook.findBootstrap",
+          "when": "view == playbookKits",
+          "group": "navigation@3"
         }
       ],
       "commandPalette": [
         {
           "command": "playbook.kitActions",
           "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "playbook.findDeprecated",
+          "when": "explorerResourceIsFolder || resourceExtname =~ /\\.(erb|rb|tsx|jsx|ts|js)$/",
+          "group": "playbook@1"
+        },
+        {
+          "command": "playbook.findBootstrap",
+          "when": "explorerResourceIsFolder || resourceExtname =~ /\\.(erb|html|tsx|jsx)$/",
+          "group": "playbook@2"
         }
       ]
     }

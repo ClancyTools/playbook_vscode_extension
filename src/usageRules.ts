@@ -32,7 +32,7 @@ import {
  * turns them into editor diagnostics.
  */
 
-export type FindingSeverity = "information" | "warning"
+export type FindingSeverity = "hint" | "information" | "warning"
 
 export interface Finding {
   start: number
@@ -110,6 +110,23 @@ export function propAt(
 ): { usage: ScannedUsage; prop: ScannedProp } | undefined {
   for (const usage of scanUsages(text, languageId)) {
     const prop = usage.props.find((p) => offset >= p.nameStart && offset <= p.nameEnd)
+    if (prop) {
+      return { usage, prop }
+    }
+  }
+  return undefined
+}
+
+/** The usage and prop whose *value* the offset is inside, for value hovers. */
+export function valueAt(
+  text: string,
+  languageId: string,
+  offset: number
+): { usage: ScannedUsage; prop: ScannedProp } | undefined {
+  for (const usage of scanUsages(text, languageId)) {
+    const prop = usage.props.find(
+      (p) => p.valueStart !== undefined && p.valueEnd !== undefined && offset >= p.valueStart && offset <= p.valueEnd
+    )
     if (prop) {
       return { usage, prop }
     }
