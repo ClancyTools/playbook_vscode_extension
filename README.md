@@ -103,6 +103,17 @@ Errors appear as:
 - **Pixel hints** — `padding="md"` shows `24px`
 - **Flex axis hints** — `justify="center"` shows `↔ center` in a row and `↕ middle` in a column, so you never have to remember which of `justify`/`align` is horizontal
 
+### 🎨 Colors and Icons
+
+- **Color swatches** — a small square with the real color after a Playbook color token (`background="bg_light"`) and after the `color` of Icon, Legend, Body, Caption, Title, Detail, Link and Overlay, Card `background` and Card header `header_color`. Names like `light` or `link` show that kit's own color, not the same-named token. A hover showing the token and its value. An Icon or Legend color Playbook doesn't define (`color="secondary"` on an Icon) is flagged, since no color is applied.
+- **Icons** — icon props complete from `@powerhome/playbook-icons` (with a preview of the highlighted icon), hover shows the icon, its category and alias, and a typo gets a "did you mean". The icon set is private, so nothing from it is bundled: it is read from the workspace's installed package, or from `playbook.icons.path` (for example a checkout of the repo). Names with no close match are never flagged, since the Icon kit falls back to Font Awesome.
+
+### 🧹 Tidying Props
+
+- **Combine paired spacing** — `paddingTop="sm" paddingBottom="sm"` → `paddingY="sm"` (and left/right, and margins), with a quick fix and *Combine all in this file*.
+- **Required indicator** — a label ending in a hand-written `*` on a Playbook input (`label: "Name *"`) gets a quick fix that removes it and adds `required_indicator: true`.
+- **Flex migration** — the deprecated Flex `horizontal`, `vertical` and `spacing` are rewritten to the right `justify`/`align` for the orientation.
+
 ### ⚠️ Deprecations
 
 Deprecated props are struck through with the replacement named. *Playbook: Find Deprecated Usages* lists every one in the workspace.
@@ -110,7 +121,8 @@ Deprecated props are struck through with the replacement named. *Playbook: Find 
 ### 🔎 Sweeps and References
 
 - **Find Deprecated Usages** and **Find Bootstrap Markup** ask what to scan (this file, its folder, a folder you pick, or the whole workspace), or take a path: right-click a folder in the Explorer, or run the command with an argument.
-- **Show Global Props** opens the complete global props reference.
+- **Find Bootstrap Markup** matches Bootstrap classes (`btn btn-primary`, `panel`, `col-md-6`, …) to the Playbook kit that replaces them and opens a summary report by kind, folder and file.
+- **Show Global Props** opens the complete global props reference, grouped and alphabetized, with every value shown. The kit hover lists the same props compactly.
 
 ### 🔄 Always the Right Version
 
