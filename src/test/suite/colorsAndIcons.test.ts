@@ -460,6 +460,25 @@ suite("Colors and Icons Test Suite", () => {
       assert.ok(down.sortText! < items.find((i) => i.label === "chevron")!.sortText!, "icons sort before aliases")
     })
 
+    test("completes an icon name as you type inside existing quotes", async () => {
+      const provider = new PlaybookCompletionProvider(extensionPath)
+      for (const [languageId, content] of [
+        ["typescriptreact", '<Button icon="chev|" />'],
+        ["erb", '<%= pb_rails("button", props: { icon: "chev|" }) %>'],
+      ]) {
+        const document = await createTestDocument(languageId, content.replace("|", ""))
+        const items = getCompletionItems(
+          await provider.provideCompletionItems(
+            document,
+            document.positionAt(content.indexOf("|")),
+            createCancellationToken(),
+            createCompletionContext("v")
+          )
+        )
+        assert.ok(items.some((i) => i.label === "chevron-down"), languageId)
+      }
+    })
+
     test("adds quotes when the value isn't quoted yet", async () => {
       const { items } = await complete("<Button icon= />", "icon=")
       assert.strictEqual(items.find((i) => i.label === "arrow-right")?.insertText, '"arrow-right"')

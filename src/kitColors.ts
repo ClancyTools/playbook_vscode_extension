@@ -79,7 +79,7 @@ export function isKnownKitColor(kit: string, value: string, colors: KitColors): 
  * Subcomponents have no schema, but Card's header takes the colors Card's data
  * describes (`header_color`), so it is mapped to its kit by hand.
  */
-const SUBCOMPONENT_KITS: Record<string, string> = { "card/card_header": "card", "Card.Header": "card" }
+export const SUBCOMPONENT_KITS: Record<string, string> = { "card/card_header": "card", "Card.Header": "card" }
 
 /** Color boxes for color props that take a kit's own colors (Icon, Legend, Body, Card, …). */
 export function kitColorAnnotations(

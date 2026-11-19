@@ -1,5 +1,6 @@
 import * as assert from "assert"
 import * as vscode from "vscode"
+import * as fs from "fs"
 import * as path from "path"
 import { PlaybookCompletionProvider } from "../../completionProvider"
 import {
@@ -280,6 +281,104 @@ suite("Completion Provider Test Suite", () => {
     hardcodedProps.forEach((propName) => {
       const found = items.find((c: vscode.CompletionItem) => c.label === propName)
       assert.ok(found, `Should include hardcoded global prop: ${propName}`)
+    })
+  })
+
+  suite("Color value completions", () => {
+    const complete = async (languageId: string, content: string): Promise<vscode.CompletionItem[]> => {
+      const document = await createTestDocument(languageId, content.replace("|", ""))
+      const position = document.positionAt(content.indexOf("|"))
+      return getCompletionItems(
+        await provider.provideCompletionItems(document, position, createCancellationToken(), createCompletionContext())
+      )
+    }
+    const find = (items: vscode.CompletionItem[], label: string) => items.find((i) => i.label === label)
+
+    test("an enum color value shows its color", async () => {
+      const items = await complete("typescriptreact", '<Card background="|" />')
+      assert.strictEqual(find(items, "windows")?.kind, vscode.CompletionItemKind.Color)
+      assert.strictEqual(find(items, "light")?.documentation, "#F3F7FB")
+    })
+
+    test("a kit's own meaning of a name wins over the same-named token", async () => {
+      const items = await complete("erb", '<%= pb_rails("body", props: { color: "|" }) %>')
+      assert.strictEqual(find(items, "default")?.documentation, "#242B42")
+    })
+
+    test("Icon color has no enum, so its names come from the stylesheet", async () => {
+      const items = await complete("typescriptreact", '<Icon icon="user" color="|" />')
+      assert.strictEqual(find(items, "primary")?.documentation, "#0056CF")
+      assert.ok(!find(items, "secondary"))
+    })
+
+    test("Card header_color completes on the header subcomponent", async () => {
+      const items = await complete("erb", '<%= pb_rails("card/card_header", props: { header_color: "|" }) %>')
+      assert.ok(find(items, "category_1"), "category_1")
+      assert.ok(find(items, "dark"), "dark")
+    })
+
+    test("a non-color prop gets plain enum values", async () => {
+      const items = await complete("typescriptreact", '<Body size="|" />')
+      assert.ok(items.every((i) => i.kind !== vscode.CompletionItemKind.Color))
+    })
+
+    test("with swatches off the names remain but without colors", async () => {
+      const config = vscode.workspace.getConfiguration("playbook")
+      await config.update("colorSwatches", false, vscode.ConfigurationTarget.Global)
+      try {
+        const items = await complete("typescriptreact", '<Icon icon="user" color="|" />')
+        assert.ok(find(items, "primary"))
+        assert.strictEqual(find(items, "primary")?.documentation, undefined)
+        assert.ok(items.every((i) => i.kind !== vscode.CompletionItemKind.Color))
+      } finally {
+        await config.update("colorSwatches", undefined, vscode.ConfigurationTarget.Global)
+      }
+    })
+  })
+
+  suite("Typing letters inside a value", () => {
+    const typed = async (languageId: string, content: string, trigger: string): Promise<vscode.CompletionItem[]> => {
+      const document = await createTestDocument(languageId, content.replace("|", ""))
+      const position = document.positionAt(content.indexOf("|"))
+      return getCompletionItems(
+        await provider.provideCompletionItems(document, position, createCancellationToken(), createCompletionContext(trigger))
+      )
+    }
+
+    test("completes a value as you type inside existing quotes (React)", async () => {
+      const items = await typed("typescriptreact", '<Card background="wi|" />', "i")
+      assert.ok(items.some((i) => i.label === "windows"))
+    })
+
+    test("completes a value as you type inside existing quotes (Rails)", async () => {
+      const items = await typed("erb", '<%= pb_rails("card", props: { background: "wi|" }) %>', "i")
+      assert.ok(items.some((i) => i.label === "windows"))
+    })
+
+    test("typing a letter anywhere else offers nothing", async () => {
+      assert.deepStrictEqual(await typed("typescriptreact", "const total = 1 + va|", "a"), [])
+      assert.deepStrictEqual(await typed("typescriptreact", "<Card pad|", "d"), [])
+      assert.deepStrictEqual(await typed("erb", "<%= link_to car|", "r"), [])
+    })
+
+    test("completes a Rails component name as you type inside existing quotes", async () => {
+      const content = '<%= pb_rails("bu|") %>'
+      const items = await typed("erb", content, "u")
+      assert.ok(items.some((i) => i.label === "button"))
+    })
+
+    test("a preset replaces the text already typed, not just what follows the cursor", async () => {
+      const content = '<%= pb_rails("dr|") %>'
+      const items = await typed("erb", content, "r")
+      const preset = items.find((i) => i.detail === "Playbook preset" && String(i.label).startsWith("dropdown:"))
+      assert.ok(preset, "a Dropdown preset")
+      const range = preset!.range as vscode.Range
+      assert.strictEqual(range.start.character, content.indexOf("|") - 2, "starts where 'dr' starts")
+    })
+
+    test("the trigger characters include letters, digits and underscore", () => {
+      const source = fs.readFileSync(path.resolve(extensionPath, "src/extension.ts"), "utf-8")
+      assert.ok(source.includes("abcdefghijklmnopqrstuvwxyz") && source.includes("0123456789_"))
     })
   })
 })

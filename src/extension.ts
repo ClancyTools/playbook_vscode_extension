@@ -56,7 +56,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   console.log(`[${timestamp}] Creating completion provider...`);
   const completionProvider = new PlaybookCompletionProvider(context.extensionPath);
-  const completionTriggers = ['"', "'", "<", " ", ":", "="];
+  // Letters, digits and _ make VS Code ask for suggestions while typing inside a
+  // string (quickSuggestions are off there by default), so a value in
+  // background="|" completes as you type. The provider ignores them anywhere
+  // but a prop value.
+  const completionTriggers = ['"', "'", "<", " ", ":", "=", ..."abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"];
   console.log(`[${timestamp}] Completion triggers: ${completionTriggers.join(", ")}`);
   const completionDisposable = vscode.languages.registerCompletionItemProvider(
     supportedLanguages,

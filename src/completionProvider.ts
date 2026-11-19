@@ -23,9 +23,13 @@ import { axisLabel, axisLabelBothWays, axisRole, resolveOrientation } from "./fl
 import { usageAt } from "./usageRules"
 import { enabled } from "./settings"
 import { iconPreviewDataUri, loadIconIndex } from "./playbookIcons"
+import { SUBCOMPONENT_KITS, kitColorKey, loadKitColors } from "./kitColors"
+import { isColorProp, loadColorTokens } from "./colorTokens"
 
 /** Which icon a completion item stands for, so its preview can be built on demand. */
 const iconNames = new WeakMap<vscode.CompletionItem, string>()
+
+const WORD_TRIGGER = /^[A-Za-z0-9_]$/
 
 export class PlaybookCompletionProvider
   implements vscode.CompletionItemProvider
@@ -72,6 +76,12 @@ export class PlaybookCompletionProvider
     console.log(
       `[PlaybookCompletionProvider] Detected completion type: ${completionType}`
     )
+
+    // Typing a letter only asks for suggestions so values complete inside quotes;
+    // everywhere else those requests would just be noise.
+    if (context.triggerCharacter && WORD_TRIGGER.test(context.triggerCharacter) && !completionType.endsWith("prop-value") && completionType !== "rails-component") {
+      return []
+    }
 
     switch (completionType) {
       case "rails-component":
@@ -125,7 +135,7 @@ export class PlaybookCompletionProvider
     document: vscode.TextDocument,
     position: vscode.Position
   ): string {
-    if (linePrefix.match(/pb_rails\(\s*["']$/)) {
+    if (linePrefix.match(/pb_rails\(\s*["'][\w]*$/)) {
       return "rails-component"
     }
 
@@ -158,7 +168,7 @@ export class PlaybookCompletionProvider
         linePrefix.indexOf(reactTagMatch[1]) + reactTagMatch[1].length
       )
 
-      if (afterTag.match(/\w+\s*=\s*["'{]?$/)) {
+      if (afterTag.match(/\w+\s*=\s*(?:"[^"]*|'[^']*|\{\s*(?:["'][^"'}]*)?)?$/)) {
         return "react-prop-value"
       }
 
@@ -170,7 +180,7 @@ export class PlaybookCompletionProvider
       position
     )
     if (reactComponentContext) {
-      if (linePrefix.match(/\w+\s*=\s*["'{]?$/)) {
+      if (linePrefix.match(/\w+\s*=\s*(?:"[^"]*|'[^']*|\{\s*(?:["'][^"'}]*)?)?$/)) {
         return "react-prop-value"
       }
       return "react-prop-name"
@@ -280,6 +290,8 @@ export class PlaybookCompletionProvider
     const items: vscode.CompletionItem[] = []
     const rest = document.lineAt(position.line).text.substring(position.character)
     const closing = /^["']\)/.test(rest) ? 2 : /^["']/.test(rest) ? 1 : 0
+    // Text already typed after the quote is replaced too, not left in front of the preset.
+    const typed = /["'](\w*)$/.exec(document.lineAt(position.line).text.substring(0, position.character))?.[1].length ?? 0
 
     for (const component of Object.values<ComponentMetadata>(metadata.components)) {
       if (!isComponentValidForPlatform(component, "erb")) {
@@ -297,7 +309,7 @@ export class PlaybookCompletionProvider
         item.filterText = `${component.rails} ${preset.name}`
         item.sortText = `${component.rails}~${String(index).padStart(2, "0")}`
         item.insertText = `${component.rails}", props: { ${preset.rails} }${closing === 2 ? ")" : ""}`
-        item.range = new vscode.Range(position, position.translate(0, closing))
+        item.range = new vscode.Range(position.translate(0, -typed), position.translate(0, closing))
         item.documentation = new vscode.MarkdownString(
           `\`\`\`erb\n<%= pb_rails("${component.rails}", props: { ${preset.rails} }) %>\n\`\`\``
         )
@@ -673,6 +685,18 @@ export class PlaybookCompletionProvider
     return items
   }
 
+  /** Color names a kit accepts, each shown with its color. */
+  private colorNameItems(colors: Record<string, string>, insideString: boolean, swatches: boolean): vscode.CompletionItem[] {
+    return Object.entries(colors).map(([name, css]) => {
+      const item = new vscode.CompletionItem(name, swatches && css ? vscode.CompletionItemKind.Color : vscode.CompletionItemKind.EnumMember)
+      item.insertText = insideString ? name : `"${name}"`
+      if (swatches && css) {
+        item.documentation = css
+      }
+      return item
+    })
+  }
+
   /** Icon names from the workspace's playbook-icons (never bundled; the repo is private). */
   private iconItems(insideString: boolean): vscode.CompletionItem[] {
     const index = loadIconIndex()
@@ -727,7 +751,9 @@ export class PlaybookCompletionProvider
           )
         : metadata.components[componentContext.componentName]
 
-    if (!component) {
+    // Subcomponents have no schema, but a few take a kit's own colors (Card header_color).
+    const subKit = SUBCOMPONENT_KITS[componentContext.componentName]
+    if (!component && !subKit) {
       return []
     }
 
@@ -761,14 +787,20 @@ export class PlaybookCompletionProvider
       return []
     }
 
-    const prop =
-      component.props[propName] ||
-      findGlobalPropForComponent(metadata, component, propName)
-    if (!prop) {
-      return []
+    const swatches = enabled("colorSwatches")
+    const kitColors = loadKitColors(this.extensionPath)
+    const ownColors = kitColors[kitColorKey(component?.rails ?? subKit, propName)]
+
+    const prop = component
+      ? component.props[propName] || findGlobalPropForComponent(metadata, component, propName)
+      : undefined
+    if (!component || !prop) {
+      // A subcomponent, or a prop with no schema entry: offer the kit's colors when it has some.
+      return ownColors && !prop ? this.colorNameItems(ownColors, insideString, swatches) : []
     }
 
     const items: vscode.CompletionItem[] = []
+    const tokens = swatches ? loadColorTokens(this.extensionPath) : {}
 
     // justify/align (and justifyContent/alignItems) point along different axes
     // depending on orientation, so say where each value puts the items.
@@ -808,8 +840,19 @@ export class PlaybookCompletionProvider
           item.sortText = "0" + value
         }
 
+        // A color value shows its color in the list: the kit's own meaning of the
+        // name (Body "light") wins over the same-named token.
+        const color = (swatches ? ownColors?.[value] : undefined) || (isColorProp(propName, validValues, tokens) ? tokens[value] : undefined)
+        if (color) {
+          item.kind = vscode.CompletionItemKind.Color
+          item.documentation = color
+        }
+
         items.push(item)
       }
+    } else if (ownColors) {
+      // No enum in the schema (Icon, Legend color): the names come from the kit's stylesheet.
+      items.push(...this.colorNameItems(ownColors, insideString, swatches))
     }
 
     if (enabled("completion.icons") && /^icon(_right|_left)?$/.test(propName) && component.props[propName]) {
