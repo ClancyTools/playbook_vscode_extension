@@ -881,6 +881,143 @@ function docsLinksFor(component: ComponentMetadata): string {
 }
 
 /**
+ * How Playbook's global props are grouped for documentation. First match wins;
+ * anything unmatched lands in "Other".
+ */
+const GLOBAL_PROP_CATEGORIES: Array<{ title: string; matches: RegExp }> = [
+  { title: "Spacing", matches: /^(margin|padding)/ },
+  {
+    title: "Flexbox",
+    matches: /^(align(Content|Items|Self)|flex(Direction|Grow|Shrink|Wrap)?|justify(Content|Self)|order|gap|rowGap|columnGap)$/,
+  },
+  { title: "Grid", matches: /^(grid|justifyItems)/ },
+  { title: "Sizing", matches: /^(width|height|minWidth|maxWidth|minHeight|maxHeight)$/ },
+  { title: "Position", matches: /^(position|top|right|bottom|left|inset|zIndex)$/ },
+  { title: "Border and effects", matches: /^(border|shadow|hover|groupHover)/ },
+  { title: "Display and overflow", matches: /^(display|overflow|truncate|cursor)/ },
+  { title: "Text", matches: /^(lineHeight|textAlign|verticalAlign|numberSpacing)$/ },
+]
+
+export interface GlobalPropRow {
+  /** Props that share a type and value list, alphabetized, in the platform's spelling. */
+  names: string[]
+  type: string
+  values?: string[]
+  responsive: boolean
+}
+
+export interface GlobalPropGroup {
+  title: string
+  rows: GlobalPropRow[]
+}
+
+function categoryTitle(camelName: string): string {
+  return GLOBAL_PROP_CATEGORIES.find((c) => c.matches.test(camelName))?.title ?? "Other"
+}
+
+/**
+ * Global props by purpose, alphabetized. Within a group, props with the same
+ * type and values (margin, marginTop, padding, … all take the spacing scale) are
+ * one row, so each value list is written once and nothing has to be shortened.
+ */
+export function buildGlobalPropGroups(metadata: PlaybookMetadata, platform: Platform): GlobalPropGroup[] {
+  const languageId = platform === "rails" ? "erb" : "typescriptreact"
+  const byTitle = new Map<string, Map<string, GlobalPropRow>>()
+
+  for (const [snake, prop] of Object.entries(metadata.globalProps || {})) {
+    const camel = snakeToCamel(snake)
+    const values = getPropValues(prop, languageId)
+    const type = getPropType(prop, languageId)
+    const signature = JSON.stringify([type, values ?? null, !!prop.responsive])
+    const title = categoryTitle(camel)
+    const rows = byTitle.get(title) ?? new Map<string, GlobalPropRow>()
+    const row = rows.get(signature) ?? { names: [], type, values, responsive: !!prop.responsive }
+    row.names.push(platform === "rails" ? snake : camel)
+    rows.set(signature, row)
+    byTitle.set(title, rows)
+  }
+
+  const order = [...GLOBAL_PROP_CATEGORIES.map((c) => c.title), "Other"]
+  return order
+    .filter((title) => byTitle.has(title))
+    .map((title) => ({
+      title,
+      rows: [...byTitle.get(title)!.values()]
+        .map((row) => ({ ...row, names: row.names.sort((x, y) => x.localeCompare(y)) }))
+        .sort((x, y) => x.names[0].localeCompare(y.names[0])),
+    }))
+}
+
+/**
+ * The global props section of a kit hover: every name, grouped and alphabetized,
+ * without values (hover a prop for those, or open the full reference).
+ */
+export function globalPropsSummaryLines(metadata: PlaybookMetadata, platform: Platform): string[] {
+  const groups = buildGlobalPropGroups(metadata, platform)
+  if (groups.length === 0) {
+    return []
+  }
+  const lines: string[] = ["## Global Props", ""]
+  lines.push("_On every Playbook kit. Hover one for its values; **Playbook: Show Global Props** has the full reference._")
+  lines.push("")
+  for (const group of groups) {
+    const names = group.rows.flatMap((row) => row.names).sort((x, y) => x.localeCompare(y))
+    lines.push(`**${group.title}** (${names.length}) — ${names.map((n) => `\`${n}\``).join(" ")}`)
+    lines.push("")
+  }
+  const tokens = metadata.spacingTokens
+  if (tokens) {
+    const scale = Object.entries(tokens).map(([name, px]) => `\`${name}\` ${px}`).join(" · ")
+    lines.push(`**Spacing scale:** ${scale}`)
+    lines.push("")
+  }
+  return lines
+}
+
+/** The complete reference: every global prop with its full value list, as Markdown tables. */
+export function generateGlobalPropsDocs(metadata: PlaybookMetadata, platform: Platform): string {
+  const lines: string[] = []
+  lines.push("# Playbook global props")
+  lines.push("")
+  lines.push(
+    "Available on every Playbook kit. " +
+      (platform === "rails"
+        ? "Showing Rails names (snake_case); React uses camelCase (margin_bottom → marginBottom)."
+        : "Showing React names (camelCase); Rails uses snake_case (marginBottom → margin_bottom).")
+  )
+  lines.push("")
+  if (metadata.breakpoints) {
+    const legend = Object.entries(metadata.breakpoints).map(([bp, range]) => `\`${bp}\` ${range}`).join(" · ")
+    lines.push(
+      "**Responsive** props (↔) also take an object keyed by breakpoint, e.g. " +
+        (platform === "rails" ? '`{ default: "sm", md: "lg" }`' : "`{{ default: 'sm', md: 'lg' }}`") +
+        `. Breakpoints: ${legend}.`
+    )
+    lines.push("")
+  }
+  if (metadata.spacingTokens) {
+    const scale = Object.entries(metadata.spacingTokens).map(([name, px]) => `\`${name}\` ${px}`).join(" · ")
+    lines.push(`**Spacing scale:** ${scale}`)
+    lines.push("")
+  }
+  for (const group of buildGlobalPropGroups(metadata, platform)) {
+    lines.push(`## ${group.title}`)
+    lines.push("")
+    lines.push("| Props | Values | ↔ |")
+    lines.push("|---|---|:-:|")
+    for (const row of group.rows) {
+      const names = row.names.map((n) => `\`${n}\``).join(" ")
+      // "enum | responsive" has a pipe that would split the table cell; the ↔ column already says responsive.
+      const typeText = row.type.replace(/\s*\|\s*responsive/g, "").replace(/\|/g, "\\|")
+      const values = row.values && row.values.length > 0 ? row.values.map((v) => `\`${v}\``).join(" ") : `_${typeText}_`
+      lines.push(`| ${names} | ${values} | ${row.responsive ? "↔" : ""} |`)
+    }
+    lines.push("")
+  }
+  return lines.join("\n")
+}
+
+/**
  * Guidance Playbook publishes alongside a kit: what it is easily confused with,
  * known gotchas, named presets, and answers to common questions.
  */
@@ -985,7 +1122,8 @@ export function generateComponentDocs(
   componentName: string,
   component: ComponentMetadata,
   metadata: PlaybookMetadata,
-  playground?: Playground
+  playground?: Playground,
+  languageId?: string
 ): string {
   const lines: string[] = []
 
@@ -1106,7 +1244,7 @@ export function generateComponentDocs(
     lines.push("## Props")
     lines.push("")
 
-    for (const [propName, prop] of Object.entries(component.props)) {
+    for (const [propName, prop] of Object.entries(component.props).sort(([x], [y]) => x.localeCompare(y))) {
       const camelCaseProp = propName.replace(/_([a-z])/g, (_, letter) =>
         letter.toUpperCase()
       )
@@ -1133,41 +1271,8 @@ export function generateComponentDocs(
     }
   }
 
-  if (metadata.globalProps && Object.keys(metadata.globalProps).length > 0) {
-    lines.push("## Global Props")
-    lines.push("")
-    lines.push("*These props are available on all Playbook components:*")
-    lines.push("")
-
-    const globalPropsList: string[] = []
-    for (const [propName, prop] of Object.entries(metadata.globalProps)) {
-      const camelCaseProp = propName.replace(/_([a-z])/g, (_, letter) =>
-        letter.toUpperCase()
-      )
-      let propDesc = `**${propName}** (${camelCaseProp})`
-
-      if (prop.values && prop.values.length > 0) {
-        if (prop.values.length > 5) {
-          propDesc += ` - \`${prop.type}\`: ${prop.values
-            .slice(0, 5)
-            .map(v => `\`${v}\``)
-            .join(", ")}...`
-        } else {
-          propDesc += ` - ${prop.values.map(v => `\`${v}\``).join(", ")}`
-        }
-      } else {
-        propDesc += ` - \`${prop.type}\``
-      }
-
-      if (prop.description) {
-        propDesc += ` — ${prop.description}`
-      }
-
-      globalPropsList.push(propDesc)
-    }
-
-    lines.push(globalPropsList.join("  \n"))
-    lines.push("")
+  if (component.hasGlobalProps !== false) {
+    lines.push(...globalPropsSummaryLines(metadata, platformFor(languageId ?? "typescriptreact")))
   }
 
   return lines.join("\n")
