@@ -5,6 +5,7 @@ import { PlaybookDiagnostics } from "./diagnostics";
 import { PlaybookCompletionProvider } from "./completionProvider";
 import { PlaybookQuickFixProvider } from "./quickFixes";
 import { SpacingHints } from "./spacingHints";
+import { AxisHints } from "./axisHints";
 import { PlaybookStatusBar } from "./statusBar";
 import { KitTreeProvider, browseKits, runKitActions } from "./kitBrowser";
 import { findDeprecatedUsages } from "./deprecatedUsages";
@@ -103,10 +104,12 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   const spacingHints = new SpacingHints(context.extensionPath);
+  const axisHints = new AxisHints(context.extensionPath);
   const statusBar = new PlaybookStatusBar(context.extensionPath);
   const kitTree = new KitTreeProvider(context.extensionPath);
   context.subscriptions.push(
     spacingHints,
+    axisHints,
     statusBar,
     vscode.window.registerTreeDataProvider("playbookKits", kitTree)
   );
@@ -118,6 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
     statusBar.update();
     kitTree.refresh();
     spacingHints.refreshAll();
+    axisHints.refreshAll();
   };
 
   context.subscriptions.push(

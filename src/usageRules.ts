@@ -13,8 +13,10 @@ import {
   platformFor,
   snakeToCamel,
 } from "./metadata"
+import { migrationForUsage, migrationText } from "./flexAxis"
 import { Playground } from "./playgrounds"
 import {
+  literalValue,
   ScannedProp,
   ScannedUsage,
   scanFormBuilderUsages,
@@ -100,6 +102,32 @@ export function scanUsages(text: string, languageId: string): ScannedUsage[] {
   return platformFor(languageId) === "rails" ? scanRailsUsages(text) : scanReactUsages(text)
 }
 
+/** The usage and prop whose name the offset is on, for hover. */
+export function propAt(
+  text: string,
+  languageId: string,
+  offset: number
+): { usage: ScannedUsage; prop: ScannedProp } | undefined {
+  for (const usage of scanUsages(text, languageId)) {
+    const prop = usage.props.find((p) => offset >= p.nameStart && offset <= p.nameEnd)
+    if (prop) {
+      return { usage, prop }
+    }
+  }
+  return undefined
+}
+
+/** The innermost usage whose tag / call arguments contain the offset, for completion. */
+export function usageAt(text: string, languageId: string, offset: number): ScannedUsage | undefined {
+  let found: ScannedUsage | undefined
+  for (const usage of scanUsages(text, languageId)) {
+    if (usage.componentStart <= offset && offset <= usage.end) {
+      found = usage // later usages start later, so the last match is the innermost
+    }
+  }
+  return found
+}
+
 export function resolveComponent(
   metadata: PlaybookMetadata,
   usage: ScannedUsage
@@ -155,7 +183,10 @@ function deprecatedProps(
       continue
     }
     let message = `Prop "${prop.name}" is deprecated.`
-    if (info.replacement) {
+    const migrated = migrationForUsage(usage, component, prop)
+    if (migrated) {
+      message += ` Use ${migrationText(migrated.migration, usage.platform)} instead (orientation is ${migrated.resolved.orientation}).`
+    } else if (info.replacement) {
       message += ` Use "${displayName(info.replacement, usage.platform)}" instead.`
     } else if (info.message) {
       message += ` ${info.message}`
@@ -175,31 +206,7 @@ function deprecatedProps(
   return findings
 }
 
-/** Reads a literal prop value (`"x"`, `{true}`, `:x`, shorthand) or undefined if dynamic. */
-export function literalValue(prop: ScannedProp): string | boolean | undefined {
-  if (prop.valueText === undefined) {
-    return true // <Dropdown multiSelect />
-  }
-  let text = prop.valueText.trim()
-  if (text.startsWith("{") && text.endsWith("}")) {
-    text = text.slice(1, -1).trim()
-  }
-  if (text === "true") {
-    return true
-  }
-  if (text === "false") {
-    return false
-  }
-  const quoted = /^(["'])(.*)\1$/s.exec(text)
-  if (quoted && !/#\{|\$\{/.test(quoted[2])) {
-    return quoted[2]
-  }
-  const symbol = /^:(\w+)$/.exec(text)
-  if (symbol) {
-    return symbol[1]
-  }
-  return undefined
-}
+export { literalValue } from "./usageScanner"
 
 function sameLiteral(actual: string | boolean, expected: unknown): boolean {
   return String(actual) === String(expected)

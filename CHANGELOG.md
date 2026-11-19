@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Flex axis awareness** ↔↕
+  - Flex's `justify` and `align` point different ways depending on `orientation` (default `row`): `justify` is the *main* axis (horizontal in a row, vertical in a column) and `align` the *cross* axis. Verified against Playbook's Rails, React and SCSS source. The same applies to the global `justifyContent`/`alignItems` with `flexDirection`
+  - **Inline hints:** `justify="center"` shows `↔ center` in a row and `↕ middle` in a column; `align="start"` shows `↕ top` / `↔ left`. Skipped when the orientation can't be known from the code (a variable, a spread). Setting: `playbook.axisHints`
+  - **Hover:** on `justify`, `align`, `justifyContent`, `alignItems`, `orientation` and `flexDirection`, explains the axis using *that usage's* actual orientation ("`orientation` isn't set, so it is `row` (the default), so it positions items horizontally")
+  - **Value completions** say where each value puts items (`start — ↔ left`), or show both orientations when it is unknown
+  - **Migration for deprecated `horizontal` / `vertical` / `spacing`** (Rails): the warning names the right replacement and a quick fix rewrites the prop and value (`horizontal: "right"` → `justify: "end"` in a row, `align: "end"` in a column; `spacing: "between"` → `justify: "between"`). No fix is offered where Playbook generates no CSS for the old value (`horizontal: "stretch"` in a row), where the orientation is dynamic, or where the replacement is already set
+
 - **Quick fixes: "Did you mean…?"** 💡
   - Unknown props (`margin_botom` → `margin_bottom`, `marginBotom` → `marginBottom`), invalid enum values (`"primry"` → `"primary"`), unknown kit names (`pb_rails("buton")` → `button`) and deprecated props with a known replacement each get a lightbulb fix. Matching ignores case and underscores and handles reordered words (`bottom_margin`); props that exist only on the other platform are never suggested
 - **Pixel hints for spacing tokens** 📏

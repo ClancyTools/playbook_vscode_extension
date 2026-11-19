@@ -234,7 +234,7 @@ suite("Quick Fixes Test Suite", () => {
     test("offers nothing when Playbook names no replacement", async () => {
       const { actions } = await actionsFor(
         "erb",
-        '<%= pb_rails("flex", props: { horizontal: "center" }) %>',
+        '<%= pb_rails("tooltip", props: { trigger_element_id: "x" }) %>',
         "deprecated-prop"
       )
       assert.deepStrictEqual(actions, [])

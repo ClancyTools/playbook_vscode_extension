@@ -13,10 +13,14 @@ import {
   loadFormBuilderMetadata,
   findFormBuilderField,
   platformFor,
+  getPropDeprecation,
   propGuidanceLines,
+  ComponentMetadata,
   PlaybookMetadata
 } from "./metadata";
 import { loadPlayground } from "./playgrounds";
+import { axisGuidanceLines, migrationForUsage, resolveOrientation, migrationText } from "./flexAxis";
+import { propAt } from "./usageRules";
 import {
   parseRailsComponent,
   parseReactComponent,
@@ -32,6 +36,26 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
   constructor(extensionPath: string) {
     this.extensionPath = extensionPath;
     console.log(`[PlaybookHoverProvider] Created with extension path: ${extensionPath}`);
+  }
+
+  /** How the flex axis props apply to this exact usage (orientation resolved from the code). */
+  private flexLines(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    component: ComponentMetadata,
+    snakeProp: string
+  ): string[] {
+    const hit = propAt(document.getText(), document.languageId, document.offsetAt(position));
+    const resolved = hit ? resolveOrientation(hit.usage, component) : undefined;
+    const lines = axisGuidanceLines(component, snakeProp, resolved, platformFor(document.languageId));
+    const deprecated = hit && getPropDeprecation(component, snakeProp, document.languageId);
+    const migrated = hit && deprecated && migrationForUsage(hit.usage, component, hit.prop);
+    if (migrated) {
+      lines.push(
+        `Migrates to \`${migrationText(migrated.migration, platformFor(document.languageId))}\` (orientation is \`${migrated.resolved.orientation}\`).`
+      );
+    }
+    return lines;
   }
 
   provideHover(
@@ -123,6 +147,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               loadPlayground(this.extensionPath, component.rails),
               document.languageId
             );
+            guidance.push(...this.flexLines(document, position, component, railsProp.propName));
             return new vscode.Hover(
               new vscode.MarkdownString([propDocs, ...guidance].join("  \n")),
               railsProp.range
@@ -158,6 +183,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               loadPlayground(this.extensionPath, component.rails),
               document.languageId
             );
+            guidance.push(...this.flexLines(document, position, component, snakeCaseProp));
             return new vscode.Hover(
               new vscode.MarkdownString([propDocs, ...guidance].join("  \n")),
               reactProp.range

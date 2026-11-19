@@ -34,6 +34,32 @@ export interface ScannedUsage {
   form?: boolean
 }
 
+/** Reads a literal prop value (`"x"`, `{true}`, `:x`, shorthand) or undefined if dynamic. */
+export function literalValue(prop: ScannedProp): string | boolean | undefined {
+  if (prop.valueText === undefined) {
+    return true // <Dropdown multiSelect />
+  }
+  let text = prop.valueText.trim()
+  if (text.startsWith("{") && text.endsWith("}")) {
+    text = text.slice(1, -1).trim()
+  }
+  if (text === "true") {
+    return true
+  }
+  if (text === "false") {
+    return false
+  }
+  const quoted = /^(["'])(.*)\1$/s.exec(text)
+  if (quoted && !/#\{|\$\{/.test(quoted[2])) {
+    return quoted[2]
+  }
+  const symbol = /^:(\w+)$/.exec(text)
+  if (symbol) {
+    return symbol[1]
+  }
+  return undefined
+}
+
 const WORD = /[\w$]/
 
 function isWordChar(ch: string | undefined): boolean {

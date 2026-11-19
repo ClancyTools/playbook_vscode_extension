@@ -15,6 +15,7 @@ import {
 } from "./metadata"
 import { suggest } from "./suggestions"
 import { displayName, resolveComponent, scanUsages } from "./usageRules"
+import { migrationForUsage, migrationText } from "./flexAxis"
 import { ScannedProp, ScannedUsage, scanFormBuilderUsages } from "./usageScanner"
 
 export interface FixRequest {
@@ -242,6 +243,21 @@ function deprecatedPropFixes(
   const component = found && resolveComponent(metadata, found.usage)
   if (!found || !component) {
     return []
+  }
+  const migrated = migrationForUsage(found.usage, component, found.prop)
+  if (migrated) {
+    // horizontal/vertical/spacing swap roles with orientation, so the whole
+    // prop (name and value) is rewritten: horizontal="center" -> justify="center".
+    const text = migrationText(migrated.migration, found.usage.platform)
+    return [
+      {
+        title: `Replace with ${text} (orientation is ${migrated.resolved.orientation})`,
+        start: request.start,
+        end: found.prop.valueEnd ?? request.end,
+        newText: text,
+        preferred: true,
+      },
+    ]
   }
   const snake = found.usage.platform === "react" ? camelToSnake(found.prop.name) : found.prop.name
   const replacement = getPropDeprecation(component, snake, languageId)?.replacement

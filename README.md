@@ -101,6 +101,7 @@ Errors appear as:
 - **Presets** — every Playbook playground preset is a completion (`<Dr` → `Dropdown: Create tags`)
 - **Kit browser** — *Playbook: Browse Kits* (or the *Playbook Kits* Explorer view): search by name or by what it looks like, then insert an example or preset, copy it, or open the docs
 - **Pixel hints** — `padding="md"` shows `24px`
+- **Flex axis hints** — `justify="center"` shows `↔ center` in a row and `↕ middle` in a column, so you never have to remember which of `justify`/`align` is horizontal
 
 ### ⚠️ Deprecations
 
@@ -115,6 +116,7 @@ The extension reads the newest `playbook-ui` installed in your workspace (monore
 | Setting | Default | |
 |---|---|---|
 | `playbook.spacingHints` | `true` | Pixel values after spacing tokens |
+| `playbook.axisHints` | `true` | Which way `justify`/`align` values point |
 | `playbook.diagnostics.deprecations` | `true` | Flag deprecated props |
 | `playbook.diagnostics.propDependencies` | `true` | Flag props that do nothing without another |
 | `playbook.diagnostics.externalDependencies` | `true` | Flag kits whose Highcharts/maplibre-gl isn't installed |

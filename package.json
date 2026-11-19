@@ -102,6 +102,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show the pixel value after spacing tokens, for example padding=\"md\" → 24px."
+        },
+        "playbook.axisHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show which way a flex value points after justify/align (and justifyContent/alignItems), for example \"↔ center\" in a row or \"↕ middle\" in a column."
         }
       }
     },

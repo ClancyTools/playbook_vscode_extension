@@ -19,6 +19,8 @@ import {
 import { findComponentContext, findFormBuilderContext } from "./parser"
 import { loadPlayground } from "./playgrounds"
 import { renderPresets } from "./presets"
+import { axisLabel, axisLabelBothWays, axisRole, resolveOrientation } from "./flexAxis"
+import { usageAt } from "./usageRules"
 
 export class PlaybookCompletionProvider
   implements vscode.CompletionItemProvider
@@ -722,6 +724,16 @@ export class PlaybookCompletionProvider
 
     const items: vscode.CompletionItem[] = []
 
+    // justify/align (and justifyContent/alignItems) point along different axes
+    // depending on orientation, so say where each value puts the items.
+    const role = axisRole(component, propName)
+    const orientation = role
+      ? (() => {
+          const usage = usageAt(document.getText(), document.languageId, document.offsetAt(position))
+          return usage ? resolveOrientation(usage, component) : undefined
+        })()
+      : undefined
+
     const validValues = getPropValues(prop, document.languageId)
     if (validValues && validValues.length > 0) {
       for (const value of validValues) {
@@ -730,6 +742,14 @@ export class PlaybookCompletionProvider
           vscode.CompletionItemKind.EnumMember
         )
         item.detail = `Valid value for ${propName}`
+        if (role) {
+          const where = orientation
+            ? axisLabel(role, orientation.orientation, value)
+            : axisLabelBothWays(role, value)
+          if (where) {
+            item.detail += ` — ${where}`
+          }
+        }
 
         if (insideString) {
           item.insertText = value
