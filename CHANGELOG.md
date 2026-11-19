@@ -9,8 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Quick fixes: "Did you mean…?"** 💡
+  - Unknown props (`margin_botom` → `margin_bottom`, `marginBotom` → `marginBottom`), invalid enum values (`"primry"` → `"primary"`), unknown kit names (`pb_rails("buton")` → `button`) and deprecated props with a known replacement each get a lightbulb fix. Matching ignores case and underscores and handles reordered words (`bottom_margin`); props that exist only on the other platform are never suggested
+- **Pixel hints for spacing tokens** 📏
+  - `padding="md"` shows `24px` after the token, including every token inside responsive objects (`{{ default: "sm", md: "lg" }}`). Setting: `playbook.spacingHints`
+- **Deprecation support** ⚠️
+  - Deprecated props (`Flex horizontal/vertical/spacing`, `Body status`, `Caption`/`Title variant`, `Button type`, `Tooltip trigger_element_id`, …) are shown struck through with the replacement in the message, and are flagged in hover and completions. Playbook's schema doesn't carry this, so it is read from Playbook's source into `data/deprecations.json`
+  - **Playbook: Find Deprecated Usages** scans the workspace and lists every deprecated kit/prop, grouped and most-used first, jump-to-location
+- **Kit browser** 🗂️
+  - **Playbook: Browse Kits** and a *Playbook Kits* Explorer view list every kit by category. Search matches names, descriptions and what a kit looks like ("sidebar", "progress"). For each kit: insert Playbook's example or any preset into the file you're editing (React or Rails to match), copy it, or open its docs
+- **Preset completions** ⚡
+  - Every Playbook playground preset is offered as a completion — `<Dr` → `Dropdown: Create tags`, `pb_rails("` → `dropdown: Create tags` — written with the right props for the platform (snake_case top-level keys for Rails, shorthand booleans for JSX)
+- **Richer hover docs** 📖
+  - Kit hover now shows Playbook's gotchas ("Requires columnDefinitions + tableData"), what the kit is often confused with, presets, FAQs and deprecated props. Prop hover shows what it is used together with and the playground hints that apply (e.g. `link` → "renders as an <a> tag")
+- **Form builder support from Playbook's contract** 📝
+  - Hover `f.check_box` for its signature, example and notes; `f.` completes the builder's real method names; props complete inside `props: { }` for the field under the cursor
+- **Prop dependency check** 🔗
+  - `showPillIndex` without `multiSelect`, `link` `target` without `href`, `loadOptions` without `async`, … are flagged as having no effect. Limited to rules verified in Playbook's source (see KNOWN_LIMITATIONS #4). Setting: `playbook.diagnostics.propDependencies`
+- **Missing host package check** 📦
+  - `pb_bar_graph`/`PbBarGraph` and other kits that wrap Highcharts or maplibre-gl warn when the package isn't in the nearest `package.json` or `node_modules`. Setting: `playbook.diagnostics.externalDependencies`
+- **Version-matched data** 🔄
+  - The extension now reads the newest `playbook-ui` installed in the workspace — including monorepo `components/*`, `packages/*` and `apps/*` — and the new status bar item shows which version (or "bundled") is in use. It reloads when a lockfile changes; **Playbook: Reload Metadata** forces it
+- `npm run sync:data` copies Playbook's `dist/ai` into `data/ai/` and regenerates `data/deprecations.json`
+
+### Changed
+
+- Bundled data moved from `data/all-schemas.json` to `data/ai/` (the same layout as `playbook-ui/dist/ai`) and now includes playgrounds, the visual index and the form contract
+- Props that differ between React and Rails (Playbook's `{ react, rails }` split of `type`, `values` and `default`) are now validated, completed and documented per platform instead of using one platform's values for both
+- The test document helper now creates documents with the right language id
+
+### Fixed
+
+- **Workspace `playbook-ui` was silently ignored.** The loader threw on Playbook's platform-split schema fields and fell back to the bundled copy, so docs and validation could be out of date without any sign
+- **Form builder validation never ran on real code.** It only matched calls written with parentheses (`f.text_field(`), but ERB almost always omits them (`f.text_field :name, props: {`). It also took the next `props: {` within ten lines, so a field with no props could be blamed for a neighbouring `pb_rails` call's props. Validation now reads each call's own props
+- **Wrong form builder method names.** The extension's list was built from Ruby file names (`checkbox_field`, `select_field`, `date_picker_field`, `typeahead_field`), so `f.check_box`, `f.select`, `f.date_picker` and `f.typeahead` were never validated. Names now come from Playbook's `forms.json`
+- **No hover on the first prop of a single-line `props: { … }`.** `props: {` was being read as the prop, hiding `variant` in `props: { variant: "x" }`
+- **React props spelled in snake_case are now flagged.** `<Flex margin_bottom="xs" />` passed silently because the validator normalised every prop to snake_case before the lookup. It now warns (`should be written "marginBottom" in React`) with a quick fix to rename it. No React prop name in the schema contains an underscore, so there are no false positives from this
+- Rails `tooltip position: "top"` was reported as invalid (the schema publishes React's CSS values for both platforms) — corrected in `SCHEMA_CORRECTIONS`
+- `.erb` / `.html.erb` documents are recognised in test environments without a Ruby/ERB extension (the `erb` and `html.erb` language ids are now registered, with no file-extension mapping so existing associations are untouched)
+
+### Tests
+
+- 246 → 490+ tests. Replaced ~65 `assert.ok(true)` tests that could not fail with real assertions; fixed test documents that silently ran as `plaintext`; added suites for the scanner, rules, quick fixes, presets, spacing hints, form builders, catalog/sweep, data loading (including loading from a workspace install and falling back on a broken one)
+
 - **Container kit** 📦
-  - New `Container` kit added upstream ([PLAY-3163](https://github.com/powerhome/playbook/pull/6546)) — a single `tag` enum prop (`div`, `span`, `section`, etc., default `div`), global props enabled. Now included in `data/all-schemas.json` and available as a snippet (`pbContainer` / `pb_container`)
+  - New `Container` kit added upstream ([PLAY-3163](https://github.com/powerhome/playbook/pull/6546)) — a single `tag` enum prop (`div`, `span`, `section`, etc., default `div`), global props enabled. Now included in `data/ai/all-schemas.json` and available as a snippet (`pbContainer` / `pb_container`)
 - New props picked up from upstream Playbook changes since the last sync (2026-07-31):
   - `Table`: `colSpan` (React) and `contrastBorder` (React + Rails)
   - `FileUpload`: `customMessage` extended from React-only to React + Rails
@@ -23,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - **IconButton kit** 🗑️
-  - Playbook fully removed the standalone `IconButton` kit upstream ([PLAY-3096](https://github.com/powerhome/playbook/pull/6466)) in favor of `Button`/`CircleIconButton`. Removed from `data/all-schemas.json` and both snippet files so the extension no longer suggests a component that doesn't exist
+  - Playbook fully removed the standalone `IconButton` kit upstream ([PLAY-3096](https://github.com/powerhome/playbook/pull/6466)) in favor of `Button`/`CircleIconButton`. Removed from `data/ai/all-schemas.json` and both snippet files so the extension no longer suggests a component that doesn't exist
 
 ### Fixed
 

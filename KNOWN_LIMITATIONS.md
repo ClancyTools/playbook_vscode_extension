@@ -1,12 +1,27 @@
 # Known Limitations
 
-Gaps in this extension that are blocked on Playbook's shared metadata
-(`node_modules/playbook-ui/dist/ai/`), not on this codebase. Each entry lists
-the concrete check to re-run — if the check's answer changes, the limitation
-may be fixable here.
+Gaps in this extension, mostly blocked on Playbook's shared metadata
+(`node_modules/playbook-ui/dist/ai/`) rather than on this codebase. Each entry
+lists the concrete check to re-run — if the check's answer changes, the
+limitation may be fixable here.
 
-Last audited: 2026-07-31, against `playbook-ui`'s `dist/ai/` output as
-installed in nitro-web.
+Last audited: 2026-11-18, against `playbook-ui`'s `dist/ai/` built from the
+Playbook repo (18.3.0 + unreleased) and as installed in nitro-web
+(18.4.0-rc.4).
+
+## Resolved since the last audit (2026-07-31)
+
+- **JSX leaking into Rails usage examples** — 15 of 108 kits had a
+  `usage.rails.example` containing raw JSX. Now 0 of 109. The recheck is kept
+  below (#8) as a regression guard.
+- **`playgrounds/*.json` and `visual-index.json` were unused** — they now drive
+  preset completions, gotchas/"often confused with" hover notes, prop
+  dependency checks, and the kit browser.
+- **The workspace's `playbook-ui` could silently be ignored** — Playbook's
+  schema now splits `type`/`values`/`default` per platform
+  (`{ "react": ..., "rails": ... }`); the old loader threw on those and quietly
+  fell back to the bundled copy. Both are handled, and the status bar shows
+  which source is in use.
 
 ## 1. Subcomponent props aren't validated
 
@@ -18,56 +33,117 @@ validation for subcomponents rather than validate against the *parent* kit's
 schema, which would produce a different set of false positives.
 
 **Why:** Playbook's `dist/ai` doesn't publish a schema for the subcomponent
-itself — no props, no Rails name, nothing — anywhere in `index.json`,
-`all-schemas.json`, or `kits/*.schema.json`. The only place subcomponents
-appear at all is inside `playgrounds/<kit>.json`'s
-`structureModes.modes.subcomponents.template`, and that's a plain JSX string
-(`<Table.Head>`), not structured data.
+itself — no props, no Rails name. The only place subcomponents appear is
+`playgrounds/<kit>.json` → `structureModes.modes.subcomponents.template`, and
+only for 4 kits (`collapsible`, `dialog`, `dropdown`, `table`), as a plain JSX
+string (`<Table.Head>`), not structured data.
 
 **Recheck:**
 
 ```bash
-# Does any kit schema now define its own subcomponents with props?
 grep -l 'subComponents\|"table_row"\|"dialog_header"' \
-  node_modules/playbook-ui/dist/ai/kits/*.schema.json \
+  node_modules/playbook-ui/dist/ai/all-schemas.json \
   node_modules/playbook-ui/dist/ai/index.json
 ```
 
-If this starts returning hits, add real prop validation for subcomponents in
-`diagnostics.ts` (replace the "skip validation" branch) and extend
-`ComponentMetadata`/`transformSchema` in `metadata.ts` to carry the
-subcomponent's own prop list.
+If this returns hits, add real prop validation for subcomponents in
+`usageRules.ts`/`diagnostics.ts` and carry the subcomponent's own prop list
+through `transformSchema` in `metadata.ts`.
 
-## 2. 15 of 108 kits' Rails usage examples are JSX, not `pb_rails`
+## 2. No authoritative list of subcomponent names to offer as completions
 
-Not just `table` — as of this audit, 15 of 108 kits in `all-schemas.json`
-have a `usage.rails.example` that embeds raw JSX children (e.g.
-`<Caption text="A" />`, `<Table.Row>`, `<NavItem link="#" text="Photos" />`)
-inside the `.erb` code block, instead of the real nested `pb_rails(...)`
-syntax actual Rails code would use. Affected kits: `bread_crumbs`,
-`button_toolbar`, `flex`, `form_group`, `full_screen`, `layout`, `list`,
-`nav`, `overlay`, `progress_step`, `radio`, `selectable_card`,
-`selectable_list`, `table`, `timeline`. All of them are container-style kits
-whose example has nested children — the leak looks specific to however
-Playbook's doc generator renders a kit's *children* into the Rails example,
-not something specific to `table`.
+Real Rails subcomponent names don't follow one consistent pattern relative to
+their kit name — `table/table_row`, `advanced_table/table_row` (not
+`advanced_table_table_row`), `layout/header` (no prefix at all), `flex/flex_item`.
+Because there's no formula, `completionProvider.ts` doesn't attempt to
+autocomplete subcomponent names — guessing would insert wrong syntax.
 
-Since `generateComponentDocs` shows a kit's real `railsExample` verbatim
-(see CHANGELOG "Real Usage Examples in Hover Docs"), hovering any of these
-15 kits currently shows broken/misleading Rails code. This extension
-intentionally does not paper over it with a heuristic filter — the example
-data itself should be corrected upstream so every consumer of the schema
-(not just this extension) gets the fix.
+**Recheck:** same as #1 — a real per-kit subcomponent list would let
+completions offer real options instead of guessing.
 
-**Why:** upstream schema/doc-generation bug in Playbook, not this codebase.
+## 3. `PropMetadata.required` is always `undefined`
+
+The `required` field exists on the `PropMetadata` type and is rendered in
+hover docs (`generatePropDocs`) and snippet generation, but no kit in the
+current schema ever sets it — it's effectively dead data.
 
 **Recheck:**
 
 ```bash
-# Flags any kit whose rails example contains a bare <Uppercase...> tag —
-# real ERB never has one (Rails helpers are invoked through <%= %>).
+node -e 'const d=require("./data/ai/all-schemas.json");
+  console.log(Object.values(d.kits).flatMap(k=>Object.values(k.props)).filter(p=>p.required!==undefined).length)'
+```
+
+If this is non-zero, `transformProp` in `metadata.ts` already copies `type`,
+`values`, `default`, `platforms`, `description`, `example`, `responsive` and
+`properties`; add `required` to that list.
+
+## 4. Playground "requires" rules aren't all real constraints
+
+Playbook's `playgrounds/<kit>.json` → `conditionals.<prop>.requires` says when a
+control is *shown in the docs playground*. Some are real behaviour (Link
+`target` is ignored without `href`; Dropdown `formPillProps` needs
+`multiSelect`), others are playground layout hints (Flex `horizontal` "needs"
+`vertical`; Button `iconRight` "needs" `icon` — it doesn't). Run against
+nitro-web, the unfiltered data produced ~800 false positives.
+
+So the "has no effect unless…" diagnostic is limited to
+`VETTED_DEPENDENCIES` in `src/usageRules.ts` — rules confirmed in Playbook's
+source. The rest are shown only as a "Used together with…" hover note. A test
+fails if a vetted rule disappears from the synced data.
+
+**To widen it:** find where the kit reads the prop, confirm it's ignored without
+the other, and add `"<rails_kit>.<camelProp>"`. A machine-readable "this prop
+is inert without that one" flag upstream would replace the list.
+
+## 5. Schema values that are wrong for one platform
+
+`SCHEMA_CORRECTIONS` in `src/metadata.ts` removes enum values that Playbook's
+schema publishes for both platforms but that only fit one. Currently:
+
+- `tooltip.position` — React's value is the CSS strategy (`absolute`/`fixed`);
+  Rails passes it through as the placement (`"top"`, `"bottom"`, …). Without the
+  correction every Rails tooltip is flagged.
+
+**Recheck:** `node -e 'console.log(require("./data/ai/all-schemas.json").kits.tooltip.props.position)'`
+— if `values` becomes a `{ react, rails }` split, delete the entry.
+
+## 6. Form-builder-level props come from an unreliable extraction
+
+Builder method *names*, kits and docs come from Playbook's own contract
+(`forms.json`). But props that the builder accepts beyond its kit's props
+(`label` on `check_box`, `input_options`, `validation_message`, …) are not in
+that contract. They still come from `data/form-builders.json`, which
+`scripts/extract-form-builders.ts` built by regex over Ruby source — and which
+turned out to be keyed by *file* names (`checkbox_field.rb` defines `check_box`)
+and to include props that don't belong (`variant` on a checkbox). Extra props
+there only make validation more lenient, never stricter.
+
+**Fix:** have `forms.json` list each method's builder-level props, then delete
+`form-builders.json` and the extraction script.
+
+## 7. Playbook's deprecations aren't in the published schema
+
+`dist/ai` carries a kit-level `status` (everything is `stable`) but nothing for
+deprecated *props* — Playbook only records those in Ruby (`prop :x, deprecated:
+true`) and React comments. The extension's deprecated-prop warnings, quick
+fixes and "Find Deprecated Usages" therefore read `data/deprecations.json`,
+generated by `npm run sync:data` from a Playbook checkout
+(`PLAYBOOK_REPO_PATH`). If the extension is synced without a checkout, that
+file is left as it was.
+
+**Recheck:** `grep -il deprecat node_modules/playbook-ui/dist/ai/kits/*.json`
+— if the schema starts carrying it, read it in `transformProp` and drop the
+source scan.
+
+## 8. Regression guard: JSX in Rails examples
+
+This was fixed upstream (see "Resolved"). If it comes back, hover docs for the
+affected kits will show broken Rails code:
+
+```bash
 node -e '
-  const data = require("./data/all-schemas.json");
+  const data = require("./data/ai/all-schemas.json");
   for (const [name, kit] of Object.entries(data.kits || {})) {
     if (name.startsWith("$")) continue;
     const ex = kit.usage?.rails?.example || "";
@@ -76,43 +152,5 @@ node -e '
 '
 ```
 
-Run the same check against `node_modules/playbook-ui/dist/ai/all-schemas.json`
-in a consuming app for the live (non-bundled) schema. If either returns
-nothing, the leak has been fixed upstream.
-
-## 3. No authoritative list of subcomponent names to offer as completions
-
-Real Rails subcomponent names don't follow one consistent pattern relative to
-their kit name — `table/table_row`, `advanced_table/table_row` (not
-`advanced_table_table_row`), `layout/header` (no prefix at all), `flex/flex_item`.
-Because there's no formula, `completionProvider.ts` doesn't attempt to
-autocomplete subcomponent names — guessing would insert wrong syntax.
-
-**Recheck:** same as #1 — a real per-kit subcomponent list (with each
-subcomponent's actual Rails name) would let completions offer real options
-instead of guessing.
-
-## 4. `PropMetadata.required` is always `undefined`
-
-The `required` field exists on the `PropMetadata` type and is rendered in
-hover docs (`generatePropDocs`) and snippet generation, but no kit in the
-current schema ever sets it — it's effectively dead data right now.
-
-**Recheck:**
-
-```bash
-grep -l '"required"' node_modules/playbook-ui/dist/ai/kits/*.schema.json
-```
-
-If this returns hits, verify `transformSchema` in `metadata.ts` actually reads
-`propData.required` (it currently doesn't — only `type`, `values`, `default`,
-`platforms` are copied) and wire it through.
-
-## 5. `playgrounds/*.json` and `visual-index.json` are unused
-
-These carry presets, hints, and structure-mode templates (including the only
-subcomponent JSX examples that exist upstream — see #1) plus a
-screenshot-to-kit index. They matter more for AI codegen agents (per
-`nitro-web/.agents/rules/playbook-ui.mdc`) than for this hover/completion/
-diagnostics extension, so they're intentionally not loaded. Revisit only if
-this extension grows a codegen-style feature (e.g. "insert a preset").
+Any output means the leak is back — it needs fixing upstream, not papering over
+with a filter here.

@@ -26,3 +26,5 @@ src/test/**
 FEATURES.md
 TEST_*.md
 **/.DS_Store
+*.vsix
+releases/**

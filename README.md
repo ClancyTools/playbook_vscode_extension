@@ -92,6 +92,33 @@ Errors appear as:
 - Problems panel entries with helpful messages
 - Suggestions for valid values
 
+### 💡 Quick Fixes
+
+"Did you mean…?" for unknown props (`margin_botom` → `margin_bottom`), invalid values (`"primry"` → `"primary"`), unknown kits, and deprecated props that have a replacement. Press `Cmd/Ctrl+.` on the squiggle.
+
+### ⚡ Presets, Kit Browser & Pixel Hints
+
+- **Presets** — every Playbook playground preset is a completion (`<Dr` → `Dropdown: Create tags`)
+- **Kit browser** — *Playbook: Browse Kits* (or the *Playbook Kits* Explorer view): search by name or by what it looks like, then insert an example or preset, copy it, or open the docs
+- **Pixel hints** — `padding="md"` shows `24px`
+
+### ⚠️ Deprecations
+
+Deprecated props are struck through with the replacement named. *Playbook: Find Deprecated Usages* lists every one in the workspace.
+
+### 🔄 Always the Right Version
+
+The extension reads the newest `playbook-ui` installed in your workspace (monorepo `components/*` too). The status bar shows which version it is using, or "bundled" if none was found.
+
+### Settings
+
+| Setting | Default | |
+|---|---|---|
+| `playbook.spacingHints` | `true` | Pixel values after spacing tokens |
+| `playbook.diagnostics.deprecations` | `true` | Flag deprecated props |
+| `playbook.diagnostics.propDependencies` | `true` | Flag props that do nothing without another |
+| `playbook.diagnostics.externalDependencies` | `true` | Flag kits whose Highcharts/maplibre-gl isn't installed |
+
 ## Installation
 
 ### From VS Code Marketplace
