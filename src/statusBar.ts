@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 import { loadMetadata } from "./metadata"
+import { enabled } from "./settings"
 
 const SUPPORTED = [
   "ruby",
@@ -44,7 +45,7 @@ export class PlaybookStatusBar implements vscode.Disposable {
 
   update(): void {
     const editor = vscode.window.activeTextEditor
-    if (!editor || !SUPPORTED.includes(editor.document.languageId)) {
+    if (!enabled("statusBar.enabled") || !editor || !SUPPORTED.includes(editor.document.languageId)) {
       this.item.hide()
       return
     }

@@ -19,6 +19,7 @@ import { checkFormBuilderUsages, checkUsages, Finding } from "./usageRules"
 import { checkIcons } from "./iconRules"
 import { loadIconIndex } from "./playbookIcons"
 import { checkKitColors, loadKitColors } from "./kitColors"
+import { enabled } from "./settings"
 import { findCombinableSpacing } from "./spacingCombine"
 import { describeHit, scanBootstrap } from "./bootstrapCatalog"
 import { findRequiredIndicatorIssues } from "./requiredIndicator"
@@ -88,8 +89,14 @@ export class PlaybookDiagnostics {
       return
     }
 
+    if (!enabled("diagnostics.enabled")) {
+      this.diagnosticCollection.delete(document.uri)
+      return
+    }
+
     const diagnostics: vscode.Diagnostic[] = []
     const metadata = loadMetadata(this.extensionPath)
+    const validate = enabled("diagnostics.validation")
     const formBuilderMetadata = loadFormBuilderMetadata(this.extensionPath)
     console.log(
       `[PlaybookDiagnostics] Loaded metadata with ${Object.keys(metadata.components || {}).length} components`
@@ -102,7 +109,7 @@ export class PlaybookDiagnostics {
     const lines = text.split("\n")
     console.log(`[PlaybookDiagnostics] Analyzing ${lines.length} lines of code`)
 
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    for (let lineIndex = 0; validate && lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex]
 
       this.validateRailsLine(line, lineIndex, document, metadata, diagnostics)
@@ -111,12 +118,9 @@ export class PlaybookDiagnostics {
 
     }
 
-    for (const finding of checkFormBuilderUsages(
-      text,
-      metadata,
-      formBuilderMetadata,
-      document.languageId
-    )) {
+    for (const finding of validate
+      ? checkFormBuilderUsages(text, metadata, formBuilderMetadata, document.languageId)
+      : []) {
       diagnostics.push(toDiagnostic(document, finding))
     }
     this.addUsageRuleDiagnostics(document, metadata, diagnostics)
@@ -152,6 +156,7 @@ export class PlaybookDiagnostics {
         deprecations: config.get<boolean>("deprecations", true),
         propDependencies: config.get<boolean>("propDependencies", true),
         externalDependencies: config.get<boolean>("externalDependencies", true),
+        flexMigration: enabled("flexAxis.enabled"),
       },
     })
     if (config.get<boolean>("requiredIndicator", true)) {
@@ -674,11 +679,13 @@ export class PlaybookDiagnostics {
         }
       }
 
-      this.checkPropsAlphabeticalOrder(
-        collectedProps,
-        diagnostics,
-        component.react
-      )
+      if (enabled("diagnostics.propOrder")) {
+        this.checkPropsAlphabeticalOrder(
+          collectedProps,
+          diagnostics,
+          component.react
+        )
+      }
     }
   }
 

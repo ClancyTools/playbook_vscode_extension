@@ -85,6 +85,86 @@
     "configuration": {
       "title": "Playbook UI Helper",
       "properties": {
+        "playbook.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Master switch. Turn off to disable every Playbook feature at once (hover, completion, diagnostics, quick fixes, inline hints, go to definition, status bar, kit browser). Snippets are contributed by VS Code and stay available. Individual features have their own switches below."
+        },
+        "playbook.hover.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hover documentation for Playbook kits, props, values and form builder methods."
+        },
+        "playbook.hover.kitGuidance": {
+          "type": "boolean",
+          "default": true,
+          "description": "In hovers, show Playbook's notes: gotchas, what a kit is often confused with, presets, FAQs, deprecated props, what a prop is used with, and playground hints."
+        },
+        "playbook.hover.globalProps": {
+          "type": "boolean",
+          "default": true,
+          "description": "In a kit hover, include the grouped list of global props."
+        },
+        "playbook.hover.valuePreviews": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hovering a color token, an Icon/Legend color or an icon name shows the color or the icon."
+        },
+        "playbook.completion.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Completion for Playbook kit names, props, values and form builder methods."
+        },
+        "playbook.completion.presets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer Playbook's named presets as completions (for example Dropdown: Create tags)."
+        },
+        "playbook.completion.icons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer icon names from playbook-icons as completions on icon props."
+        },
+        "playbook.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "All Playbook diagnostics (warnings, information and hints). Turn off to see none of them; the individual diagnostics below only apply while this is on."
+        },
+        "playbook.diagnostics.validation": {
+          "type": "boolean",
+          "default": true,
+          "description": "The core checks: unknown kits and props, invalid values, props that aren't available on the platform, React props written in snake_case, and form builder props."
+        },
+        "playbook.diagnostics.propOrder": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when React props are not in alphabetical order."
+        },
+        "playbook.quickFixes.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Quick fixes for Playbook diagnostics (did you mean, combine spacing, required indicator, flex migration, and more)."
+        },
+        "playbook.flexAxis.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flex axis help: which way justify/align point (inline hints, hover, completion detail) and the justify/align replacement for the deprecated horizontal, vertical and spacing props."
+        },
+        "playbook.definition.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Go to definition on Playbook kits (opens the kit's documentation)."
+        },
+        "playbook.statusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Playbook version in the status bar."
+        },
+        "playbook.kitBrowser.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Playbook Kits view in the Explorer. The Browse Kits command is always available."
+        },
         "playbook.diagnostics.deprecations": {
           "type": "boolean",
           "default": true,
@@ -199,7 +279,8 @@
         {
           "id": "playbookKits",
           "name": "Playbook Kits",
-          "icon": "$(symbol-class)"
+          "icon": "$(symbol-class)",
+          "when": "playbook.kitBrowserEnabled"
         }
       ]
     },

@@ -21,6 +21,7 @@ import { loadPlayground } from "./playgrounds"
 import { renderPresets } from "./presets"
 import { axisLabel, axisLabelBothWays, axisRole, resolveOrientation } from "./flexAxis"
 import { usageAt } from "./usageRules"
+import { enabled } from "./settings"
 import { iconPreviewDataUri, loadIconIndex } from "./playbookIcons"
 
 /** Which icon a completion item stands for, so its preview can be built on demand. */
@@ -44,6 +45,9 @@ export class PlaybookCompletionProvider
     token: vscode.CancellationToken,
     context: vscode.CompletionContext
   ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
+    if (!enabled("completion.enabled")) {
+      return []
+    }
     console.log(
       `[PlaybookCompletionProvider] Completion requested at ${document.languageId}:${position.line}:${position.character}, trigger: ${context.triggerCharacter || "manual"}`
     )
@@ -73,12 +77,14 @@ export class PlaybookCompletionProvider
       case "rails-component":
         return [
           ...this.provideRailsComponentCompletions(metadata),
-          ...this.provideRailsPresetCompletions(metadata, document, position),
+          ...(enabled("completion.presets")
+            ? this.provideRailsPresetCompletions(metadata, document, position)
+            : []),
         ]
       case "react-component":
         return [
           ...this.provideReactComponentCompletions(metadata),
-          ...this.provideReactPresetCompletions(metadata, document),
+          ...(enabled("completion.presets") ? this.provideReactPresetCompletions(metadata, document) : []),
         ]
       case "rails-prop-name":
         return this.provideRailsPropNameCompletions(
@@ -766,7 +772,7 @@ export class PlaybookCompletionProvider
 
     // justify/align (and justifyContent/alignItems) point along different axes
     // depending on orientation, so say where each value puts the items.
-    const role = axisRole(component, propName)
+    const role = enabled("flexAxis.enabled") ? axisRole(component, propName) : undefined
     const orientation = role
       ? (() => {
           const usage = usageAt(document.getText(), document.languageId, document.offsetAt(position))
@@ -806,7 +812,7 @@ export class PlaybookCompletionProvider
       }
     }
 
-    if (/^icon(_right|_left)?$/.test(propName) && component.props[propName]) {
+    if (enabled("completion.icons") && /^icon(_right|_left)?$/.test(propName) && component.props[propName]) {
       items.push(...this.iconItems(insideString))
     }
 

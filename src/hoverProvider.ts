@@ -22,6 +22,7 @@ import { loadPlayground } from "./playgrounds";
 import { axisGuidanceLines, migrationForUsage, resolveOrientation, migrationText } from "./flexAxis";
 import { propAt } from "./usageRules";
 import { valueHover } from "./valueHover";
+import { enabled } from "./settings";
 import { loadColorTokens } from "./colorTokens";
 import { loadIconIndex } from "./playbookIcons";
 import { loadKitColors } from "./kitColors";
@@ -49,6 +50,9 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
     component: ComponentMetadata,
     snakeProp: string
   ): string[] {
+    if (!enabled("flexAxis.enabled")) {
+      return [];
+    }
     const hit = propAt(document.getText(), document.languageId, document.offsetAt(position));
     const resolved = hit ? resolveOrientation(hit.usage, component) : undefined;
     const lines = axisGuidanceLines(component, snakeProp, resolved, platformFor(document.languageId));
@@ -66,6 +70,9 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
     document: vscode.TextDocument,
     position: vscode.Position
   ): vscode.ProviderResult<vscode.Hover> {
+    if (!enabled("hover.enabled")) {
+      return null;
+    }
     console.log(
       `[PlaybookHoverProvider] Hover requested at ${document.languageId}:${position.line}:${position.character}`
     );
@@ -84,7 +91,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
       }
     }
 
-    const value = valueHover(
+    const value = !enabled("hover.valuePreviews") ? undefined : valueHover(
       document.getText(),
       document.languageId,
       document.offsetAt(position),
@@ -110,7 +117,8 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           component,
           metadata,
           loadPlayground(this.extensionPath, component.rails),
-          document.languageId
+          document.languageId,
+          { guidance: enabled("hover.kitGuidance"), globalProps: enabled("hover.globalProps") }
         );
         return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range);
       }
@@ -131,7 +139,8 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
           component,
           metadata,
           loadPlayground(this.extensionPath, component.rails),
-          document.languageId
+          document.languageId,
+          { guidance: enabled("hover.kitGuidance"), globalProps: enabled("hover.globalProps") }
         );
         return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range);
       }
@@ -164,7 +173,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               metadata,
               document.languageId
             );
-            const guidance = propGuidanceLines(
+            const guidance = !enabled("hover.kitGuidance") ? [] : propGuidanceLines(
               component,
               railsProp.propName,
               loadPlayground(this.extensionPath, component.rails),
@@ -200,7 +209,7 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               metadata,
               document.languageId
             );
-            const guidance = propGuidanceLines(
+            const guidance = !enabled("hover.kitGuidance") ? [] : propGuidanceLines(
               component,
               snakeCaseProp,
               loadPlayground(this.extensionPath, component.rails),

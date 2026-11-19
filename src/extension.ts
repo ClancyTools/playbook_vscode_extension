@@ -16,6 +16,7 @@ import { findDeprecatedUsages } from "./deprecatedUsages";
 import { findBootstrapMarkup } from "./bootstrapSweep";
 import { generateGlobalPropsDocs, loadMetadata, resetMetadataCache } from "./metadata";
 import { platformForEditor } from "./kitBrowser";
+import { enabled } from "./settings";
 
 export function activate(context: vscode.ExtensionContext) {
   const timestamp = new Date().toISOString();
@@ -114,6 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
   const colorSwatches = new ColorSwatches(context.extensionPath);
   const statusBar = new PlaybookStatusBar(context.extensionPath);
   const kitTree = new KitTreeProvider(context.extensionPath);
+  void vscode.commands.executeCommand("setContext", "playbook.kitBrowserEnabled", enabled("kitBrowser.enabled"));
   context.subscriptions.push(
     spacingHints,
     axisHints,
@@ -196,7 +198,11 @@ export function activate(context: vscode.ExtensionContext) {
       if (event.affectsConfiguration("playbook.icons")) {
         reload();
       }
-      if (event.affectsConfiguration("playbook.diagnostics")) {
+      if (event.affectsConfiguration("playbook")) {
+        statusBar.update();
+        void vscode.commands.executeCommand("setContext", "playbook.kitBrowserEnabled", enabled("kitBrowser.enabled"));
+      }
+      if (event.affectsConfiguration("playbook")) {
         vscode.workspace.textDocuments.forEach((document) =>
           diagnostics.updateDiagnostics(document)
         );

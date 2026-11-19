@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Every feature can be turned off** 🎚️
+  - A master switch, `playbook.enabled`, turns everything off at once; hover, completion, diagnostics, quick fixes, the flex axis help, go to definition, the status bar and the Explorer view each have their own, and so do the finer parts (hover notes, the global props list, value previews, presets, icon completions, the core validation checks and the alphabetical prop order warning). All default to on. See *Turning features off* in the README
 - **Icon intelligence** 🖼️
   - Completions for icon props (`icon`, `iconRight`, `iconLeft`) from `@powerhome/playbook-icons`, each with a preview when you highlight it, a hover with the preview, category and alias note, and a "did you mean" fix for typos. The preview is shown only in hovers and completion documentation, never inline in the code, where an image can't follow the line height and throws the lines off
   - **The icons are private (branding, vendor, window and door icons), so nothing from that package is bundled with the extension.** They are read from the workspace's installed `@powerhome/playbook-icons` (including `components/*`), or from the folder named by `playbook.icons.path`, e.g. a checkout of the repo

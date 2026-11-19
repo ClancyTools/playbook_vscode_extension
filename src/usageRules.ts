@@ -53,6 +53,8 @@ export interface RuleOptions {
   deprecations: boolean
   propDependencies: boolean
   externalDependencies: boolean
+  /** Name the right justify/align replacement for a deprecated Flex prop. */
+  flexMigration: boolean
 }
 
 /**
@@ -86,6 +88,7 @@ export const DEFAULT_RULE_OPTIONS: RuleOptions = {
   deprecations: true,
   propDependencies: true,
   externalDependencies: true,
+  flexMigration: true,
 }
 
 export interface RuleContext {
@@ -172,7 +175,7 @@ export function checkUsages(text: string, context: RuleContext): Finding[] {
       continue
     }
     if (options.deprecations) {
-      findings.push(...deprecatedProps(usage, component, context.languageId))
+      findings.push(...deprecatedProps(usage, component, context.languageId, options.flexMigration))
     }
     if (options.propDependencies) {
       findings.push(...propDependencies(usage, component, context))
@@ -191,7 +194,8 @@ function snakeOf(prop: ScannedProp, platform: Platform): string {
 function deprecatedProps(
   usage: ScannedUsage,
   component: ComponentMetadata,
-  languageId: string
+  languageId: string,
+  flexMigration = true
 ): Finding[] {
   const findings: Finding[] = []
   for (const prop of usage.props) {
@@ -200,7 +204,7 @@ function deprecatedProps(
       continue
     }
     let message = `Prop "${prop.name}" is deprecated.`
-    const migrated = migrationForUsage(usage, component, prop)
+    const migrated = flexMigration ? migrationForUsage(usage, component, prop) : undefined
     if (migrated) {
       message += ` Use ${migrationText(migrated.migration, usage.platform)} instead (orientation is ${migrated.resolved.orientation}).`
     } else if (info.replacement) {

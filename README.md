@@ -116,6 +116,35 @@ Deprecated props are struck through with the replacement named. *Playbook: Find 
 
 The extension reads the newest `playbook-ui` installed in your workspace (monorepo `components/*` too). The status bar shows which version it is using, or "bundled" if none was found.
 
+### Turning features off
+
+Everything is on by default and every feature can be switched off, so you can keep just the parts you want. Set `playbook.enabled` to `false` to turn them all off at once, or switch off individual features in `settings.json`:
+
+```jsonc
+{
+  "playbook.hover.enabled": false,             // all hovers
+  "playbook.hover.kitGuidance": false,         //   just Playbook's notes in them (gotchas, presets, FAQs, …)
+  "playbook.hover.globalProps": false,         //   just the global props list in a kit hover
+  "playbook.hover.valuePreviews": false,       //   just the color / icon value previews
+  "playbook.completion.enabled": false,        // all completions
+  "playbook.completion.presets": false,        //   just the presets
+  "playbook.completion.icons": false,          //   just icon names
+  "playbook.diagnostics.enabled": false,       // every warning, hint and info
+  "playbook.diagnostics.validation": false,    //   just the core checks (unknown kits/props, invalid values, …)
+  "playbook.diagnostics.propOrder": false,     //   just the alphabetical prop order warning
+  "playbook.quickFixes.enabled": false,
+  "playbook.flexAxis.enabled": false,          // axis hints, hover, completion detail and the migration
+  "playbook.spacingHints": false,
+  "playbook.axisHints": false,
+  "playbook.colorSwatches": false,
+  "playbook.definition.enabled": false,
+  "playbook.statusBar.enabled": false,
+  "playbook.kitBrowser.enabled": false         // the Explorer view (the command stays available)
+}
+```
+
+Each individual diagnostic (deprecations, prop dependencies, required indicator, unknown icons and colors, combine spacing, missing packages, Bootstrap) has its own `playbook.diagnostics.*` switch too. Snippets come from VS Code's own snippet system and stay available either way.
+
 ### Settings
 
 | Setting | Default | |

@@ -18,6 +18,7 @@ import { displayName, resolveComponent, scanUsages } from "./usageRules"
 import { migrationForUsage, migrationText } from "./flexAxis"
 import { findCombinableSpacing } from "./spacingCombine"
 import { findRequiredIndicatorIssues } from "./requiredIndicator"
+import { enabled } from "./settings"
 import { KitColors, kitColorSuggestions, loadKitColors } from "./kitColors"
 import { IconIndex, iconSuggestions, loadIconIndex } from "./playbookIcons"
 import { ScannedProp, ScannedUsage, scanFormBuilderUsages } from "./usageScanner"
@@ -53,10 +54,11 @@ export function computeFixes(
   requests: FixRequest[],
   forms: FormBuilderMetadata = { fields: [] },
   icons?: IconIndex,
-  kitColors: KitColors = {}
+  kitColors: KitColors = {},
+  options: { flexMigration?: boolean } = {}
 ): Fix[] {
   const usages = [...scanUsages(text, languageId), ...scanFormBuilderUsages(text)]
-  const context: FixContext = { metadata, forms, languageId }
+  const context: FixContext = { metadata, forms, languageId, flexMigration: options.flexMigration !== false }
   const fixes: Fix[] = []
   for (const request of requests) {
     switch (request.code) {
@@ -97,6 +99,7 @@ interface FixContext {
   metadata: PlaybookMetadata
   forms: FormBuilderMetadata
   languageId: string
+  flexMigration: boolean
 }
 
 /** The props a usage may pass: a kit's, or a form builder field's, plus globals. */
@@ -335,7 +338,7 @@ function wrongPropCaseFixes(text: string, request: FixRequest): Fix[] {
 
 function deprecatedPropFixes(
   usages: ScannedUsage[],
-  { metadata, languageId }: FixContext,
+  { metadata, languageId, flexMigration }: FixContext,
   request: FixRequest
 ): Fix[] {
   const found = findProp(usages, (p) => p.nameStart === request.start && p.nameEnd === request.end)
@@ -343,7 +346,7 @@ function deprecatedPropFixes(
   if (!found || !component) {
     return []
   }
-  const migrated = migrationForUsage(found.usage, component, found.prop)
+  const migrated = flexMigration ? migrationForUsage(found.usage, component, found.prop) : undefined
   if (migrated) {
     // horizontal/vertical/spacing swap roles with orientation, so the whole
     // prop (name and value) is rewritten: horizontal="center" -> justify="center".
@@ -403,6 +406,9 @@ export class PlaybookQuickFixProvider implements vscode.CodeActionProvider {
     _range: vscode.Range | vscode.Selection,
     context: vscode.CodeActionContext
   ): vscode.CodeAction[] {
+    if (!enabled("quickFixes.enabled")) {
+      return []
+    }
     const relevant = context.diagnostics.filter(
       (d) => d.source === "Playbook" && typeof d.code === "string" && FIXABLE.has(d.code)
     )
@@ -422,7 +428,7 @@ export class PlaybookQuickFixProvider implements vscode.CodeActionProvider {
           start: document.offsetAt(diagnostic.range.start),
           end: document.offsetAt(diagnostic.range.end),
         },
-      ], forms, icons, kitColors)
+      ], forms, icons, kitColors, { flexMigration: enabled("flexAxis.enabled") })
       for (const fix of fixes) {
         const action = new vscode.CodeAction(fix.title, vscode.CodeActionKind.QuickFix)
         action.diagnostics = [diagnostic]

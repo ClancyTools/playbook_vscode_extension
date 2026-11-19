@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { enabled } from "./settings";
 import {
   loadMetadata,
   findComponentByRailsName,
@@ -19,6 +20,9 @@ export class PlaybookDefinitionProvider implements vscode.DefinitionProvider {
     document: vscode.TextDocument,
     position: vscode.Position
   ): vscode.ProviderResult<vscode.Definition> {
+    if (!enabled("definition.enabled")) {
+      return undefined;
+    }
     const metadata = loadMetadata(this.extensionPath);
 
     const railsComponent = parseRailsComponent(document, position);

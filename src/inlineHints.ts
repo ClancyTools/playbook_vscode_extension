@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 import { PlaybookMetadata, loadMetadata } from "./metadata"
+import { enabled } from "./settings"
 
 export interface InlineAnnotation {
   /** Offset the hint is shown at (just after a value). */
@@ -54,14 +55,16 @@ export class InlineHints implements vscode.Disposable {
   constructor(
     private readonly extensionPath: string,
     private readonly setting: string,
-    private readonly annotate: Annotator
+    private readonly annotate: Annotator,
+    /** Further switches that must also be on (e.g. "flexAxis.enabled"). */
+    private readonly gates: string[] = []
   ) {
     this.disposables.push(
       vscode.window.onDidChangeActiveTextEditor(() => this.refreshAll()),
       vscode.window.onDidChangeVisibleTextEditors(() => this.refreshAll()),
       vscode.workspace.onDidChangeTextDocument((e) => this.schedule(e.document)),
       vscode.workspace.onDidChangeConfiguration((e) => {
-        if (e.affectsConfiguration(`playbook.${this.setting}`)) {
+        if (e.affectsConfiguration("playbook")) {
           this.refreshAll()
         }
       })
@@ -70,7 +73,7 @@ export class InlineHints implements vscode.Disposable {
   }
 
   isEnabled(): boolean {
-    return vscode.workspace.getConfiguration("playbook").get<boolean>(this.setting, true)
+    return enabled(this.setting, ...this.gates)
   }
 
   /** Decorations for a document; empty when the setting is off. */

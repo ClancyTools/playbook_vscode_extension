@@ -44,6 +44,6 @@ export function axisAnnotations(
 /** Shows the axis flex values point along (playbook.axisHints). */
 export class AxisHints extends InlineHints {
   constructor(extensionPath: string) {
-    super(extensionPath, "axisHints", axisAnnotations)
+    super(extensionPath, "axisHints", axisAnnotations, ["flexAxis.enabled"])
   }
 }

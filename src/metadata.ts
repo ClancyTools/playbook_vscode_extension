@@ -1123,7 +1123,8 @@ export function generateComponentDocs(
   component: ComponentMetadata,
   metadata: PlaybookMetadata,
   playground?: Playground,
-  languageId?: string
+  languageId?: string,
+  options: { guidance?: boolean; globalProps?: boolean } = {}
 ): string {
   const lines: string[] = []
 
@@ -1147,7 +1148,9 @@ export function generateComponentDocs(
     lines.push("")
   }
 
-  lines.push(...kitGuidanceLines(component, playground))
+  if (options.guidance !== false) {
+    lines.push(...kitGuidanceLines(component, playground))
+  }
 
   const supportsReact =
     !component.platforms || component.platforms.includes("react")
@@ -1271,7 +1274,7 @@ export function generateComponentDocs(
     }
   }
 
-  if (component.hasGlobalProps !== false) {
+  if (component.hasGlobalProps !== false && options.globalProps !== false) {
     lines.push(...globalPropsSummaryLines(metadata, platformFor(languageId ?? "typescriptreact")))
   }
 
