@@ -20,7 +20,10 @@ import {
   getCompletionItems,
 } from "./testHelpers"
 
-suite("Opt-out Settings Test Suite", () => {
+suite("Opt-out Settings Test Suite", function () {
+  // Each test changes settings and reopens documents, which is slow on CI runners (macOS timed out at 10s).
+  this.timeout(60000)
+
   const extensionPath = path.resolve(__dirname, "../../../")
   const config = () => vscode.workspace.getConfiguration("playbook")
 
