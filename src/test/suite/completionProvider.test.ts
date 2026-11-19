@@ -56,7 +56,10 @@ suite("Completion Provider Test Suite", () => {
     const result = await provider.provideCompletionItems(document, position, token, context)
     const items = getCompletionItems(result)
 
-    assert.ok(items.length >= 0, "Should handle prop completions")
+    assert.ok(
+      items.some((c: vscode.CompletionItem) => c.label === "variant"),
+      "Should offer Button props such as variant"
+    )
   })
 
   test("Should provide completions for React props", async () => {
@@ -68,21 +71,24 @@ suite("Completion Provider Test Suite", () => {
     const result = await provider.provideCompletionItems(document, position, token, context)
     const items = getCompletionItems(result)
 
-    assert.ok(true, "Handles React prop completions")
+    assert.ok(
+      items.some((c: vscode.CompletionItem) => c.label === "variant"),
+      "Should offer Button props such as variant"
+    )
   })
 
   test("Should filter components based on partial match", async () => {
     const document = await createTestDocument("erb", '<%= pb_rails("but" %>')
-    const position = new vscode.Position(0, 19)
+    const position = new vscode.Position(0, 14)
     const token = createCancellationToken()
     const context = createCompletionContext()
 
     const result = await provider.provideCompletionItems(document, position, token, context)
     const items = getCompletionItems(result)
 
-    if (items.length > 0) {
+    {
       const buttonCompletion = items.find((c: vscode.CompletionItem) => c.label === "button")
-      assert.ok(true, "Handles partial match filtering")
+      assert.ok(buttonCompletion, "Should include button for partial match \"but\"")
     }
   })
 
@@ -91,14 +97,17 @@ suite("Completion Provider Test Suite", () => {
       "erb",
       '<%= pb_rails("button", props: { variant: "" }) %>'
     )
-    const position = new vscode.Position(0, 44)
+    const position = new vscode.Position(0, 42)
     const token = createCancellationToken()
     const context = createCompletionContext()
 
     const result = await provider.provideCompletionItems(document, position, token, context)
     const items = getCompletionItems(result)
 
-    assert.ok(true, "Handles enum value completions")
+    assert.ok(
+      items.some((c: vscode.CompletionItem) => c.label === "primary"),
+      "Should offer enum values for variant"
+    )
   })
 
   test("Should handle incomplete code gracefully", async () => {
@@ -110,7 +119,10 @@ suite("Completion Provider Test Suite", () => {
     const result = await provider.provideCompletionItems(document, position, token, context)
     const items = getCompletionItems(result)
 
-    assert.ok(true, "Handles incomplete code")
+    assert.ok(
+      items.some((c: vscode.CompletionItem) => c.label === "button"),
+      "Should still offer component names for an unterminated pb_rails(\""
+    )
   })
 
   test("Should provide completions with documentation", async () => {

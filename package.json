@@ -66,6 +66,14 @@
         "language": "typescriptreact",
         "path": "./snippets/react.json"
       }
+    ],
+    "languages": [
+      {
+        "id": "erb"
+      },
+      {
+        "id": "html.erb"
+      }
     ]
   },
   "scripts": {

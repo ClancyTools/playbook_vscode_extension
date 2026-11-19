@@ -81,7 +81,9 @@ export function parseRailsProps(
 ): PropUsage | null {
   const lineText = document.lineAt(position.line).text;
 
-  const propRegex = /(\w+):\s*["']?([^"',}]+)["']?/g;
+  // The lookahead stops `props: {` from consuming the first real prop of a
+  // single-line hash (`props: { variant: "x" }`) as if it were `props`.
+  const propRegex = /(\w+):[ \t]*(?![ \t{])["']?([^"',}]+)["']?/g;
   let match;
 
   while ((match = propRegex.exec(lineText)) !== null) {

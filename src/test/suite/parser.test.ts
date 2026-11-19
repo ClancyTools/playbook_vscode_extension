@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { parseRailsComponent, parseReactComponent } from "../../parser";
+import { parseRailsComponent, parseReactComponent, parseRailsProps } from "../../parser";
+import { createTestDocument } from "./testHelpers";
 
 suite("Parser Test Suite", () => {
   suite("Rails Component Parsing", () => {
@@ -55,7 +56,7 @@ suite("Parser Test Suite", () => {
 
       const result = parseRailsComponent(doc, position);
 
-      assert.ok(true, "Should handle incomplete code without crashing");
+      assert.strictEqual(result, null, "An unterminated pb_rails(\"but has no component yet");
     });
 
     test("Should parse component with underscores", async () => {
@@ -92,6 +93,30 @@ suite("Parser Test Suite", () => {
 
       assert.ok(result, "Should parse component with mixed props");
       assert.strictEqual(result?.componentName, "button", "Should extract component name");
+    });
+  });
+
+  suite("Rails Prop Parsing", () => {
+    test("Should parse the first prop of a single-line props hash", async () => {
+      const doc = await createTestDocument("erb", '<%= pb_rails("button", props: { variant: "primary", text: "Hi" }) %>');
+      const result = parseRailsProps(doc, new vscode.Position(0, 34));
+
+      assert.strictEqual(result?.propName, "variant", "props: { must not swallow the first prop");
+      assert.strictEqual(result?.value, "primary");
+    });
+
+    test("Should not treat the props: key itself as a prop value", async () => {
+      const doc = await createTestDocument("erb", '<%= pb_rails("button", props: { text: "Hi" }) %>');
+      const result = parseRailsProps(doc, new vscode.Position(0, 25));
+
+      assert.strictEqual(result, null, "the props: key is not a Playbook prop");
+    });
+
+    test("Should parse later props on the same line", async () => {
+      const doc = await createTestDocument("erb", '<%= pb_rails("button", props: { variant: "primary", text: "Hi" }) %>');
+      const result = parseRailsProps(doc, new vscode.Position(0, 52));
+
+      assert.strictEqual(result?.propName, "text");
     });
   });
 
@@ -132,7 +157,7 @@ suite("Parser Test Suite", () => {
 
       const result = parseReactComponent(doc, position);
 
-      assert.ok(true, "Should handle HTML tags");
+      assert.strictEqual(result, null, "Lowercase HTML tags are not components");
     });
 
     test("Should parse component with props", async () => {
@@ -154,7 +179,7 @@ suite("Parser Test Suite", () => {
 
       const result = parseReactComponent(doc, position);
 
-      assert.ok(true, "Should handle incomplete component");
+      assert.strictEqual(result?.componentName, "But", "Partial tag name is still parsed");
     });
 
     test("Should parse multiline React component", async () => {
@@ -173,19 +198,7 @@ suite("Parser Test Suite", () => {
 
       const result = parseReactComponent(doc, position);
 
-      assert.ok(true, "Should handle fragments");
+      assert.strictEqual(result?.componentName, "Button", "Component inside a fragment is parsed");
     });
   });
 });
-
-async function createTestDocument(
-  languageId: string,
-  content: string
-): Promise<vscode.TextDocument> {
-  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${languageId}`);
-  const document = await vscode.workspace.openTextDocument(uri);
-  const edit = new vscode.WorkspaceEdit();
-  edit.insert(uri, new vscode.Position(0, 0), content);
-  await vscode.workspace.applyEdit(edit);
-  return document;
-}
