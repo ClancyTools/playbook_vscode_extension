@@ -8,6 +8,8 @@ import {
   camelToSnake,
   findComponentByReactName,
   findComponentByRailsName,
+  findRailsSubcomponent,
+  findReactSubcomponent,
   getPropDefault,
   getPropDeprecation,
   platformFor,
@@ -158,6 +160,27 @@ export function resolveComponent(
   return usage.platform === "rails"
     ? findComponentByRailsName(metadata, usage.component)
     : findComponentByReactName(metadata, usage.component)
+}
+
+/**
+ * The kit whose global props apply to this usage: the kit itself, or for a
+ * subcomponent (`card/card_body`, `Card.Body`) its parent kit. Subcomponents
+ * have no schema of their own, but every Playbook component, subcomponents
+ * included, takes the global props (padding, margin, display, …).
+ */
+export function resolveGlobalPropsHost(
+  metadata: PlaybookMetadata,
+  usage: ScannedUsage
+): ComponentMetadata | null {
+  const own = resolveComponent(metadata, usage)
+  if (own) {
+    return own
+  }
+  const sub =
+    usage.platform === "rails"
+      ? findRailsSubcomponent(metadata, usage.component)
+      : findReactSubcomponent(metadata, usage.component)
+  return sub?.parent ?? null
 }
 
 /** The prop's name in this platform's own spelling. */

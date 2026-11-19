@@ -1,6 +1,6 @@
 import { PlaybookMetadata, camelToSnake } from "./metadata"
 import { InlineAnnotation, InlineHints } from "./inlineHints"
-import { resolveComponent, scanUsages } from "./usageRules"
+import { resolveGlobalPropsHost, scanUsages } from "./usageRules"
 import { ScannedUsage } from "./usageScanner"
 
 export type SpacingAnnotation = InlineAnnotation
@@ -61,7 +61,7 @@ export function spacingAnnotations(
 }
 
 function appliesSpacing(usage: ScannedUsage, metadata: PlaybookMetadata): boolean {
-  const component = resolveComponent(metadata, usage)
+  const component = resolveGlobalPropsHost(metadata, usage)
   return !!component && component.hasGlobalProps !== false
 }
 

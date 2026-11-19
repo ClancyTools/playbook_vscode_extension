@@ -1,5 +1,5 @@
 import { PlaybookMetadata, camelToSnake, snakeToCamel } from "./metadata"
-import { resolveComponent, scanUsages } from "./usageRules"
+import { resolveGlobalPropsHost, scanUsages } from "./usageRules"
 import { ScannedProp, ScannedUsage, literalValue } from "./usageScanner"
 
 export interface TextEdit {
@@ -87,7 +87,7 @@ export function findCombinableSpacing(
   const found: Combinable[] = []
 
   for (const usage of scanUsages(text, languageId)) {
-    const component = resolveComponent(metadata, usage)
+    const component = resolveGlobalPropsHost(metadata, usage)
     if (!component || component.hasGlobalProps === false || usage.hasSpread) {
       continue
     }

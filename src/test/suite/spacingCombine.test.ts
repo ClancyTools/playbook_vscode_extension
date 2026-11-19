@@ -216,4 +216,9 @@ suite("Combine Paired Spacing Test Suite", () => {
       }
     })
   })
+
+  test("combines paired spacing on a subcomponent through its parent kit", () => {
+    const text = '<%= pb_rails("card/card_body", props: { padding_top: "sm", padding_bottom: "sm" }) %>'
+    assert.strictEqual(findCombinableSpacing(text, "erb", metadata).length, 1)
+  })
 })

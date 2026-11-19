@@ -295,6 +295,15 @@ suite("Feature Test Suite", () => {
       assert.strictEqual(text.slice(0, annotation.offset), '<Card padding="md"')
     })
 
+    test("annotates subcomponents through their parent kit (card/card_body, Card.Body)", () => {
+      assert.deepStrictEqual(
+        annotate("erb", '<%= pb_rails("card/card_body", props: { padding: "sm", padding_bottom: "none" }) %>').map((r) => r.label),
+        ["16px", "0"]
+      )
+      assert.deepStrictEqual(annotate("typescriptreact", '<Card.Body padding="md" />').map((r) => r.label), ["24px"])
+      assert.deepStrictEqual(annotate("erb", '<%= pb_rails("nope/card_body", props: { padding: "sm" }) %>'), [])
+    })
+
     test("annotates a Rails token", () => {
       const text = '<%= pb_rails("card", props: { margin_bottom: "xs" }) %>'
       const [annotation] = spacingAnnotations(text, "erb", metadata)
