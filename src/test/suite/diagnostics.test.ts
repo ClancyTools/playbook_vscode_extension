@@ -2281,4 +2281,30 @@ suite("Diagnostics Test Suite", () => {
       'First violation should be "text" (comes after "variant" which is out of order)'
     )
   })
+  suite("Global and base props", () => {
+    const messages = async (languageId: string, content: string): Promise<string[]> => {
+      const document = await createTestDocument(languageId, content)
+      diagnosticsInstance.updateDiagnostics(document)
+      return diagnosticsInstance.getDiagnostics(document.uri).filter(d => /Unknown prop|not available/.test(d.message)).map(d => d.message)
+    }
+
+    test("a kit that lists a global prop for React only still accepts it in Rails (Card padding)", async () => {
+      assert.deepStrictEqual(await messages("erb", '<%= pb_rails("card", props: { padding: "md" }) %>'), [])
+      assert.deepStrictEqual(await messages("typescriptreact", '<Card padding="md" />'), [])
+    })
+
+    test("className is accepted on every React kit, classname on every Rails kit", async () => {
+      assert.deepStrictEqual(await messages("typescriptreact", '<Detail className="x" text="a" />'), [])
+      assert.deepStrictEqual(await messages("erb", '<%= pb_rails("detail", props: { classname: "x", text: "a" }) %>'), [])
+      assert.deepStrictEqual(await messages("typescriptreact", '<Body className="x" data={{ a: 1 }} aria={{ label: "b" }} htmlOptions={{}} />'), [])
+    })
+
+    test("className is not a Rails prop", async () => {
+      assert.strictEqual((await messages("erb", '<%= pb_rails("detail", props: { className: "x" }) %>')).length, 1)
+    })
+
+    test("an unknown prop is still flagged next to the base props", async () => {
+      assert.strictEqual((await messages("typescriptreact", '<Detail bogus="x" />')).length, 1)
+    })
+  })
 })

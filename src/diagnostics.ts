@@ -25,7 +25,38 @@ import { describeHit, scanBootstrap } from "./bootstrapCatalog"
 import { findRequiredIndicatorIssues } from "./requiredIndicator"
 import { packageAvailability } from "./workspacePackages"
 
-const HARDCODED_GLOBAL_PROPS = new Set(["id", "key"])
+/**
+ * Props every Playbook kit accepts (Rails: KitBase and Classnames; React: the
+ * kit props every component spreads) that the schema doesn't list per kit.
+ */
+const BASE_PROPS = {
+  rails: new Set(["id", "key", "data", "aria", "html_options", "classname"]),
+  react: new Set(["id", "key", "data", "aria", "htmlOptions", "className", "children"]),
+}
+
+function isBaseProp(propName: string, languageId: string): boolean {
+  const rails = ["ruby", "erb", "html.erb", "html"].includes(languageId)
+  return (rails ? BASE_PROPS.rails : BASE_PROPS.react).has(propName)
+}
+
+/**
+ * The prop a name refers to. A kit may list a prop for one platform only
+ * (Card `padding` is React-only) while the global prop of the same name works
+ * on both, so the global one is used when the kit's doesn't fit the platform.
+ */
+function resolveProp(
+  metadata: PlaybookMetadata,
+  component: ComponentMetadata,
+  name: string,
+  languageId: string
+): PropMetadata | undefined {
+  const own = component.props[name]
+  if (own && isPropValidForPlatform(own, languageId)) {
+    return own
+  }
+  const global = findGlobalPropForComponent(metadata, component, name)
+  return global && isPropValidForPlatform(global, languageId) ? global : own ?? global
+}
 
 function toDiagnostic(document: vscode.TextDocument, finding: Finding): vscode.Diagnostic {
   const diagnostic = new vscode.Diagnostic(
@@ -428,10 +459,8 @@ export class PlaybookDiagnostics {
         }
 
         if (fullValue === "{") {
-          const prop =
-            component.props[propName] ||
-            findGlobalPropForComponent(metadata, component, propName)
-          const isValidProp = prop || HARDCODED_GLOBAL_PROPS.has(propName)
+          const prop = resolveProp(metadata, component, propName, document.languageId)
+          const isValidProp = prop || isBaseProp(propName, document.languageId)
 
           if (!isValidProp) {
             const position = this.getPositionInPropsBlock(
@@ -503,11 +532,9 @@ export class PlaybookDiagnostics {
 
         const position = this.getPositionInPropsBlock(propsBlock, match.index)
 
-        const prop =
-          component.props[propName] ||
-          findGlobalPropForComponent(metadata, component, propName)
+        const prop = resolveProp(metadata, component, propName, document.languageId)
 
-        if (!prop && !HARDCODED_GLOBAL_PROPS.has(propName)) {
+        if (!prop && !isBaseProp(propName, document.languageId)) {
           const range = new vscode.Range(
             position.line,
             position.character,
@@ -603,11 +630,9 @@ export class PlaybookDiagnostics {
             .replace(/([A-Z])/g, "_$1")
             .toLowerCase()
 
-          const prop =
-            component.props[snakeCaseProp] ||
-            findGlobalPropForComponent(metadata, component, snakeCaseProp)
+          const prop = resolveProp(metadata, component, snakeCaseProp, document.languageId)
 
-          if (!prop && !HARDCODED_GLOBAL_PROPS.has(propName)) {
+          if (!prop && !isBaseProp(propName, document.languageId)) {
             const startIndex =
               i === 0 ? match.index + componentBlock.startChar : match.index
             const range = new vscode.Range(
