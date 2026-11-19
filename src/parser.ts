@@ -181,3 +181,51 @@ export function findComponentContext(
 
   return null;
 }
+
+export interface FormBuilderContext {
+  /** Builder method name, e.g. "text_field" for `f.text_field :email, props: {`. */
+  fieldName: string
+  line: number
+}
+
+/**
+ * The nearest `f.method` / `form.method` call at or before the cursor (within
+ * a few lines), so props typed inside `props: { }` can be completed for it.
+ */
+export function findFormBuilderContext(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): FormBuilderContext | null {
+  for (let line = position.line; line >= Math.max(0, position.line - 6); line--) {
+    const text =
+      line === position.line
+        ? document.lineAt(line).text.substring(0, position.character)
+        : document.lineAt(line).text
+    const matches = [...text.matchAll(/\b(?:f|form|builder)\.(\w+)/g)]
+    if (matches.length > 0) {
+      return { fieldName: matches[matches.length - 1][1], line }
+    }
+  }
+  return null
+}
+
+/** The `f.method` call whose method name is under the cursor, for hover. */
+export function parseFormBuilderMethod(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): { methodName: string; range: vscode.Range } | null {
+  const text = document.lineAt(position.line).text
+  const regex = /\b(?:f|form|builder)\.(\w+)/g
+  let match
+  while ((match = regex.exec(text)) !== null) {
+    const start = match.index + match[0].length - match[1].length
+    const end = start + match[1].length
+    if (position.character >= start && position.character <= end) {
+      return {
+        methodName: match[1],
+        range: new vscode.Range(position.line, start, position.line, end),
+      }
+    }
+  }
+  return null
+}

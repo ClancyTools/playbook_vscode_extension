@@ -92,6 +92,11 @@
           "type": "boolean",
           "default": true,
           "description": "Flag kits whose required host packages (Highcharts, maplibre-gl, ...) are not installed."
+        },
+        "playbook.spacingHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the pixel value after spacing tokens, for example padding=\"md\" → 24px."
         }
       }
     }

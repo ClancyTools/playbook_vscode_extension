@@ -9,12 +9,19 @@ import {
   generateComponentDocs,
   generateSubcomponentDocs,
   generatePropDocs,
+  generateFormMethodDocs,
+  loadFormBuilderMetadata,
+  findFormBuilderField,
+  platformFor,
+  propGuidanceLines,
   PlaybookMetadata
 } from "./metadata";
+import { loadPlayground } from "./playgrounds";
 import {
   parseRailsComponent,
   parseReactComponent,
   parseRailsProps,
+  parseFormBuilderMethod,
   parseReactProps,
   findComponentContext
 } from "./parser";
@@ -37,11 +44,28 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
 
     const metadata: PlaybookMetadata = loadMetadata(this.extensionPath);
 
+    if (platformFor(document.languageId) === "rails") {
+      const method = parseFormBuilderMethod(document, position);
+      const field =
+        method && findFormBuilderField(loadFormBuilderMetadata(this.extensionPath), method.methodName);
+      if (method && field) {
+        return new vscode.Hover(
+          new vscode.MarkdownString(generateFormMethodDocs(field)),
+          method.range
+        );
+      }
+    }
+
     const railsComponent = parseRailsComponent(document, position);
     if (railsComponent) {
       const component = findComponentByRailsName(metadata, railsComponent.componentName);
       if (component) {
-        const docs = generateComponentDocs(railsComponent.componentName, component, metadata);
+        const docs = generateComponentDocs(
+          railsComponent.componentName,
+          component,
+          metadata,
+          loadPlayground(this.extensionPath, component.rails)
+        );
         return new vscode.Hover(new vscode.MarkdownString(docs), railsComponent.range);
       }
 
@@ -56,7 +80,12 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
     if (reactComponent) {
       const component = findComponentByReactName(metadata, reactComponent.componentName);
       if (component) {
-        const docs = generateComponentDocs(reactComponent.componentName, component, metadata);
+        const docs = generateComponentDocs(
+          reactComponent.componentName,
+          component,
+          metadata,
+          loadPlayground(this.extensionPath, component.rails)
+        );
         return new vscode.Hover(new vscode.MarkdownString(docs), reactComponent.range);
       }
 
@@ -85,9 +114,19 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               railsProp.propName,
               prop,
               !component.props[railsProp.propName],
-              metadata
+              metadata,
+              document.languageId
             );
-            return new vscode.Hover(new vscode.MarkdownString(propDocs), railsProp.range);
+            const guidance = propGuidanceLines(
+              component,
+              railsProp.propName,
+              loadPlayground(this.extensionPath, component.rails),
+              document.languageId
+            );
+            return new vscode.Hover(
+              new vscode.MarkdownString([propDocs, ...guidance].join("  \n")),
+              railsProp.range
+            );
           }
         }
       }
@@ -110,9 +149,19 @@ export class PlaybookHoverProvider implements vscode.HoverProvider {
               reactProp.propName,
               prop,
               !component.props[snakeCaseProp],
-              metadata
+              metadata,
+              document.languageId
             );
-            return new vscode.Hover(new vscode.MarkdownString(propDocs), reactProp.range);
+            const guidance = propGuidanceLines(
+              component,
+              snakeCaseProp,
+              loadPlayground(this.extensionPath, component.rails),
+              document.languageId
+            );
+            return new vscode.Hover(
+              new vscode.MarkdownString([propDocs, ...guidance].join("  \n")),
+              reactProp.range
+            );
           }
         }
       }
