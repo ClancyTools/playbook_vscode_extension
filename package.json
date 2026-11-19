@@ -37,7 +37,12 @@
     "onLanguage:javascript",
     "onLanguage:javascriptreact",
     "onLanguage:typescript",
-    "onLanguage:typescriptreact"
+    "onLanguage:typescriptreact",
+    "onView:playbookKits",
+    "onCommand:playbook.browseKits",
+    "onCommand:playbook.findDeprecated",
+    "onCommand:playbook.reloadMetadata",
+    "onCommand:playbook.showInfo"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -99,6 +104,70 @@
           "description": "Show the pixel value after spacing tokens, for example padding=\"md\" → 24px."
         }
       }
+    },
+    "commands": [
+      {
+        "command": "playbook.browseKits",
+        "title": "Browse Kits",
+        "category": "Playbook",
+        "icon": "$(symbol-class)"
+      },
+      {
+        "command": "playbook.findDeprecated",
+        "title": "Find Deprecated Usages",
+        "category": "Playbook",
+        "icon": "$(warning)"
+      },
+      {
+        "command": "playbook.reloadMetadata",
+        "title": "Reload Metadata",
+        "category": "Playbook",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "playbook.showInfo",
+        "title": "Show Playbook Info",
+        "category": "Playbook"
+      },
+      {
+        "command": "playbook.kitActions",
+        "title": "Kit Actions",
+        "category": "Playbook"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "playbookKits",
+          "name": "Playbook Kits",
+          "icon": "$(symbol-class)"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "playbook.browseKits",
+          "when": "view == playbookKits",
+          "group": "navigation@1"
+        },
+        {
+          "command": "playbook.findDeprecated",
+          "when": "view == playbookKits",
+          "group": "navigation@2"
+        },
+        {
+          "command": "playbook.reloadMetadata",
+          "when": "view == playbookKits",
+          "group": "navigation@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "playbook.kitActions",
+          "when": "false"
+        }
+      ]
     }
   },
   "scripts": {
