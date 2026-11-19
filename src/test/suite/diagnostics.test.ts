@@ -2,6 +2,7 @@ import * as assert from "assert"
 import * as vscode from "vscode"
 import * as path from "path"
 import { PlaybookDiagnostics } from "../../diagnostics"
+import { assertDiagnosticMessages, createTestDocument } from "./testHelpers";
 
 suite("Diagnostics Test Suite", () => {
   let diagnosticsInstance: PlaybookDiagnostics
@@ -22,7 +23,7 @@ suite("Diagnostics Test Suite", () => {
     )
 
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Diagnostics updated successfully")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Diagnostics updated successfully")
   })
 
   test("Should update diagnostics for React document", async () => {
@@ -32,7 +33,7 @@ suite("Diagnostics Test Suite", () => {
     )
 
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Diagnostics updated successfully")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Diagnostics updated successfully")
   })
 
   test("Should handle unknown component", async () => {
@@ -42,7 +43,7 @@ suite("Diagnostics Test Suite", () => {
     )
 
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Diagnostics handles unknown component")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Unknown Playbook component: \"unknown_component\""], "Diagnostics handles unknown component")
   })
 
   test("Should not warn 'unknown component' for a valid subcomponent", async () => {
@@ -88,14 +89,14 @@ suite("Diagnostics Test Suite", () => {
     )
 
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Diagnostics handles invalid props")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Unknown prop \"invalid_prop\" for component \"button\""], "Diagnostics handles invalid props")
   })
 
   test("Should skip validation for unsupported languages", async () => {
     const document = await createTestDocument("plaintext", "Some text")
 
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Skips unsupported languages")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Skips unsupported languages")
   })
 
   test("Should validate props across multiple lines", async () => {
@@ -106,7 +107,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Validates multi-line props")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Validates multi-line props")
   })
 
   test("Should detect invalid enum value on multi-line props", async () => {
@@ -118,7 +119,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Detects invalid enum on multi-line")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Invalid value \"invalid_value\" for prop \"variant\". Valid values: \"success\", \"warning\", \"error\", \"info\", \"neutral\", \"primary\""], "Detects invalid enum on multi-line")
   })
 
   test("Should NOT attribute props from second component to first component", async () => {
@@ -132,7 +133,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Does not mix props between components")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Does not mix props between components")
   })
 
   test("Should handle component without props followed by component with inline props", async () => {
@@ -141,7 +142,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Handles component without props correctly")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles component without props correctly")
   })
 
   test("Should handle multiple components on same line", async () => {
@@ -149,7 +150,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Handles multiple components on same line")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles multiple components on same line")
   })
 
   test("Should validate variables vs quoted strings correctly", async () => {
@@ -160,7 +161,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Distinguishes variables from quoted strings")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Distinguishes variables from quoted strings")
   })
 
   test("Should detect invalid enum value on single-line props", async () => {
@@ -168,7 +169,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Detects invalid enum on single-line")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Invalid value \"invalid_value\" for prop \"variant\". Valid values: \"success\", \"warning\", \"error\", \"info\", \"neutral\", \"primary\""], "Detects invalid enum on single-line")
   })
 
   test("Should not warn for hardcoded global props (id, data, aria, html_options, children, style)", async () => {
@@ -183,7 +184,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Hardcoded global props accepted without warnings")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Hardcoded global props accepted without warnings")
   })
 
   test("Should validate align_items with all correct values (including type aliases)", async () => {
@@ -193,7 +194,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "align_items accepts 'start' from Alignment type alias")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "align_items accepts 'start' from Alignment type alias")
   })
 
   test("Should handle component name collision (body vs layout/body)", async () => {
@@ -201,7 +202,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Handles component collision correctly")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles component collision correctly")
   })
 
   test("Should validate single-line props with correct warning position", async () => {
@@ -209,7 +210,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Single-line prop validation positioning works")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Invalid value \"wrong_value\" for prop \"variant\". Valid values: \"success\", \"warning\", \"error\", \"info\", \"neutral\", \"primary\""], "Single-line prop validation positioning works")
   })
 
   test("Should not warn for variables in enum props", async () => {
@@ -217,7 +218,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Variables in enum props are not flagged")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Variables in enum props are not flagged")
   })
 
   test("Should not warn for method calls in enum props", async () => {
@@ -225,7 +226,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Method calls in enum props are not flagged")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Method calls in enum props are not flagged")
   })
 
   test("Should handle empty props block", async () => {
@@ -233,7 +234,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Empty props block handled")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Empty props block handled")
   })
 
   test("Should handle deeply nested props across many lines", async () => {
@@ -247,7 +248,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Deeply nested props validated")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Deeply nested props validated")
   })
 
   test("Should handle mixed valid and invalid props", async () => {
@@ -259,7 +260,7 @@ suite("Diagnostics Test Suite", () => {
 
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
-    assert.ok(true, "Mixed valid and invalid props handled")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Unknown prop \"invalid_prop\" for component \"pill\""], "Mixed valid and invalid props handled")
   })
 
   test("Should not validate nested object properties for aria, data, html_options", async () => {
@@ -272,7 +273,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Nested object properties are not validated")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Nested object properties are not validated")
   })
 
   test("Should not validate props inside method call arguments", async () => {
@@ -427,7 +428,7 @@ suite("Diagnostics Test Suite", () => {
 
   test("Should allow React-specific props in React components", async () => {
     const content = `<Tooltip placement="top" text="Save to My Favorites" zIndex={10}>
-      <IconButton icon="heart" size="md" variant="link" />
+      <CircleIconButton icon="heart" size="sm" variant="link" />
     </Tooltip>`
 
     const document = await createTestDocument("typescriptreact", content)
@@ -465,8 +466,13 @@ suite("Diagnostics Test Suite", () => {
     const delayOpenWarning = diagnostics.find(d =>
       d.message.includes('"delay_open"')
     )
-    const triggerWarning = diagnostics.find(d =>
-      d.message.includes('"trigger_element_id"')
+    const triggerWarning = diagnostics.find(
+      d =>
+        d.message.includes('"trigger_element_id"') &&
+        (d.code === "unknown-prop" || d.message.includes("not available"))
+    )
+    const triggerDeprecation = diagnostics.find(
+      d => d.code === "deprecated-prop" && d.message.includes('"trigger_element_id"')
     )
 
     assert.ok(
@@ -475,7 +481,11 @@ suite("Diagnostics Test Suite", () => {
     )
     assert.ok(
       !triggerWarning,
-      "Should not warn about 'trigger_element_id' (it's a valid Rails prop)"
+      "Should not call 'trigger_element_id' unknown or unavailable (it's a valid Rails prop)"
+    )
+    assert.ok(
+      triggerDeprecation?.tags?.includes(vscode.DiagnosticTag.Deprecated),
+      "Playbook marks 'trigger_element_id' deprecated, so it is flagged as such"
     )
   })
 
@@ -1408,7 +1418,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles empty string values")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles empty string values")
   })
 
   test("Should handle props with escaped quotes", async () => {
@@ -1417,7 +1427,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles escaped quotes")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles escaped quotes")
   })
 
   test("Should handle props with newline characters", async () => {
@@ -1426,7 +1436,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles newline characters")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles newline characters")
   })
 
   test("Should handle props with tab characters", async () => {
@@ -1434,7 +1444,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles tab characters")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles tab characters")
   })
 
   test("Should handle React component with no props", async () => {
@@ -1442,7 +1452,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles React component with no props")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles React component with no props")
   })
 
   test("Should handle React component with only closing tag", async () => {
@@ -1450,7 +1460,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles React component with closing tag")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles React component with closing tag")
   })
 
   test("Should handle camelCase to snake_case prop conversion in React", async () => {
@@ -1475,7 +1485,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles boolean props in React")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles boolean props in React")
   })
 
   test("Should handle React component with expression props", async () => {
@@ -1483,7 +1493,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles expression props in React")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Props should be in alphabetical order. \"count\" should come before \"onClick\" in Button."], "Handles expression props in React")
   })
 
   test("Should handle React component with spread props", async () => {
@@ -1491,7 +1501,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles spread props in React")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles spread props in React")
   })
 
   test("Should handle Rails component with Ruby string interpolation", async () => {
@@ -1500,7 +1510,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles Ruby string interpolation")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles Ruby string interpolation")
   })
 
   test("Should handle Rails component with symbol values", async () => {
@@ -1508,7 +1518,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles Ruby symbol values")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles Ruby symbol values")
   })
 
   test("Should handle Rails component with array values", async () => {
@@ -1517,7 +1527,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles array prop values")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles array prop values")
   })
 
   test("Should handle Rails component with hash literal values", async () => {
@@ -1526,7 +1536,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles hash literal values")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles hash literal values")
   })
 
   test("Should handle form builder with all recognized variable names", async () => {
@@ -1555,7 +1565,7 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     // Should not validate 'obj' since it's not a recognized form builder variable
-    assert.ok(true, "Skips non-form-builder variables")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Skips non-form-builder variables")
   })
 
   test("Should handle form builder with unknown method", async () => {
@@ -1564,7 +1574,7 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     // Should skip validation for unknown form builder methods
-    assert.ok(true, "Skips unknown form builder methods")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Skips unknown form builder methods")
   })
 
   test("Should handle multiple form builder fields in succession", async () => {
@@ -1575,7 +1585,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles multiple form builder fields")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles multiple form builder fields")
   })
 
   test("Should handle form builder with multiline props", async () => {
@@ -1589,7 +1599,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles multiline form builder props")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles multiline form builder props")
   })
 
   test("Should handle deeply nested React components (3+ levels)", async () => {
@@ -1608,7 +1618,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles deeply nested React components")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles deeply nested React components")
   })
 
   test("Should handle sibling React components", async () => {
@@ -1621,7 +1631,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles sibling React components")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles sibling React components")
   })
 
   test("Should handle React component with children", async () => {
@@ -1633,7 +1643,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles React components with children")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles React components with children")
   })
 
   test("Should handle React self-closing component variations", async () => {
@@ -1648,7 +1658,7 @@ suite("Diagnostics Test Suite", () => {
     for (const content of variations) {
       const document = await createTestDocument("typescriptreact", content)
       diagnosticsInstance.updateDiagnostics(document)
-      assert.ok(true, `Handles: ${content}`)
+      assertDiagnosticMessages(diagnosticsInstance, document, [], `Handles: ${content}`)
     }
   })
 
@@ -1662,7 +1672,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles props at 50-line boundary")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles props at 50-line boundary")
   })
 
   test("Should handle component without closing props brace (edge case)", async () => {
@@ -1671,7 +1681,7 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     // Should not crash
-    assert.ok(true, "Handles malformed props block gracefully")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles malformed props block gracefully")
   })
 
   test("Should handle Rails component with trailing comma", async () => {
@@ -1679,7 +1689,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles trailing comma in props")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles trailing comma in props")
   })
 
   test("Should handle Rails component with comments in props", async () => {
@@ -1691,7 +1701,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles comments in props block")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles comments in props block")
   })
 
   test("Should validate across all 8 supported language IDs comprehensively", async () => {
@@ -1718,7 +1728,7 @@ suite("Diagnostics Test Suite", () => {
     for (const { lang, content } of testCases) {
       const document = await createTestDocument(lang, content)
       diagnosticsInstance.updateDiagnostics(document)
-      assert.ok(true, `Validates ${lang}`)
+      assertDiagnosticMessages(diagnosticsInstance, document, [], `Validates ${lang}`)
     }
   })
 
@@ -1746,7 +1756,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles checkbox form builder field")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles checkbox form builder field")
   })
 
   test("Should handle form builder select with options", async () => {
@@ -1755,7 +1765,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles select with options array")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles select with options array")
   })
 
   test("Should handle React component starting with lowercase (HTML elements)", async () => {
@@ -1764,7 +1774,7 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     // Should only validate capitalized components (Button), not HTML elements (div)
-    assert.ok(true, "Ignores HTML elements, only validates PB components")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Ignores HTML elements, only validates PB components")
   })
 
   test("Should handle Rails component with 'do' keyword in props value", async () => {
@@ -1772,7 +1782,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles 'do' keyword in prop value")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles 'do' keyword in prop value")
   })
 
   test("Should handle Rails component with 'end' keyword in props value", async () => {
@@ -1780,7 +1790,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles 'end' keyword in prop value")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles 'end' keyword in prop value")
   })
 
   test("Should handle Rails component with 'if' keyword in props value", async () => {
@@ -1789,7 +1799,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles 'if' keyword in prop value")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles 'if' keyword in prop value")
   })
 
   test("Should handle Rails component with 'unless' keyword in props value", async () => {
@@ -1798,7 +1808,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles 'unless' keyword in prop value")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles 'unless' keyword in prop value")
   })
 
   test("Should handle getDiagnostics for URI with no diagnostics", async () => {
@@ -1818,13 +1828,81 @@ suite("Diagnostics Test Suite", () => {
     )
   })
 
+  test("Should not flag a Rails tooltip placement as an invalid position", async () => {
+    const document = await createTestDocument(
+      "erb",
+      '<%= pb_rails("tooltip", props: { position: "top", delay_open: 100 }) do %>x<% end %>'
+    )
+    diagnosticsInstance.updateDiagnostics(document)
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Rails tooltip placement is valid")
+  })
+
+  test("Should still validate tooltip position in React", async () => {
+    const document = await createTestDocument(
+      "typescriptreact",
+      '<Tooltip position="top" text="Hi" />'
+    )
+    diagnosticsInstance.updateDiagnostics(document)
+    const messages = diagnosticsInstance.getDiagnostics(document.uri).map(d => d.message)
+    assert.ok(messages.some(m => m.includes('Invalid value "top"')), messages.join("|"))
+  })
+
+  test("Should flag a Rails-style snake_case prop written in React", async () => {
+    const document = await createTestDocument("typescriptreact", '<Flex margin_bottom="xs" />')
+    diagnosticsInstance.updateDiagnostics(document)
+    const [found] = diagnosticsInstance.getDiagnostics(document.uri)
+
+    assert.strictEqual(found.code, "wrong-prop-case")
+    assert.strictEqual(found.message, 'Prop "margin_bottom" should be written "marginBottom" in React')
+    assert.strictEqual(document.getText(found.range), "margin_bottom")
+    assert.strictEqual(found.severity, vscode.DiagnosticSeverity.Warning)
+  })
+
+  test("Should flag snake_case props on a multi-line React tag", async () => {
+    const document = await createTestDocument(
+      "typescriptreact",
+      '<Card\n  padding_x="sm"\n  dark\n/>'
+    )
+    diagnosticsInstance.updateDiagnostics(document)
+    const found = diagnosticsInstance
+      .getDiagnostics(document.uri)
+      .filter((d) => d.code === "wrong-prop-case")
+
+    assert.strictEqual(found.length, 1)
+    assert.strictEqual(found[0].range.start.line, 1)
+  })
+
+  test("Should accept the camelCase spelling in React", async () => {
+    const document = await createTestDocument("typescriptreact", '<Flex marginBottom="xs" />')
+    diagnosticsInstance.updateDiagnostics(document)
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "camelCase is correct in React")
+  })
+
+  test("Should keep snake_case valid in Rails", async () => {
+    const document = await createTestDocument("erb", '<%= pb_rails("flex", props: { margin_bottom: "xs" }) %>')
+    diagnosticsInstance.updateDiagnostics(document)
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "snake_case is correct in Rails")
+  })
+
+  test("Should still validate the value of a wrongly cased React prop", async () => {
+    const document = await createTestDocument("typescriptreact", '<Flex margin_bottom="huge" />')
+    diagnosticsInstance.updateDiagnostics(document)
+    const codes = diagnosticsInstance.getDiagnostics(document.uri).map((d) => d.code)
+    assert.deepStrictEqual(codes.sort(), ["invalid-value", "wrong-prop-case"])
+  })
+
+  test("Should call an unrecognised snake_case React prop unknown, not wrongly cased", async () => {
+    const document = await createTestDocument("typescriptreact", '<Flex not_a_prop="x" />')
+    diagnosticsInstance.updateDiagnostics(document)
+    const codes = diagnosticsInstance.getDiagnostics(document.uri).map((d) => d.code)
+    assert.deepStrictEqual(codes, ["unknown-prop"])
+  })
+
   test("Should handle dispose method", () => {
     const extensionPath = path.resolve(__dirname, "../../../")
     const tempDiagnostics = new PlaybookDiagnostics(extensionPath)
 
-    tempDiagnostics.dispose()
-
-    assert.ok(true, "Should dispose without errors")
+    assert.doesNotThrow(() => tempDiagnostics.dispose(), "Should dispose without errors")
   })
 
   test("Should handle very long component names", async () => {
@@ -1834,7 +1912,7 @@ suite("Diagnostics Test Suite", () => {
     diagnosticsInstance.updateDiagnostics(document)
 
     // Should handle gracefully
-    assert.ok(true, "Handles very long component names")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Unknown Playbook component: \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\""], "Handles very long component names")
   })
 
   test("Should handle very long prop names", async () => {
@@ -1843,7 +1921,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles very long prop names")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Unknown prop \"prop_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" for component \"button\""], "Handles very long prop names")
   })
 
   test("Should handle component with only whitespace between tags", async () => {
@@ -1851,7 +1929,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles whitespace-only content")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles whitespace-only content")
   })
 
   test("Should handle React component on multiple lines with props on each line", async () => {
@@ -1865,7 +1943,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles props spread across multiple lines")
+    assertDiagnosticMessages(diagnosticsInstance, document, ["Props should be in alphabetical order. \"disabled\" should come before \"variant\" in Button."], "Handles props spread across multiple lines")
   })
 
   test("Should handle form builder with invalid prop and valid props mixed", async () => {
@@ -1894,7 +1972,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles Ruby ternary in props")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles Ruby ternary in props")
   })
 
   test("Should handle clear() method during active diagnostics", async () => {
@@ -1922,7 +2000,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles single quote inside double quotes")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles single quote inside double quotes")
   })
 
   test("Should handle prop value with double quote inside single quotes", async () => {
@@ -1931,7 +2009,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles double quote inside single quotes")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles double quote inside single quotes")
   })
 
   test("Should handle React component with nested braces in expression", async () => {
@@ -1940,7 +2018,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("typescriptreact", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles nested braces in JSX expression")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles nested braces in JSX expression")
   })
 
   test("Should handle form builder with nested props object", async () => {
@@ -1952,7 +2030,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles nested props in form builder")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles nested props in form builder")
   })
 
   test("Should not crash on empty document", async () => {
@@ -1988,7 +2066,7 @@ suite("Diagnostics Test Suite", () => {
     const document = await createTestDocument("erb", content)
     diagnosticsInstance.updateDiagnostics(document)
 
-    assert.ok(true, "Handles 100+ components in single file")
+    assertDiagnosticMessages(diagnosticsInstance, document, [], "Handles 100+ components in single file")
   })
 
   // =========================================================================
@@ -2203,29 +2281,30 @@ suite("Diagnostics Test Suite", () => {
       'First violation should be "text" (comes after "variant" which is out of order)'
     )
   })
+  suite("Global and base props", () => {
+    const messages = async (languageId: string, content: string): Promise<string[]> => {
+      const document = await createTestDocument(languageId, content)
+      diagnosticsInstance.updateDiagnostics(document)
+      return diagnosticsInstance.getDiagnostics(document.uri).filter(d => /Unknown prop|not available/.test(d.message)).map(d => d.message)
+    }
+
+    test("a kit that lists a global prop for React only still accepts it in Rails (Card padding)", async () => {
+      assert.deepStrictEqual(await messages("erb", '<%= pb_rails("card", props: { padding: "md" }) %>'), [])
+      assert.deepStrictEqual(await messages("typescriptreact", '<Card padding="md" />'), [])
+    })
+
+    test("className is accepted on every React kit, classname on every Rails kit", async () => {
+      assert.deepStrictEqual(await messages("typescriptreact", '<Detail className="x" text="a" />'), [])
+      assert.deepStrictEqual(await messages("erb", '<%= pb_rails("detail", props: { classname: "x", text: "a" }) %>'), [])
+      assert.deepStrictEqual(await messages("typescriptreact", '<Body className="x" data={{ a: 1 }} aria={{ label: "b" }} htmlOptions={{}} />'), [])
+    })
+
+    test("className is not a Rails prop", async () => {
+      assert.strictEqual((await messages("erb", '<%= pb_rails("detail", props: { className: "x" }) %>')).length, 1)
+    })
+
+    test("an unknown prop is still flagged next to the base props", async () => {
+      assert.strictEqual((await messages("typescriptreact", '<Detail bogus="x" />')).length, 1)
+    })
+  })
 })
-
-async function createTestDocument(
-  languageId: string,
-  content: string
-): Promise<vscode.TextDocument> {
-  const extensionMap: Record<string, string> = {
-    typescriptreact: "tsx",
-    javascriptreact: "jsx",
-    typescript: "ts",
-    javascript: "js",
-    erb: "erb",
-    ruby: "rb",
-    "html.erb": "html.erb",
-    html: "html",
-  }
-
-  const extension = extensionMap[languageId] || languageId
-  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${extension}`)
-  const document = await vscode.workspace.openTextDocument(uri)
-  const edit = new vscode.WorkspaceEdit()
-  edit.insert(uri, new vscode.Position(0, 0), content)
-  await vscode.workspace.applyEdit(edit)
-
-  return vscode.workspace.openTextDocument(uri)
-}

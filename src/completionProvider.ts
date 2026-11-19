@@ -3,13 +3,33 @@ import {
   loadMetadata,
   ComponentMetadata,
   getPropValues,
+  getPropType,
+  getPropDefault,
+  isBooleanProp,
   isPropValidForPlatform,
   isComponentValidForPlatform,
   findGlobalPropForComponent,
   PlaybookMetadata,
   PropMetadata,
+  findFormBuilderField,
+  generateFormMethodDocs,
+  loadFormBuilderMetadata,
+  platformFor,
 } from "./metadata"
-import { findComponentContext } from "./parser"
+import { findComponentContext, findFormBuilderContext } from "./parser"
+import { loadPlayground } from "./playgrounds"
+import { renderPresets } from "./presets"
+import { axisLabel, axisLabelBothWays, axisRole, resolveOrientation } from "./flexAxis"
+import { usageAt } from "./usageRules"
+import { enabled } from "./settings"
+import { iconPreviewDataUri, loadIconIndex } from "./playbookIcons"
+import { SUBCOMPONENT_KITS, kitColorKey, loadKitColors } from "./kitColors"
+import { isColorProp, loadColorTokens } from "./colorTokens"
+
+/** Which icon a completion item stands for, so its preview can be built on demand. */
+const iconNames = new WeakMap<vscode.CompletionItem, string>()
+
+const WORD_TRIGGER = /^[A-Za-z0-9_]$/
 
 export class PlaybookCompletionProvider
   implements vscode.CompletionItemProvider
@@ -29,6 +49,9 @@ export class PlaybookCompletionProvider
     token: vscode.CancellationToken,
     context: vscode.CompletionContext
   ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
+    if (!enabled("completion.enabled")) {
+      return []
+    }
     console.log(
       `[PlaybookCompletionProvider] Completion requested at ${document.languageId}:${position.line}:${position.character}, trigger: ${context.triggerCharacter || "manual"}`
     )
@@ -37,6 +60,13 @@ export class PlaybookCompletionProvider
     const line = document.lineAt(position.line).text
     const linePrefix = line.substring(0, position.character)
     console.log(`[PlaybookCompletionProvider] Line prefix: "${linePrefix}"`)
+
+    if (
+      platformFor(document.languageId) === "rails" &&
+      /\b(?:f|form|builder)\.\w*$/.test(linePrefix)
+    ) {
+      return this.provideFormMethodCompletions()
+    }
 
     const completionType = this.detectCompletionType(
       linePrefix,
@@ -47,11 +77,25 @@ export class PlaybookCompletionProvider
       `[PlaybookCompletionProvider] Detected completion type: ${completionType}`
     )
 
+    // Typing a letter only asks for suggestions so values complete inside quotes;
+    // everywhere else those requests would just be noise.
+    if (context.triggerCharacter && WORD_TRIGGER.test(context.triggerCharacter) && !completionType.endsWith("prop-value") && completionType !== "rails-component") {
+      return []
+    }
+
     switch (completionType) {
       case "rails-component":
-        return this.provideRailsComponentCompletions(metadata)
+        return [
+          ...this.provideRailsComponentCompletions(metadata),
+          ...(enabled("completion.presets")
+            ? this.provideRailsPresetCompletions(metadata, document, position)
+            : []),
+        ]
       case "react-component":
-        return this.provideReactComponentCompletions(metadata)
+        return [
+          ...this.provideReactComponentCompletions(metadata),
+          ...(enabled("completion.presets") ? this.provideReactPresetCompletions(metadata, document) : []),
+        ]
       case "rails-prop-name":
         return this.provideRailsPropNameCompletions(
           document,
@@ -91,7 +135,7 @@ export class PlaybookCompletionProvider
     document: vscode.TextDocument,
     position: vscode.Position
   ): string {
-    if (linePrefix.match(/pb_rails\(\s*["']$/)) {
+    if (linePrefix.match(/pb_rails\(\s*["'][\w]*$/)) {
       return "rails-component"
     }
 
@@ -124,7 +168,7 @@ export class PlaybookCompletionProvider
         linePrefix.indexOf(reactTagMatch[1]) + reactTagMatch[1].length
       )
 
-      if (afterTag.match(/\w+\s*=\s*["'{]?$/)) {
+      if (afterTag.match(/\w+\s*=\s*(?:"[^"]*|'[^']*|\{\s*(?:["'][^"'}]*)?)?$/)) {
         return "react-prop-value"
       }
 
@@ -136,7 +180,7 @@ export class PlaybookCompletionProvider
       position
     )
     if (reactComponentContext) {
-      if (linePrefix.match(/\w+\s*=\s*["'{]?$/)) {
+      if (linePrefix.match(/\w+\s*=\s*(?:"[^"]*|'[^']*|\{\s*(?:["'][^"'}]*)?)?$/)) {
         return "react-prop-value"
       }
       return "react-prop-name"
@@ -231,6 +275,92 @@ export class PlaybookCompletionProvider
     }
 
     return foundPropsStart
+  }
+
+  /**
+   * One completion per named Playbook preset ("dropdown: Create tags") that
+   * writes the kit name and its props. Typed after `pb_rails("`, so it also
+   * swallows an auto-closed `")` and re-adds the paren after the props.
+   */
+  private provideRailsPresetCompletions(
+    metadata: PlaybookMetadata,
+    document: vscode.TextDocument,
+    position: vscode.Position
+  ): vscode.CompletionItem[] {
+    const items: vscode.CompletionItem[] = []
+    const rest = document.lineAt(position.line).text.substring(position.character)
+    const closing = /^["']\)/.test(rest) ? 2 : /^["']/.test(rest) ? 1 : 0
+    // Text already typed after the quote is replaced too, not left in front of the preset.
+    const typed = /["'](\w*)$/.exec(document.lineAt(position.line).text.substring(0, position.character))?.[1].length ?? 0
+
+    for (const component of Object.values<ComponentMetadata>(metadata.components)) {
+      if (!isComponentValidForPlatform(component, "erb")) {
+        continue
+      }
+      const presets = renderPresets(
+        component,
+        loadPlayground(this.extensionPath, component.rails),
+        "erb"
+      )
+      presets.forEach((preset, index) => {
+        const label = `${component.rails}: ${preset.name}`
+        const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Snippet)
+        item.detail = "Playbook preset"
+        item.filterText = `${component.rails} ${preset.name}`
+        item.sortText = `${component.rails}~${String(index).padStart(2, "0")}`
+        item.insertText = `${component.rails}", props: { ${preset.rails} }${closing === 2 ? ")" : ""}`
+        item.range = new vscode.Range(position.translate(0, -typed), position.translate(0, closing))
+        item.documentation = new vscode.MarkdownString(
+          `\`\`\`erb\n<%= pb_rails("${component.rails}", props: { ${preset.rails} }) %>\n\`\`\``
+        )
+        items.push(item)
+      })
+    }
+    return items
+  }
+
+  /** One completion per named Playbook preset ("Dropdown: Create tags") that writes the whole tag. */
+  private provideReactPresetCompletions(
+    metadata: PlaybookMetadata,
+    document: vscode.TextDocument
+  ): vscode.CompletionItem[] {
+    const items: vscode.CompletionItem[] = []
+
+    for (const [componentName, component] of Object.entries<ComponentMetadata>(
+      metadata.components
+    )) {
+      if (!isComponentValidForPlatform(component, document.languageId)) {
+        continue
+      }
+      const presets = renderPresets(
+        component,
+        loadPlayground(this.extensionPath, component.rails),
+        document.languageId
+      )
+      presets.forEach((preset, index) => {
+        const item = new vscode.CompletionItem(
+          `${componentName}: ${preset.name}`,
+          vscode.CompletionItemKind.Snippet
+        )
+        item.detail = "Playbook preset"
+        item.filterText = `${componentName} ${preset.name}`
+        item.sortText = `${componentName}~${String(index).padStart(2, "0")}`
+
+        const snippet = new vscode.SnippetString()
+        snippet.appendText(`${componentName} ${preset.react}`)
+        if (component.hasChildren) {
+          snippet.appendText(">\n\t").appendTabstop(0).appendText(`\n</${componentName}>`)
+        } else {
+          snippet.appendText(" />")
+        }
+        item.insertText = snippet
+        item.documentation = new vscode.MarkdownString(
+          `\`\`\`tsx\n<${componentName} ${preset.react}${component.hasChildren ? `>…</${componentName}>` : " />"}\n\`\`\``
+        )
+        items.push(item)
+      })
+    }
+    return items
   }
 
   private provideRailsComponentCompletions(
@@ -330,11 +460,25 @@ export class PlaybookCompletionProvider
     metadata: PlaybookMetadata
   ): vscode.CompletionItem[] {
     const componentContext = findComponentContext(document, position)
+    const formContext = findFormBuilderContext(document, position)
+
+    // A form builder call closer to the cursor than any pb_rails call wins.
+    if (
+      formContext &&
+      (!componentContext ||
+        componentContext.type !== "rails" ||
+        formContext.line >= componentContext.range.start.line)
+    ) {
+      const field = findFormBuilderField(
+        loadFormBuilderMetadata(this.extensionPath),
+        formContext.fieldName
+      )
+      return field ? this.railsPropItems(field.props, metadata, document, true) : []
+    }
+
     if (!componentContext || componentContext.type !== "rails") {
       return []
     }
-
-    const items: vscode.CompletionItem[] = []
 
     let component: ComponentMetadata | undefined
     for (const [, comp] of Object.entries<ComponentMetadata>(
@@ -350,82 +494,92 @@ export class PlaybookCompletionProvider
       return []
     }
 
-    for (const [propName, prop] of Object.entries(component.props)) {
-      if (!isPropValidForPlatform(prop, document.languageId)) {
+    return this.railsPropItems(
+      component.props,
+      metadata,
+      document,
+      component.hasGlobalProps !== false
+    )
+  }
+
+  /** Completion items for a kit's own props, then (optionally) the global props. */
+  private railsPropItems(
+    props: Record<string, PropMetadata>,
+    metadata: PlaybookMetadata,
+    document: vscode.TextDocument,
+    includeGlobals: boolean
+  ): vscode.CompletionItem[] {
+    const items: vscode.CompletionItem[] = []
+    const languageId = document.languageId
+
+    for (const [propName, prop] of Object.entries(props)) {
+      if (!isPropValidForPlatform(prop, languageId)) {
         continue
       }
-      const item = new vscode.CompletionItem(
-        propName,
-        vscode.CompletionItemKind.Property
-      )
-      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`
-
-      const validValues = getPropValues(prop)
-      let doc = `Type: \`${prop.type}\``
-      if (validValues && validValues.length > 0) {
-        doc += `\nValues: ${validValues.map(v => `\`${v}\``).join(", ")}`
-      }
-      if (prop.default !== undefined) {
-        doc += `\nDefault: \`${prop.default}\``
-      }
-
-      item.documentation = new vscode.MarkdownString(doc)
-
-      if (validValues && validValues.length > 0) {
-        const choices = validValues.join(",")
-        item.insertText = new vscode.SnippetString(
-          `${propName}: "\${1|${choices}|}"`
-        )
-      } else if (prop.type === "boolean") {
-        item.insertText = new vscode.SnippetString(
-          `${propName}: \${1|true,false|}`
-        )
-      } else {
-        item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`)
-      }
-
-      item.kind = vscode.CompletionItemKind.Snippet
-      items.push(item)
+      items.push(this.railsPropItem(propName, prop, languageId, false))
     }
 
-    if (metadata.globalProps && component.hasGlobalProps !== false) {
-      for (const [propName, prop] of Object.entries<PropMetadata>(
-        metadata.globalProps
-      )) {
-        const item = new vscode.CompletionItem(
-          propName,
-          vscode.CompletionItemKind.Property
-        )
-        item.detail = `${prop.type} (global)`
-
-        const validValues = getPropValues(prop)
-        let doc = `Type: \`${prop.type}\` (global prop)`
-        if (validValues && validValues.length > 0) {
-          doc += `\nValues: ${validValues.map((v: string) => `\`${v}\``).join(", ")}`
+    if (includeGlobals && metadata.globalProps) {
+      for (const [propName, prop] of Object.entries<PropMetadata>(metadata.globalProps)) {
+        if (props[propName]) {
+          continue
         }
-
-        item.documentation = new vscode.MarkdownString(doc)
-
-        if (validValues && validValues.length > 0) {
-          const choices = validValues.join(",")
-          item.insertText = new vscode.SnippetString(
-            `${propName}: "\${1|${choices}|}"`
-          )
-        } else if (prop.type === "boolean") {
-          item.insertText = new vscode.SnippetString(
-            `${propName}: \${1|true,false|}`
-          )
-        } else {
-          item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`)
-        }
-
-        item.kind = vscode.CompletionItemKind.Snippet
-        item.sortText = "z" + propName
-        items.push(item)
+        items.push(this.railsPropItem(propName, prop, languageId, true))
       }
     }
-
     return items
+  }
+
+  private railsPropItem(
+    propName: string,
+    prop: PropMetadata,
+    languageId: string,
+    isGlobal: boolean
+  ): vscode.CompletionItem {
+    const type = getPropType(prop, languageId)
+    const validValues = getPropValues(prop, languageId)
+    const defaultValue = getPropDefault(prop, languageId)
+
+    const item = new vscode.CompletionItem(propName, vscode.CompletionItemKind.Property)
+    item.detail = isGlobal ? `${type} (global)` : `${type}${prop.required ? " (required)" : ""}`
+
+    let doc = `Type: \`${type}\`${isGlobal ? " (global prop)" : ""}`
+    if (validValues && validValues.length > 0) {
+      doc += `\nValues: ${validValues.map(v => `\`${v}\``).join(", ")}`
+    }
+    if (!isGlobal && defaultValue !== undefined) {
+      doc += `\nDefault: \`${defaultValue}\``
+    }
+    if (prop.deprecated) {
+      item.tags = [vscode.CompletionItemTag.Deprecated]
+      doc += "\n\n⚠️ Deprecated"
+    }
+    item.documentation = new vscode.MarkdownString(doc)
+
+    if (validValues && validValues.length > 0) {
+      item.insertText = new vscode.SnippetString(`${propName}: "\${1|${validValues.join(",")}|}"`)
+    } else if (isBooleanProp(prop, languageId)) {
+      item.insertText = new vscode.SnippetString(`${propName}: \${1|true,false|}`)
+    } else {
+      item.insertText = new vscode.SnippetString(`${propName}: "\${1}"`)
+    }
+
+    item.kind = vscode.CompletionItemKind.Snippet
+    if (isGlobal) {
+      item.sortText = "z" + propName
+    }
+    return item
+  }
+
+  /** `f.` → the builder methods Playbook defines, as snippets. */
+  private provideFormMethodCompletions(): vscode.CompletionItem[] {
+    return loadFormBuilderMetadata(this.extensionPath).fields.map((field) => {
+      const item = new vscode.CompletionItem(field.name, vscode.CompletionItemKind.Method)
+      item.detail = `Playbook form field (${field.kit})`
+      item.documentation = new vscode.MarkdownString(generateFormMethodDocs(field))
+      item.insertText = new vscode.SnippetString(`${field.name} :\${1:attribute}, props: { \${2} }`)
+      return item
+    })
   }
 
   private provideReactPropNameCompletions(
@@ -458,24 +612,25 @@ export class PlaybookCompletionProvider
         camelProp,
         vscode.CompletionItemKind.Property
       )
-      item.detail = `${prop.type}${prop.required ? " (required)" : ""}`
+      item.detail = `${getPropType(prop, document.languageId)}${prop.required ? " (required)" : ""}`
 
-      let doc = `Type: \`${prop.type}\``
-      if (prop.values && prop.values.length > 0) {
-        doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`
+      const values = getPropValues(prop, document.languageId)
+      let doc = `Type: \`${getPropType(prop, document.languageId)}\``
+      if (values && values.length > 0) {
+        doc += `\nValues: ${values.map((v: string) => `\`${v}\``).join(", ")}`
       }
-      if (prop.default !== undefined) {
-        doc += `\nDefault: \`${prop.default}\``
+      if (getPropDefault(prop, document.languageId) !== undefined) {
+        doc += `\nDefault: \`${getPropDefault(prop, document.languageId)}\``
       }
 
       item.documentation = new vscode.MarkdownString(doc)
 
-      if (prop.values && prop.values.length > 0) {
-        const choices = prop.values.map((v: string) => `"${v}"`).join(",")
+      if (values && values.length > 0) {
+        const choices = values.map((v: string) => `"${v}"`).join(",")
         item.insertText = new vscode.SnippetString(
           `${camelProp}={\${1|${choices}|}}`
         )
-      } else if (prop.type === "boolean") {
+      } else if (isBooleanProp(prop, document.languageId)) {
         item.insertText = new vscode.SnippetString(
           `${camelProp}={$\{1|true,false|}}`
         )
@@ -498,21 +653,22 @@ export class PlaybookCompletionProvider
           camelProp,
           vscode.CompletionItemKind.Property
         )
-        item.detail = `${prop.type} (global)`
+        item.detail = `${getPropType(prop, document.languageId)} (global)`
 
-        let doc = `Type: \`${prop.type}\` (global prop)`
-        if (prop.values && prop.values.length > 0) {
-          doc += `\nValues: ${prop.values.map((v: string) => `\`${v}\``).join(", ")}`
+        const values = getPropValues(prop, document.languageId)
+        let doc = `Type: \`${getPropType(prop, document.languageId)}\` (global prop)`
+        if (values && values.length > 0) {
+          doc += `\nValues: ${values.map((v: string) => `\`${v}\``).join(", ")}`
         }
 
         item.documentation = new vscode.MarkdownString(doc)
 
-        if (prop.values && prop.values.length > 0) {
-          const choices = prop.values.map((v: string) => `"${v}"`).join(",")
+        if (values && values.length > 0) {
+          const choices = values.map((v: string) => `"${v}"`).join(",")
           item.insertText = new vscode.SnippetString(
             `${camelProp}={\${1|${choices}|}}`
           )
-        } else if (prop.type === "boolean") {
+        } else if (isBooleanProp(prop, document.languageId)) {
           item.insertText = new vscode.SnippetString(
             `${camelProp}={$\{1|true,false|}}`
           )
@@ -527,6 +683,54 @@ export class PlaybookCompletionProvider
     }
 
     return items
+  }
+
+  /** Color names a kit accepts, each shown with its color. */
+  private colorNameItems(colors: Record<string, string>, insideString: boolean, swatches: boolean): vscode.CompletionItem[] {
+    return Object.entries(colors).map(([name, css]) => {
+      const item = new vscode.CompletionItem(name, swatches && css ? vscode.CompletionItemKind.Color : vscode.CompletionItemKind.EnumMember)
+      item.insertText = insideString ? name : `"${name}"`
+      if (swatches && css) {
+        item.documentation = css
+      }
+      return item
+    })
+  }
+
+  /** Icon names from the workspace's playbook-icons (never bundled; the repo is private). */
+  private iconItems(insideString: boolean): vscode.CompletionItem[] {
+    const index = loadIconIndex()
+    if (!index) {
+      return []
+    }
+    const items: vscode.CompletionItem[] = []
+    const add = (name: string, category: string, canonical?: string) => {
+      const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Reference)
+      item.detail = canonical ? `alias of ${canonical}` : category
+      item.insertText = insideString ? name : `"${name}"`
+      item.sortText = (canonical ? "1" : "0") + name
+      iconNames.set(item, name)
+      items.push(item)
+    }
+    for (const info of index.icons.values()) {
+      add(info.name, info.category)
+    }
+    for (const [alias, canonical] of index.aliases) {
+      add(alias, index.icons.get(canonical)?.category ?? "", canonical)
+    }
+    return items
+  }
+
+  /** The icon preview is only built for the item being looked at, not for all ~800. */
+  resolveCompletionItem(item: vscode.CompletionItem): vscode.CompletionItem {
+    const name = iconNames.get(item)
+    const index = name ? loadIconIndex() : undefined
+    const info = name && index ? (index.icons.get(name) ?? index.icons.get(index.aliases.get(name) ?? "")) : undefined
+    const preview = info && iconPreviewDataUri(info)
+    if (preview && name) {
+      item.documentation = new vscode.MarkdownString(`![${name}](${preview})`)
+    }
+    return item
   }
 
   private providePropValueCompletions(
@@ -547,7 +751,9 @@ export class PlaybookCompletionProvider
           )
         : metadata.components[componentContext.componentName]
 
-    if (!component) {
+    // Subcomponents have no schema, but a few take a kit's own colors (Card header_color).
+    const subKit = SUBCOMPONENT_KITS[componentContext.componentName]
+    if (!component && !subKit) {
       return []
     }
 
@@ -581,16 +787,32 @@ export class PlaybookCompletionProvider
       return []
     }
 
-    const prop =
-      component.props[propName] ||
-      findGlobalPropForComponent(metadata, component, propName)
-    if (!prop) {
-      return []
+    const swatches = enabled("colorSwatches")
+    const kitColors = loadKitColors(this.extensionPath)
+    const ownColors = kitColors[kitColorKey(component?.rails ?? subKit, propName)]
+
+    const prop = component
+      ? component.props[propName] || findGlobalPropForComponent(metadata, component, propName)
+      : undefined
+    if (!component || !prop) {
+      // A subcomponent, or a prop with no schema entry: offer the kit's colors when it has some.
+      return ownColors && !prop ? this.colorNameItems(ownColors, insideString, swatches) : []
     }
 
     const items: vscode.CompletionItem[] = []
+    const tokens = swatches ? loadColorTokens(this.extensionPath) : {}
 
-    const validValues = getPropValues(prop)
+    // justify/align (and justifyContent/alignItems) point along different axes
+    // depending on orientation, so say where each value puts the items.
+    const role = enabled("flexAxis.enabled") ? axisRole(component, propName) : undefined
+    const orientation = role
+      ? (() => {
+          const usage = usageAt(document.getText(), document.languageId, document.offsetAt(position))
+          return usage ? resolveOrientation(usage, component) : undefined
+        })()
+      : undefined
+
+    const validValues = getPropValues(prop, document.languageId)
     if (validValues && validValues.length > 0) {
       for (const value of validValues) {
         const item = new vscode.CompletionItem(
@@ -598,6 +820,14 @@ export class PlaybookCompletionProvider
           vscode.CompletionItemKind.EnumMember
         )
         item.detail = `Valid value for ${propName}`
+        if (role) {
+          const where = orientation
+            ? axisLabel(role, orientation.orientation, value)
+            : axisLabelBothWays(role, value)
+          if (where) {
+            item.detail += ` — ${where}`
+          }
+        }
 
         if (insideString) {
           item.insertText = value
@@ -605,16 +835,31 @@ export class PlaybookCompletionProvider
           item.insertText = `"${value}"`
         }
 
-        if (value === prop.default?.replace(/["']/g, "")) {
+        if (value === getPropDefault(prop, document.languageId)?.replace(/["']/g, "")) {
           item.detail += " (default)"
           item.sortText = "0" + value
         }
 
+        // A color value shows its color in the list: the kit's own meaning of the
+        // name (Body "light") wins over the same-named token.
+        const color = (swatches ? ownColors?.[value] : undefined) || (isColorProp(propName, validValues, tokens) ? tokens[value] : undefined)
+        if (color) {
+          item.kind = vscode.CompletionItemKind.Color
+          item.documentation = color
+        }
+
         items.push(item)
       }
+    } else if (ownColors) {
+      // No enum in the schema (Icon, Legend color): the names come from the kit's stylesheet.
+      items.push(...this.colorNameItems(ownColors, insideString, swatches))
     }
 
-    if (prop.type === "boolean") {
+    if (enabled("completion.icons") && /^icon(_right|_left)?$/.test(propName) && component.props[propName]) {
+      items.push(...this.iconItems(insideString))
+    }
+
+    if (isBooleanProp(prop, document.languageId)) {
       const trueItem = new vscode.CompletionItem(
         "true",
         vscode.CompletionItemKind.Value
@@ -626,10 +871,10 @@ export class PlaybookCompletionProvider
       )
       falseItem.insertText = "false"
 
-      if (prop.default === "true") {
+      if (getPropDefault(prop, document.languageId) === "true") {
         trueItem.detail = "(default)"
         trueItem.sortText = "0true"
-      } else if (prop.default === "false") {
+      } else if (getPropDefault(prop, document.languageId) === "false") {
         falseItem.detail = "(default)"
         falseItem.sortText = "0false"
       }

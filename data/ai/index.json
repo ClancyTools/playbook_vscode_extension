@@ -1,0 +1,1056 @@
+{
+  "version": "18.3.0",
+  "metadataVersion": 1,
+  "forms": "forms.json",
+  "generated": "2026-11-19T02:59:18.847Z",
+  "schemas": {
+    "globalProps": "global-props.schema.json",
+    "globalEventProps": "global-event-props.schema.json",
+    "kits": {
+      "advanced_table": "kits/advanced_table.schema.json",
+      "avatar": "kits/avatar.schema.json",
+      "background": "kits/background.schema.json",
+      "badge": "kits/badge.schema.json",
+      "body": "kits/body.schema.json",
+      "bread_crumbs": "kits/bread_crumbs.schema.json",
+      "button": "kits/button.schema.json",
+      "button_toolbar": "kits/button_toolbar.schema.json",
+      "caption": "kits/caption.schema.json",
+      "card": "kits/card.schema.json",
+      "checkbox": "kits/checkbox.schema.json",
+      "circle_icon_button": "kits/circle_icon_button.schema.json",
+      "collapsible": "kits/collapsible.schema.json",
+      "contact": "kits/contact.schema.json",
+      "container": "kits/container.schema.json",
+      "copy_button": "kits/copy_button.schema.json",
+      "currency": "kits/currency.schema.json",
+      "dashboard_value": "kits/dashboard_value.schema.json",
+      "date": "kits/date.schema.json",
+      "date_picker": "kits/date_picker.schema.json",
+      "date_range_inline": "kits/date_range_inline.schema.json",
+      "date_range_stacked": "kits/date_range_stacked.schema.json",
+      "date_stacked": "kits/date_stacked.schema.json",
+      "date_time": "kits/date_time.schema.json",
+      "date_time_stacked": "kits/date_time_stacked.schema.json",
+      "date_year_stacked": "kits/date_year_stacked.schema.json",
+      "detail": "kits/detail.schema.json",
+      "dialog": "kits/dialog.schema.json",
+      "distribution_bar": "kits/distribution_bar.schema.json",
+      "draggable": "kits/draggable.schema.json",
+      "dropdown": "kits/dropdown.schema.json",
+      "empty_state": "kits/empty_state.schema.json",
+      "file_upload": "kits/file_upload.schema.json",
+      "filter": "kits/filter.schema.json",
+      "fixed_confirmation_toast": "kits/fixed_confirmation_toast.schema.json",
+      "flex": "kits/flex.schema.json",
+      "form": "kits/form.schema.json",
+      "form_group": "kits/form_group.schema.json",
+      "form_pill": "kits/form_pill.schema.json",
+      "full_screen": "kits/full_screen.schema.json",
+      "hashtag": "kits/hashtag.schema.json",
+      "highlight": "kits/highlight.schema.json",
+      "home_address_street": "kits/home_address_street.schema.json",
+      "icon": "kits/icon.schema.json",
+      "icon_circle": "kits/icon_circle.schema.json",
+      "icon_stat_value": "kits/icon_stat_value.schema.json",
+      "icon_value": "kits/icon_value.schema.json",
+      "image": "kits/image.schema.json",
+      "label_pill": "kits/label_pill.schema.json",
+      "label_value": "kits/label_value.schema.json",
+      "layout": "kits/layout.schema.json",
+      "legend": "kits/legend.schema.json",
+      "lightbox": "kits/lightbox.schema.json",
+      "link": "kits/link.schema.json",
+      "list": "kits/list.schema.json",
+      "loading_inline": "kits/loading_inline.schema.json",
+      "map": "kits/map.schema.json",
+      "message": "kits/message.schema.json",
+      "multi_level_select": "kits/multi_level_select.schema.json",
+      "multiple_users": "kits/multiple_users.schema.json",
+      "multiple_users_stacked": "kits/multiple_users_stacked.schema.json",
+      "nav": "kits/nav.schema.json",
+      "online_status": "kits/online_status.schema.json",
+      "overlay": "kits/overlay.schema.json",
+      "pagination": "kits/pagination.schema.json",
+      "passphrase": "kits/passphrase.schema.json",
+      "pb_bar_graph": "kits/pb_bar_graph.schema.json",
+      "pb_circle_chart": "kits/pb_circle_chart.schema.json",
+      "pb_gauge_chart": "kits/pb_gauge_chart.schema.json",
+      "pb_line_graph": "kits/pb_line_graph.schema.json",
+      "person": "kits/person.schema.json",
+      "person_contact": "kits/person_contact.schema.json",
+      "phone_number_input": "kits/phone_number_input.schema.json",
+      "pill": "kits/pill.schema.json",
+      "popover": "kits/popover.schema.json",
+      "progress_pills": "kits/progress_pills.schema.json",
+      "progress_simple": "kits/progress_simple.schema.json",
+      "progress_step": "kits/progress_step.schema.json",
+      "radio": "kits/radio.schema.json",
+      "rich_text_editor": "kits/rich_text_editor.schema.json",
+      "section_separator": "kits/section_separator.schema.json",
+      "select": "kits/select.schema.json",
+      "selectable_card": "kits/selectable_card.schema.json",
+      "selectable_card_icon": "kits/selectable_card_icon.schema.json",
+      "selectable_icon": "kits/selectable_icon.schema.json",
+      "selectable_list": "kits/selectable_list.schema.json",
+      "skeleton_loading": "kits/skeleton_loading.schema.json",
+      "source": "kits/source.schema.json",
+      "star_rating": "kits/star_rating.schema.json",
+      "stat_change": "kits/stat_change.schema.json",
+      "stat_value": "kits/stat_value.schema.json",
+      "table": "kits/table.schema.json",
+      "text_input": "kits/text_input.schema.json",
+      "textarea": "kits/textarea.schema.json",
+      "time": "kits/time.schema.json",
+      "time_picker": "kits/time_picker.schema.json",
+      "time_range_inline": "kits/time_range_inline.schema.json",
+      "time_stacked": "kits/time_stacked.schema.json",
+      "timeline": "kits/timeline.schema.json",
+      "timestamp": "kits/timestamp.schema.json",
+      "title": "kits/title.schema.json",
+      "title_count": "kits/title_count.schema.json",
+      "title_detail": "kits/title_detail.schema.json",
+      "toggle": "kits/toggle.schema.json",
+      "tooltip": "kits/tooltip.schema.json",
+      "typeahead": "kits/typeahead.schema.json",
+      "user": "kits/user.schema.json",
+      "user_badge": "kits/user_badge.schema.json",
+      "weekday_stacked": "kits/weekday_stacked.schema.json"
+    }
+  },
+  "playgrounds": {
+    "index": "playgrounds/index.json",
+    "kits": {
+      "advanced_table": "playgrounds/advanced_table.json",
+      "avatar": "playgrounds/avatar.json",
+      "background": "playgrounds/background.json",
+      "badge": "playgrounds/badge.json",
+      "body": "playgrounds/body.json",
+      "bread_crumbs": "playgrounds/bread_crumbs.json",
+      "button": "playgrounds/button.json",
+      "button_toolbar": "playgrounds/button_toolbar.json",
+      "caption": "playgrounds/caption.json",
+      "card": "playgrounds/card.json",
+      "checkbox": "playgrounds/checkbox.json",
+      "circle_icon_button": "playgrounds/circle_icon_button.json",
+      "collapsible": "playgrounds/collapsible.json",
+      "contact": "playgrounds/contact.json",
+      "container": "playgrounds/container.json",
+      "copy_button": "playgrounds/copy_button.json",
+      "currency": "playgrounds/currency.json",
+      "dashboard_value": "playgrounds/dashboard_value.json",
+      "date": "playgrounds/date.json",
+      "date_picker": "playgrounds/date_picker.json",
+      "date_range_inline": "playgrounds/date_range_inline.json",
+      "date_range_stacked": "playgrounds/date_range_stacked.json",
+      "date_stacked": "playgrounds/date_stacked.json",
+      "date_time": "playgrounds/date_time.json",
+      "date_time_stacked": "playgrounds/date_time_stacked.json",
+      "date_year_stacked": "playgrounds/date_year_stacked.json",
+      "detail": "playgrounds/detail.json",
+      "dialog": "playgrounds/dialog.json",
+      "distribution_bar": "playgrounds/distribution_bar.json",
+      "draggable": "playgrounds/draggable.json",
+      "dropdown": "playgrounds/dropdown.json",
+      "empty_state": "playgrounds/empty_state.json",
+      "file_upload": "playgrounds/file_upload.json",
+      "filter": "playgrounds/filter.json",
+      "fixed_confirmation_toast": "playgrounds/fixed_confirmation_toast.json",
+      "flex": "playgrounds/flex.json",
+      "form_group": "playgrounds/form_group.json",
+      "form_pill": "playgrounds/form_pill.json",
+      "full_screen": "playgrounds/full_screen.json",
+      "hashtag": "playgrounds/hashtag.json",
+      "highlight": "playgrounds/highlight.json",
+      "home_address_street": "playgrounds/home_address_street.json",
+      "icon": "playgrounds/icon.json",
+      "icon_circle": "playgrounds/icon_circle.json",
+      "icon_stat_value": "playgrounds/icon_stat_value.json",
+      "icon_value": "playgrounds/icon_value.json",
+      "image": "playgrounds/image.json",
+      "label_pill": "playgrounds/label_pill.json",
+      "label_value": "playgrounds/label_value.json",
+      "layout": "playgrounds/layout.json",
+      "legend": "playgrounds/legend.json",
+      "link": "playgrounds/link.json",
+      "list": "playgrounds/list.json",
+      "loading_inline": "playgrounds/loading_inline.json",
+      "map": "playgrounds/map.json",
+      "message": "playgrounds/message.json",
+      "multi_level_select": "playgrounds/multi_level_select.json",
+      "multiple_users": "playgrounds/multiple_users.json",
+      "multiple_users_stacked": "playgrounds/multiple_users_stacked.json",
+      "nav": "playgrounds/nav.json",
+      "online_status": "playgrounds/online_status.json",
+      "overlay": "playgrounds/overlay.json",
+      "pagination": "playgrounds/pagination.json",
+      "passphrase": "playgrounds/passphrase.json",
+      "pb_bar_graph": "playgrounds/pb_bar_graph.json",
+      "pb_circle_chart": "playgrounds/pb_circle_chart.json",
+      "pb_gauge_chart": "playgrounds/pb_gauge_chart.json",
+      "pb_line_graph": "playgrounds/pb_line_graph.json",
+      "person": "playgrounds/person.json",
+      "person_contact": "playgrounds/person_contact.json",
+      "phone_number_input": "playgrounds/phone_number_input.json",
+      "pill": "playgrounds/pill.json",
+      "popover": "playgrounds/popover.json",
+      "progress_pills": "playgrounds/progress_pills.json",
+      "progress_simple": "playgrounds/progress_simple.json",
+      "progress_step": "playgrounds/progress_step.json",
+      "radio": "playgrounds/radio.json",
+      "rich_text_editor": "playgrounds/rich_text_editor.json",
+      "section_separator": "playgrounds/section_separator.json",
+      "select": "playgrounds/select.json",
+      "selectable_card": "playgrounds/selectable_card.json",
+      "selectable_card_icon": "playgrounds/selectable_card_icon.json",
+      "selectable_icon": "playgrounds/selectable_icon.json",
+      "selectable_list": "playgrounds/selectable_list.json",
+      "skeleton_loading": "playgrounds/skeleton_loading.json",
+      "source": "playgrounds/source.json",
+      "star_rating": "playgrounds/star_rating.json",
+      "stat_change": "playgrounds/stat_change.json",
+      "stat_value": "playgrounds/stat_value.json",
+      "table": "playgrounds/table.json",
+      "text_input": "playgrounds/text_input.json",
+      "textarea": "playgrounds/textarea.json",
+      "time": "playgrounds/time.json",
+      "time_picker": "playgrounds/time_picker.json",
+      "time_range_inline": "playgrounds/time_range_inline.json",
+      "time_stacked": "playgrounds/time_stacked.json",
+      "timeline": "playgrounds/timeline.json",
+      "timestamp": "playgrounds/timestamp.json",
+      "title": "playgrounds/title.json",
+      "title_count": "playgrounds/title_count.json",
+      "title_detail": "playgrounds/title_detail.json",
+      "toggle": "playgrounds/toggle.json",
+      "tooltip": "playgrounds/tooltip.json",
+      "typeahead": "playgrounds/typeahead.json",
+      "user": "playgrounds/user.json",
+      "user_badge": "playgrounds/user_badge.json",
+      "weekday_stacked": "playgrounds/weekday_stacked.json"
+    }
+  },
+  "visualIndex": "visual-index.json",
+  "externalDependencies": "external-dependencies.json",
+  "kitMeta": {
+    "advanced_table": {
+      "category": "advanced_table",
+      "description": "The Advanced Table can be used to display complex, nested data in a way that allows for expansion and/or sorting.",
+      "status": "stable",
+      "schema": "kits/advanced_table.schema.json",
+      "playground": "playgrounds/advanced_table.json"
+    },
+    "avatar": {
+      "category": "user",
+      "description": "User photo for recognition. Prefer User when showing a name; Avatar alone if names are hidden.",
+      "status": "stable",
+      "schema": "kits/avatar.schema.json",
+      "playground": "playgrounds/avatar.json"
+    },
+    "background": {
+      "category": "layout_and_structure",
+      "description": "The Background component is used for adding a background to a page or to any container.",
+      "status": "stable",
+      "schema": "kits/background.schema.json",
+      "playground": "playgrounds/background.json"
+    },
+    "badge": {
+      "category": "tags",
+      "description": "Badges can be used for notification, tags, and status. They are used for count and numbers.",
+      "status": "stable",
+      "schema": "kits/badge.schema.json",
+      "playground": "playgrounds/badge.json"
+    },
+    "body": {
+      "category": "typography",
+      "description": "Default paragraph style. Step to light, then lighter, only to de-emphasize supporting lines.",
+      "status": "stable",
+      "schema": "kits/body.schema.json",
+      "playground": "playgrounds/body.json"
+    },
+    "bread_crumbs": {
+      "category": "navigation",
+      "description": "BreadCrumbs can be used for keeping a user aware of their route location.",
+      "status": "stable",
+      "schema": "kits/bread_crumbs.schema.json",
+      "playground": "playgrounds/bread_crumbs.json"
+    },
+    "button": {
+      "category": "buttons",
+      "description": "Primary Button for main tasks; secondary and danger variants for other actions.",
+      "status": "stable",
+      "schema": "kits/button.schema.json",
+      "playground": "playgrounds/button.json"
+    },
+    "button_toolbar": {
+      "category": "buttons",
+      "description": "This component should primarily hold the most commonly used buttons.",
+      "status": "stable",
+      "schema": "kits/button_toolbar.schema.json",
+      "playground": "playgrounds/button_toolbar.json"
+    },
+    "caption": {
+      "category": "typography",
+      "description": "Supplementary text beside inputs or blocks; use large caption when the note spans more content.",
+      "status": "stable",
+      "schema": "kits/caption.schema.json",
+      "playground": "playgrounds/caption.json"
+    },
+    "card": {
+      "category": "layout_and_structure",
+      "description": "Content container with optional header, body sections, and various styling options.",
+      "status": "stable",
+      "schema": "kits/card.schema.json",
+      "playground": "playgrounds/card.json"
+    },
+    "checkbox": {
+      "category": "form_selection",
+      "description": "Checkbox is used for a list of selections that are meant to have one or more options checked.",
+      "status": "stable",
+      "schema": "kits/checkbox.schema.json",
+      "playground": "playgrounds/checkbox.json"
+    },
+    "circle_icon_button": {
+      "category": "buttons",
+      "description": "Round icon-only button; the icon must clearly show the action because there is no label.",
+      "status": "stable",
+      "schema": "kits/circle_icon_button.schema.json",
+      "playground": "playgrounds/circle_icon_button.json"
+    },
+    "collapsible": {
+      "category": "layout_and_structure",
+      "description": "Collapsible content that can be expanded or collapsed.",
+      "status": "stable",
+      "schema": "kits/collapsible.schema.json",
+      "playground": "playgrounds/collapsible.json"
+    },
+    "contact": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Use to display customer's or user's contact information.",
+      "status": "stable",
+      "schema": "kits/contact.schema.json",
+      "playground": "playgrounds/contact.json"
+    },
+    "container": {
+      "category": "layout_and_structure",
+      "description": "The Container component is used as a wrapper for the content of a page or to any container.",
+      "status": "stable",
+      "schema": "kits/container.schema.json",
+      "playground": "playgrounds/container.json"
+    },
+    "copy_button": {
+      "category": "buttons",
+      "description": "Button that copies text to clipboard with visual feedback.",
+      "status": "stable",
+      "schema": "kits/copy_button.schema.json",
+      "playground": "playgrounds/copy_button.json"
+    },
+    "currency": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Formats money for dashboards and summaries. Pair with labels so amounts stay clear.",
+      "status": "stable",
+      "schema": "kits/currency.schema.json",
+      "playground": "playgrounds/currency.json"
+    },
+    "dashboard_value": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Large dashboard number for quick metrics. Use Currency when the value is money.",
+      "status": "stable",
+      "schema": "kits/dashboard_value.schema.json",
+      "playground": "playgrounds/dashboard_value.json"
+    },
+    "date": {
+      "category": "date_and_time_text_patterns",
+      "description": "Use to display the date. Year will not display by default if it is the current year.",
+      "status": "stable",
+      "schema": "kits/date.schema.json",
+      "playground": "playgrounds/date.json"
+    },
+    "date_picker": {
+      "category": "form_selection",
+      "description": "Calendar date field powered by flatpickr; props cover common cases without custom JS.",
+      "status": "stable",
+      "schema": "kits/date_picker.schema.json",
+      "playground": "playgrounds/date_picker.json"
+    },
+    "date_range_inline": {
+      "category": "date_and_time_text_patterns",
+      "description": "Use to display a date range. Year will not show by default if it is the current year.",
+      "status": "stable",
+      "schema": "kits/date_range_inline.schema.json",
+      "playground": "playgrounds/date_range_inline.json"
+    },
+    "date_range_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays a date range in a vertical stacked format.",
+      "status": "stable",
+      "schema": "kits/date_range_stacked.schema.json",
+      "playground": "playgrounds/date_range_stacked.json"
+    },
+    "date_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays the date stacked with the month and day. Default behavior does not show the current year.",
+      "status": "stable",
+      "schema": "kits/date_stacked.schema.json",
+      "playground": "playgrounds/date_stacked.json"
+    },
+    "date_time": {
+      "category": "date_and_time_text_patterns",
+      "description": "Combined date and time. Respects time zones; defaults to America/New_York when not set.",
+      "status": "stable",
+      "schema": "kits/date_time.schema.json",
+      "playground": "playgrounds/date_time.json"
+    },
+    "date_time_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays date and time in a vertical stacked format.",
+      "status": "stable",
+      "schema": "kits/date_time_stacked.schema.json",
+      "playground": "playgrounds/date_time_stacked.json"
+    },
+    "date_year_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "This component is a simple option for displaying dates in a month, day, and year format.",
+      "status": "stable",
+      "schema": "kits/date_year_stacked.schema.json",
+      "playground": "playgrounds/date_year_stacked.json"
+    },
+    "detail": {
+      "category": "typography",
+      "description": "Used for tables or designs with large amounts of data or text.",
+      "status": "stable",
+      "schema": "kits/detail.schema.json",
+      "playground": "playgrounds/detail.json"
+    },
+    "dialog": {
+      "category": "alerts_and_dialogs",
+      "description": "Modal for confirmations, forms, or focus. Supports alert modals for various statuses.",
+      "status": "stable",
+      "schema": "kits/dialog.schema.json",
+      "playground": "playgrounds/dialog.json"
+    },
+    "distribution_bar": {
+      "category": "data_visualization",
+      "description": "Part-to-whole comparison like a pie chart. Default mode stresses share without raw numbers.",
+      "status": "stable",
+      "schema": "kits/distribution_bar.schema.json",
+      "playground": "playgrounds/distribution_bar.json"
+    },
+    "draggable": {
+      "category": "layout_and_structure",
+      "description": "Drag and drop functionality for reordering items.",
+      "status": "stable",
+      "schema": "kits/draggable.schema.json",
+      "playground": "playgrounds/draggable.json"
+    },
+    "dropdown": {
+      "category": "form_selection",
+      "description": "Customizable dropdown menu with trigger element and various option configurations.",
+      "status": "stable",
+      "schema": "kits/dropdown.schema.json",
+      "playground": "playgrounds/dropdown.json"
+    },
+    "empty_state": {
+      "category": "state_and_progress_indicators",
+      "description": "Empty state placeholder for when no content is available.",
+      "status": "stable",
+      "schema": "kits/empty_state.schema.json",
+      "playground": "playgrounds/empty_state.json"
+    },
+    "file_upload": {
+      "category": "form_elements",
+      "description": "Allows users to upload files via drag-and-drop or file browser.",
+      "status": "stable",
+      "schema": "kits/file_upload.schema.json",
+      "playground": "playgrounds/file_upload.json"
+    },
+    "filter": {
+      "category": "data_visualization",
+      "description": "Search and filter UI. See production /dev_docs/search for real integration examples.",
+      "status": "stable",
+      "schema": "kits/filter.schema.json",
+      "playground": "playgrounds/filter.json"
+    },
+    "fixed_confirmation_toast": {
+      "category": "alerts_and_dialogs",
+      "description": "Fixed alerts: success after completion, error when blocked, neutral for informational context.",
+      "status": "stable",
+      "schema": "kits/fixed_confirmation_toast.schema.json",
+      "playground": "playgrounds/fixed_confirmation_toast.json"
+    },
+    "flex": {
+      "category": "layout_and_structure",
+      "description": "Flexbox layout helper for responsive rows, columns, spacing, and alignment in UIs.",
+      "status": "stable",
+      "schema": "kits/flex.schema.json",
+      "playground": "playgrounds/flex.json"
+    },
+    "form": {
+      "category": "form_elements",
+      "description": "The Form component provides consumers with a convenient, consistently styled <form> wrapper.",
+      "status": "stable",
+      "schema": "kits/form.schema.json",
+      "playground": null
+    },
+    "form_group": {
+      "category": "form_elements",
+      "description": "Groups related form fields together with optional labels.",
+      "status": "stable",
+      "schema": "kits/form_group.schema.json",
+      "playground": "playgrounds/form_group.json"
+    },
+    "form_pill": {
+      "category": "form_elements",
+      "description": "Pill-shaped form elements for tags, selections, or filters.",
+      "status": "stable",
+      "schema": "kits/form_pill.schema.json",
+      "playground": "playgrounds/form_pill.json"
+    },
+    "full_screen": {
+      "category": "layout_and_structure",
+      "description": "Full Screen component",
+      "status": "stable",
+      "schema": "kits/full_screen.schema.json",
+      "playground": "playgrounds/full_screen.json"
+    },
+    "hashtag": {
+      "category": "tags",
+      "description": "Hashtag is used to display home, project and other forms of IDs. They can be used as a link.",
+      "status": "stable",
+      "schema": "kits/hashtag.schema.json",
+      "playground": "playgrounds/hashtag.json"
+    },
+    "highlight": {
+      "category": "message_text_patterns",
+      "description": "Highlight is used to pick out or emphasize content.",
+      "status": "stable",
+      "schema": "kits/highlight.schema.json",
+      "playground": "playgrounds/highlight.json"
+    },
+    "home_address_street": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Street address with unit, city, state, ZIP, and optional project hashtag linking to work.",
+      "status": "stable",
+      "schema": "kits/home_address_street.schema.json",
+      "playground": "playgrounds/home_address_street.json"
+    },
+    "icon": {
+      "category": "icons_and_images",
+      "description": "Graphic symbol for an object, action, or status; add nearby text if meaning could be vague.",
+      "status": "stable",
+      "schema": "kits/icon.schema.json",
+      "playground": "playgrounds/icon.json"
+    },
+    "icon_circle": {
+      "category": "icons_and_images",
+      "description": "Icon centered in a circle for emphasis, touch targets, or consistent visual weight.",
+      "status": "stable",
+      "schema": "kits/icon_circle.schema.json",
+      "playground": "playgrounds/icon_circle.json"
+    },
+    "icon_stat_value": {
+      "category": "icons_and_images",
+      "description": "Displays a statistic value with an associated icon.",
+      "status": "stable",
+      "schema": "kits/icon_stat_value.schema.json",
+      "playground": "playgrounds/icon_stat_value.json"
+    },
+    "icon_value": {
+      "category": "icons_and_images",
+      "description": "Icon paired with a value—often a number—for compact KPIs, stats, or dense summaries.",
+      "status": "stable",
+      "schema": "kits/icon_value.schema.json",
+      "playground": "playgrounds/icon_value.json"
+    },
+    "image": {
+      "category": "icons_and_images",
+      "description": "A responsive image component.",
+      "status": "stable",
+      "schema": "kits/image.schema.json",
+      "playground": "playgrounds/image.json"
+    },
+    "label_pill": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "This component combines the Caption and Pill components with all of their variants.",
+      "status": "stable",
+      "schema": "kits/label_pill.schema.json",
+      "playground": "playgrounds/label_pill.json"
+    },
+    "label_value": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "This component can be very versatile when used to display text data.",
+      "status": "stable",
+      "schema": "kits/label_value.schema.json",
+      "playground": "playgrounds/label_value.json"
+    },
+    "layout": {
+      "category": "layout_and_structure",
+      "description": "Layouts used for positioning content inside of pages, cards, or containers.",
+      "status": "stable",
+      "schema": "kits/layout.schema.json",
+      "playground": "playgrounds/layout.json"
+    },
+    "legend": {
+      "category": "data_visualization",
+      "description": "A key used to compare the variables and their value in any given graph.",
+      "status": "stable",
+      "schema": "kits/legend.schema.json",
+      "playground": "playgrounds/legend.json"
+    },
+    "lightbox": {
+      "category": "icons_and_images",
+      "description": "Fullscreen dimmed overlay for enlarged images or media that covers the viewport.",
+      "status": "stable",
+      "schema": "kits/lightbox.schema.json",
+      "playground": null
+    },
+    "link": {
+      "category": "typography",
+      "description": "Text link for navigation to other pages or sections.",
+      "status": "stable",
+      "schema": "kits/link.schema.json",
+      "playground": "playgrounds/link.json"
+    },
+    "list": {
+      "category": "data_visualization",
+      "description": "Lists display a vertical set of related content.",
+      "status": "stable",
+      "schema": "kits/list.schema.json",
+      "playground": "playgrounds/list.json"
+    },
+    "loading_inline": {
+      "category": "state_and_progress_indicators",
+      "description": "Inline spinner while content loads or a background request is still processing.",
+      "status": "stable",
+      "schema": "kits/loading_inline.schema.json",
+      "playground": "playgrounds/loading_inline.json"
+    },
+    "map": {
+      "category": "data_visualization",
+      "description": "This component provides a wrapping class to place around the MapLibre library.",
+      "status": "stable",
+      "schema": "kits/map.schema.json",
+      "playground": "playgrounds/map.json",
+      "externalDependencies": {
+        "packages": [
+          "maplibre-gl"
+        ],
+        "optional": true,
+        "note": "Map wraps MapLibre. The host app must already have maplibre-gl (and any required CSS) installed. Agents must not install packages — tell the user if they are missing."
+      }
+    },
+    "message": {
+      "category": "message_text_patterns",
+      "description": "Conversation-style block with optional avatar, status, caption, body, and timestamp.",
+      "status": "stable",
+      "schema": "kits/message.schema.json",
+      "playground": "playgrounds/message.json"
+    },
+    "multi_level_select": {
+      "category": "form_selection",
+      "description": "The MultiLevelSelect component renders a multi leveled select dropdown based on data from the User.",
+      "status": "stable",
+      "schema": "kits/multi_level_select.schema.json",
+      "playground": "playgrounds/multi_level_select.json"
+    },
+    "multiple_users": {
+      "category": "user",
+      "description": "Shows several people tied to one record when a single avatar would hide shared ownership.",
+      "status": "stable",
+      "schema": "kits/multiple_users.schema.json",
+      "playground": "playgrounds/multiple_users.json"
+    },
+    "multiple_users_stacked": {
+      "category": "user",
+      "description": "Overlapping avatars in tight spaces to hint many collaborators without naming each.",
+      "status": "stable",
+      "schema": "kits/multiple_users_stacked.schema.json",
+      "playground": "playgrounds/multiple_users_stacked.json"
+    },
+    "nav": {
+      "category": "navigation",
+      "description": "Grouped navigation links for pages or in-page sections; horizontal or vertical variants.",
+      "status": "stable",
+      "schema": "kits/nav.schema.json",
+      "playground": "playgrounds/nav.json"
+    },
+    "online_status": {
+      "category": "tags",
+      "description": "Online Status is a small indicator that lets the user know the status of a person or item.",
+      "status": "stable",
+      "schema": "kits/online_status.schema.json",
+      "playground": "playgrounds/online_status.json"
+    },
+    "overlay": {
+      "category": "layout_and_structure",
+      "description": "Full screen overlay for modals and dialogs.",
+      "status": "stable",
+      "schema": "kits/overlay.schema.json",
+      "playground": "playgrounds/overlay.json"
+    },
+    "pagination": {
+      "category": "navigation",
+      "description": "Pagination for navigating through multiple pages of content.",
+      "status": "stable",
+      "schema": "kits/pagination.schema.json",
+      "playground": "playgrounds/pagination.json"
+    },
+    "passphrase": {
+      "category": "form_input",
+      "description": "Secure password input with strength indicator and show/hide toggle.",
+      "status": "stable",
+      "schema": "kits/passphrase.schema.json",
+      "playground": "playgrounds/passphrase.json"
+    },
+    "pb_bar_graph": {
+      "category": "data_visualization",
+      "description": "Bar graphs are used to compare data. Bar graphs are not typically used to show percentages.",
+      "status": "stable",
+      "schema": "kits/pb_bar_graph.schema.json",
+      "playground": "playgrounds/pb_bar_graph.json",
+      "externalDependencies": {
+        "packages": [
+          "highcharts",
+          "highcharts-react-official"
+        ],
+        "optional": true,
+        "note": "This kit wraps Highcharts and does not ship it. The host app must already have these packages installed before using the kit. Agents must not install packages — tell the user if they are missing.",
+        "docs": "https://api.highcharts.com/highcharts/"
+      }
+    },
+    "pb_circle_chart": {
+      "category": "data_visualization",
+      "description": "Circular chart for displaying proportional data.",
+      "status": "stable",
+      "schema": "kits/pb_circle_chart.schema.json",
+      "playground": "playgrounds/pb_circle_chart.json",
+      "externalDependencies": {
+        "packages": [
+          "highcharts",
+          "highcharts-react-official"
+        ],
+        "optional": true,
+        "note": "This kit wraps Highcharts and does not ship it. The host app must already have these packages installed before using the kit. Agents must not install packages — tell the user if they are missing.",
+        "docs": "https://api.highcharts.com/highcharts/"
+      }
+    },
+    "pb_gauge_chart": {
+      "category": "data_visualization",
+      "description": "Circular gauge chart for displaying a single value within a range.",
+      "status": "stable",
+      "schema": "kits/pb_gauge_chart.schema.json",
+      "playground": "playgrounds/pb_gauge_chart.json",
+      "externalDependencies": {
+        "packages": [
+          "highcharts",
+          "highcharts-react-official"
+        ],
+        "optional": true,
+        "note": "This kit wraps Highcharts and does not ship it. The host app must already have these packages installed before using the kit. Agents must not install packages — tell the user if they are missing.",
+        "docs": "https://api.highcharts.com/highcharts/"
+      }
+    },
+    "pb_line_graph": {
+      "category": "data_visualization",
+      "description": "Line graph for displaying data trends over time.",
+      "status": "stable",
+      "schema": "kits/pb_line_graph.schema.json",
+      "playground": "playgrounds/pb_line_graph.json",
+      "externalDependencies": {
+        "packages": [
+          "highcharts",
+          "highcharts-react-official"
+        ],
+        "optional": true,
+        "note": "This kit wraps Highcharts and does not ship it. The host app must already have these packages installed before using the kit. Agents must not install packages — tell the user if they are missing.",
+        "docs": "https://api.highcharts.com/highcharts/"
+      }
+    },
+    "person": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "This component is broken down into a first name last name format with normal and bold weighted text.",
+      "status": "stable",
+      "schema": "kits/person.schema.json",
+      "playground": "playgrounds/person.json"
+    },
+    "person_contact": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "This component can be used to display a person contact information.",
+      "status": "stable",
+      "schema": "kits/person_contact.schema.json",
+      "playground": "playgrounds/person_contact.json"
+    },
+    "phone_number_input": {
+      "category": "form_input",
+      "description": "International phone number input with country code selection and formatting.",
+      "status": "stable",
+      "schema": "kits/phone_number_input.schema.json",
+      "playground": "playgrounds/phone_number_input.json"
+    },
+    "pill": {
+      "category": "tags",
+      "description": "A pill uses both a keyword and a specific color to categorize an item.",
+      "status": "stable",
+      "schema": "kits/pill.schema.json",
+      "playground": "playgrounds/pill.json"
+    },
+    "popover": {
+      "category": "alerts_and_dialogs",
+      "description": "Anchored panel for short content, mini forms, or menus. Click the trigger to toggle it open.",
+      "status": "stable",
+      "schema": "kits/popover.schema.json",
+      "playground": "playgrounds/popover.json"
+    },
+    "progress_pills": {
+      "category": "state_and_progress_indicators",
+      "description": "Step chips along a sequence—shows completed, current, and upcoming stages over time.",
+      "status": "stable",
+      "schema": "kits/progress_pills.schema.json",
+      "playground": "playgrounds/progress_pills.json"
+    },
+    "progress_simple": {
+      "category": "state_and_progress_indicators",
+      "description": "Linear progress for an operation; add labels or percentages so progress is obvious.",
+      "status": "stable",
+      "schema": "kits/progress_simple.schema.json",
+      "playground": "playgrounds/progress_simple.json"
+    },
+    "progress_step": {
+      "category": "state_and_progress_indicators",
+      "description": "Wizard steps marked completed, active, or inactive for multi-phase flows.",
+      "status": "stable",
+      "schema": "kits/progress_step.schema.json",
+      "playground": "playgrounds/progress_step.json"
+    },
+    "radio": {
+      "category": "form_selection",
+      "description": "Radio is a control that allows the user to only choose one predefined option.",
+      "status": "stable",
+      "schema": "kits/radio.schema.json",
+      "playground": "playgrounds/radio.json"
+    },
+    "rich_text_editor": {
+      "category": "form_input",
+      "description": "Full-featured text editor with formatting options.",
+      "status": "stable",
+      "schema": "kits/rich_text_editor.schema.json",
+      "playground": "playgrounds/rich_text_editor.json",
+      "externalDependencies": {
+        "packages": [
+          "react-trix",
+          "trix",
+          "@tiptap/react",
+          "@tiptap/starter-kit",
+          "@tiptap/extension-link",
+          "prosemirror-markdown",
+          "prosemirror-model"
+        ],
+        "optional": true,
+        "note": "Default React editor uses Trix (pass TrixEditor from react-trix). Advanced React editor uses TipTap, and the host app must already have the needed packages installed. Agents must not install packages — tell the user if they are missing. Rails bundles TipTap in playbook-rails.js (no host packages needed) and accepts only these extension strings: underline, text_align, horizontal_rule, image."
+      }
+    },
+    "section_separator": {
+      "category": "layout_and_structure",
+      "description": "A divider line that visually separates and organizes content into distinct sections.",
+      "status": "stable",
+      "schema": "kits/section_separator.schema.json",
+      "playground": "playgrounds/section_separator.json"
+    },
+    "select": {
+      "category": "form_selection",
+      "description": "Dropdown where the user picks one option from a list, styled like other form fields.",
+      "status": "stable",
+      "schema": "kits/select.schema.json",
+      "playground": "playgrounds/select.json"
+    },
+    "selectable_card": {
+      "category": "form_selection",
+      "description": "Selectable card with clear selected and unselected visuals; common for plans or tiers.",
+      "status": "stable",
+      "schema": "kits/selectable_card.schema.json",
+      "playground": "playgrounds/selectable_card.json"
+    },
+    "selectable_card_icon": {
+      "category": "form_selection",
+      "description": "Selectable card variant with icon display for visual selection options.",
+      "status": "stable",
+      "schema": "kits/selectable_card_icon.schema.json",
+      "playground": "playgrounds/selectable_card_icon.json"
+    },
+    "selectable_icon": {
+      "category": "form_selection",
+      "description": "Icon-based selection input for compact visual choices.",
+      "status": "stable",
+      "schema": "kits/selectable_icon.schema.json",
+      "playground": "playgrounds/selectable_icon.json"
+    },
+    "selectable_list": {
+      "category": "form_selection",
+      "description": "List of items that can be selected, supporting single or multiple selection.",
+      "status": "stable",
+      "schema": "kits/selectable_list.schema.json",
+      "playground": "playgrounds/selectable_list.json"
+    },
+    "skeleton_loading": {
+      "category": "state_and_progress_indicators",
+      "description": "Placeholder loading state that mimics the shape of content.",
+      "status": "stable",
+      "schema": "kits/skeleton_loading.schema.json",
+      "playground": "playgrounds/skeleton_loading.json"
+    },
+    "source": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Shows where a record or lead came from; flexible for other attribution labels too.",
+      "status": "stable",
+      "schema": "kits/source.schema.json",
+      "playground": "playgrounds/source.json"
+    },
+    "star_rating": {
+      "category": "icons_and_images",
+      "description": "Star rating for opinions or scores; pair with reviews or labels for real meaning.",
+      "status": "stable",
+      "schema": "kits/star_rating.schema.json",
+      "playground": "playgrounds/star_rating.json"
+    },
+    "stat_change": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Displays the increase, decrease, or neutral change in data.",
+      "status": "stable",
+      "schema": "kits/stat_change.schema.json",
+      "playground": "playgrounds/stat_change.json"
+    },
+    "stat_value": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Prominent numeric stat for dashboards; optional label explains what the figure means.",
+      "status": "stable",
+      "schema": "kits/stat_value.schema.json",
+      "playground": "playgrounds/stat_value.json"
+    },
+    "table": {
+      "category": "data_visualization",
+      "description": "Structured rows and columns of data, often with sorting, filtering, and pagination.",
+      "status": "stable",
+      "schema": "kits/table.schema.json",
+      "playground": "playgrounds/table.json"
+    },
+    "text_input": {
+      "category": "form_input",
+      "description": "Area where user can enter small amount of text. Commonly used in forms.",
+      "status": "stable",
+      "schema": "kits/text_input.schema.json",
+      "playground": "playgrounds/text_input.json"
+    },
+    "textarea": {
+      "category": "form_input",
+      "description": "Area where user can enter larger amounts of text. Commonly used in forms.",
+      "status": "stable",
+      "schema": "kits/textarea.schema.json",
+      "playground": "playgrounds/textarea.json"
+    },
+    "time": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays a time of day with optional timezone and icon, in large or compact layouts.",
+      "status": "stable",
+      "schema": "kits/time.schema.json",
+      "playground": "playgrounds/time.json"
+    },
+    "time_picker": {
+      "category": "form_selection",
+      "description": "A time picker component that allows users to select a time independently of the date.",
+      "status": "stable",
+      "schema": "kits/time_picker.schema.json",
+      "playground": "playgrounds/time_picker.json"
+    },
+    "time_range_inline": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays a time range in an inline format.",
+      "status": "stable",
+      "schema": "kits/time_range_inline.schema.json",
+      "playground": "playgrounds/time_range_inline.json"
+    },
+    "time_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays time in a vertical stacked format.",
+      "status": "stable",
+      "schema": "kits/time_stacked.schema.json",
+      "playground": "playgrounds/time_stacked.json"
+    },
+    "timeline": {
+      "category": "state_and_progress_indicators",
+      "description": "A timeline with solid or dotted connectors to show sequences, phases, or gaps in time.",
+      "status": "stable",
+      "schema": "kits/timeline.schema.json",
+      "playground": "playgrounds/timeline.json"
+    },
+    "timestamp": {
+      "category": "date_and_time_text_patterns",
+      "description": "Low profile component for displaying time; elapsed, current, future, or otherwise.",
+      "status": "stable",
+      "schema": "kits/timestamp.schema.json",
+      "playground": "playgrounds/timestamp.json"
+    },
+    "title": {
+      "category": "typography",
+      "description": "Heading levels Title 1-4; keep semantic order and do not skip levels on a page.",
+      "status": "stable",
+      "schema": "kits/title.schema.json",
+      "playground": "playgrounds/title.json"
+    },
+    "title_count": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "Title with a related count, in default or larger dashboard-friendly sizing.",
+      "status": "stable",
+      "schema": "kits/title_count.schema.json",
+      "playground": "playgrounds/title_count.json"
+    },
+    "title_detail": {
+      "category": "form_and_dashboard_text_patterns",
+      "description": "This component can be used in many versatile ways. It's made up of a Title 4 and light Body component.",
+      "status": "stable",
+      "schema": "kits/title_detail.schema.json",
+      "playground": "playgrounds/title_detail.json"
+    },
+    "toggle": {
+      "category": "form_elements",
+      "description": "On/off switch for settings, feature flags, or any binary choice in a form.",
+      "status": "stable",
+      "schema": "kits/toggle.schema.json",
+      "playground": "playgrounds/toggle.json"
+    },
+    "tooltip": {
+      "category": "alerts_and_dialogs",
+      "description": "Small overlay providing contextual information on hover or focus.",
+      "status": "stable",
+      "schema": "kits/tooltip.schema.json",
+      "playground": "playgrounds/tooltip.json"
+    },
+    "typeahead": {
+      "category": "form_input",
+      "description": "Autocomplete options that narrow as users type, cutting errors and extra typing.",
+      "status": "stable",
+      "schema": "kits/typeahead.schema.json",
+      "playground": "playgrounds/typeahead.json"
+    },
+    "user": {
+      "category": "user",
+      "description": "Avatar with name, title, territory, and optional extras—the standard rich user row.",
+      "status": "stable",
+      "schema": "kits/user.schema.json",
+      "playground": "playgrounds/user.json"
+    },
+    "user_badge": {
+      "category": "icons_and_images",
+      "description": "Small badge on an avatar for programs or achievements so standout users read quickly.",
+      "status": "stable",
+      "schema": "kits/user_badge.schema.json",
+      "playground": "playgrounds/user_badge.json"
+    },
+    "weekday_stacked": {
+      "category": "date_and_time_text_patterns",
+      "description": "Displays day of week and date in a stacked format.",
+      "status": "stable",
+      "schema": "kits/weekday_stacked.schema.json",
+      "playground": "playgrounds/weekday_stacked.json"
+    }
+  }
+}

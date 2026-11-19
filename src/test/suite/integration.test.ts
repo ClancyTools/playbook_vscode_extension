@@ -4,18 +4,8 @@ import * as path from "path"
 import { PlaybookDiagnostics } from "../../diagnostics"
 import { PlaybookCompletionProvider } from "../../completionProvider"
 import { PlaybookHoverProvider } from "../../hoverProvider"
+import { createTestDocument } from "./testHelpers";
 
-async function createTestDocument(
-  languageId: string,
-  content: string
-): Promise<vscode.TextDocument> {
-  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${languageId}`)
-  const document = await vscode.workspace.openTextDocument(uri)
-  const edit = new vscode.WorkspaceEdit()
-  edit.insert(uri, new vscode.Position(0, 0), content)
-  await vscode.workspace.applyEdit(edit)
-  return document
-}
 
 suite("Extension Integration Test Suite", () => {
   const testTimeout = 15000
@@ -385,12 +375,12 @@ function MyComponent() {
 
     const testContent = `<%= pb_rails("button", props: { variant: "primary", text: "Click" }) %>`
     const doc = await createTestDocument("erb", testContent)
-    const position = new vscode.Position(0, 40)
+    const position = new vscode.Position(0, 34)
 
     const hoverProvider = new PlaybookHoverProvider(extensionPath)
-    const hover = hoverProvider.provideHover(doc, position)
+    const hover = (await hoverProvider.provideHover(doc, position)) as vscode.Hover | undefined
 
-    assert.ok(true, "Hover provider executed successfully")
+    assert.ok(hover, "Hover provider should return a hover for a Playbook prop")
   })
 
   test("Completion provider should suggest Rails component names", async function () {

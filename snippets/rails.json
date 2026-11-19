@@ -196,6 +196,13 @@
     ],
     "description": "Playbook Contact component for Rails/ERB"
   },
+  "Playbook Container": {
+    "prefix": "pb_container",
+    "body": [
+      "<%= pb_rails(\"container\", props: {}) $0%>"
+    ],
+    "description": "Playbook Container component for Rails/ERB"
+  },
   "Playbook CopyButton": {
     "prefix": "pb_copy_button",
     "body": [
@@ -510,13 +517,6 @@
       "<%= pb_rails(\"icon\", props: {}) $0%>"
     ],
     "description": "Playbook Icon component for Rails/ERB"
-  },
-  "Playbook IconButton": {
-    "prefix": "pb_icon_button",
-    "body": [
-      "<%= pb_rails(\"icon_button\", props: {}) $0%>"
-    ],
-    "description": "Playbook IconButton component for Rails/ERB"
   },
   "Playbook IconCircle": {
     "prefix": "pb_icon_circle",

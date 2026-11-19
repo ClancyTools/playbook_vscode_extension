@@ -3,6 +3,20 @@ import { PlaybookHoverProvider } from "./hoverProvider";
 import { PlaybookDefinitionProvider } from "./definitionProvider";
 import { PlaybookDiagnostics } from "./diagnostics";
 import { PlaybookCompletionProvider } from "./completionProvider";
+import { PlaybookQuickFixProvider } from "./quickFixes";
+import { SpacingHints } from "./spacingHints";
+import { AxisHints } from "./axisHints";
+import { ColorSwatches } from "./previewHints";
+import { resetIconIndex } from "./playbookIcons";
+import { resetColorTokens } from "./colorTokens";
+import { resetKitColors } from "./kitColors";
+import { PlaybookStatusBar } from "./statusBar";
+import { KitTreeProvider, browseKits, runKitActions } from "./kitBrowser";
+import { findDeprecatedUsages } from "./deprecatedUsages";
+import { findBootstrapMarkup } from "./bootstrapSweep";
+import { generateGlobalPropsDocs, loadMetadata, resetMetadataCache } from "./metadata";
+import { platformForEditor } from "./kitBrowser";
+import { enabled } from "./settings";
 
 export function activate(context: vscode.ExtensionContext) {
   const timestamp = new Date().toISOString();
@@ -42,7 +56,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   console.log(`[${timestamp}] Creating completion provider...`);
   const completionProvider = new PlaybookCompletionProvider(context.extensionPath);
-  const completionTriggers = ['"', "'", "<", " ", ":", "="];
+  // Letters, digits and _ make VS Code ask for suggestions while typing inside a
+  // string (quickSuggestions are off there by default), so a value in
+  // background="|" completes as you type. The provider ignores them anywhere
+  // but a prop value.
+  const completionTriggers = ['"', "'", "<", " ", ":", "=", ..."abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"];
   console.log(`[${timestamp}] Completion triggers: ${completionTriggers.join(", ")}`);
   const completionDisposable = vscode.languages.registerCompletionItemProvider(
     supportedLanguages,
@@ -87,6 +105,114 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   console.log(`[${timestamp}] ✓ Prop validation diagnostics registered`);
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      supportedLanguages,
+      new PlaybookQuickFixProvider(context.extensionPath),
+      { providedCodeActionKinds: PlaybookQuickFixProvider.providedCodeActionKinds }
+    )
+  );
+
+  const spacingHints = new SpacingHints(context.extensionPath);
+  const axisHints = new AxisHints(context.extensionPath);
+  const colorSwatches = new ColorSwatches(context.extensionPath);
+  const statusBar = new PlaybookStatusBar(context.extensionPath);
+  const kitTree = new KitTreeProvider(context.extensionPath);
+  void vscode.commands.executeCommand("setContext", "playbook.kitBrowserEnabled", enabled("kitBrowser.enabled"));
+  context.subscriptions.push(
+    spacingHints,
+    axisHints,
+    colorSwatches,
+    statusBar,
+    vscode.window.registerTreeDataProvider("playbookKits", kitTree)
+  );
+
+  /** Re-discover which Playbook version is in use and refresh everything built from it. */
+  const reload = () => {
+    resetMetadataCache();
+    resetIconIndex();
+    resetColorTokens();
+    resetKitColors();
+    vscode.workspace.textDocuments.forEach((document) => diagnostics.updateDiagnostics(document));
+    statusBar.update();
+    kitTree.refresh();
+    spacingHints.refreshAll();
+    axisHints.refreshAll();
+    colorSwatches.refreshAll();
+  };
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("playbook.browseKits", () =>
+      browseKits(context.extensionPath)
+    ),
+    vscode.commands.registerCommand("playbook.kitActions", (railsName: string) =>
+      runKitActions(context.extensionPath, railsName)
+    ),
+    vscode.commands.registerCommand("playbook.findDeprecated", (arg?: unknown) =>
+      findDeprecatedUsages(context.extensionPath, arg)
+    ),
+    vscode.commands.registerCommand("playbook.findBootstrap", (arg?: unknown) =>
+      findBootstrapMarkup(arg)
+    ),
+    vscode.commands.registerCommand("playbook.showGlobalProps", async () => {
+      const platform = platformForEditor(vscode.window.activeTextEditor) ?? "react";
+      const content = generateGlobalPropsDocs(loadMetadata(context.extensionPath), platform);
+      const document = await vscode.workspace.openTextDocument({ language: "markdown", content });
+      await vscode.window.showTextDocument(document, { preview: false });
+      // Tables read far better rendered; fall back to the source if no preview is available.
+      await Promise.resolve(vscode.commands.executeCommand("markdown.showPreview", document.uri)).then(
+        undefined,
+        () => undefined
+      );
+    }),
+    vscode.commands.registerCommand("playbook.reloadMetadata", () => {
+      reload();
+      vscode.window.showInformationMessage("Playbook metadata reloaded.");
+    }),
+    vscode.commands.registerCommand("playbook.showInfo", async () => {
+      const choice = await vscode.window.showQuickPick(
+        [
+          { label: "$(symbol-class) Browse kits", command: "playbook.browseKits" },
+          { label: "$(warning) Find deprecated usages", command: "playbook.findDeprecated" },
+          { label: "$(search) Find Bootstrap markup", command: "playbook.findBootstrap" },
+          { label: "$(symbol-property) Show global props", command: "playbook.showGlobalProps" },
+          { label: "$(refresh) Reload Playbook metadata", command: "playbook.reloadMetadata" }
+        ],
+        { title: statusBar.describe().text.replace("$(book) ", ""), placeHolder: statusBar.describe().tooltip.split("\n")[0] }
+      );
+      if (choice) {
+        await vscode.commands.executeCommand(choice.command);
+      }
+    })
+  );
+
+  // Installing or upgrading playbook-ui changes its lockfile / manifest. (Files in
+  // node_modules are excluded from VS Code's watcher, so watch those instead.)
+  const manifestWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/{package.json,yarn.lock,package-lock.json,pnpm-lock.yaml}"
+  );
+  context.subscriptions.push(
+    manifestWatcher,
+    manifestWatcher.onDidChange(reload),
+    manifestWatcher.onDidCreate(reload),
+    manifestWatcher.onDidDelete(reload),
+    vscode.workspace.onDidChangeWorkspaceFolders(reload),
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration("playbook.icons")) {
+        reload();
+      }
+      if (event.affectsConfiguration("playbook")) {
+        statusBar.update();
+        void vscode.commands.executeCommand("setContext", "playbook.kitBrowserEnabled", enabled("kitBrowser.enabled"));
+      }
+      if (event.affectsConfiguration("playbook")) {
+        vscode.workspace.textDocuments.forEach((document) =>
+          diagnostics.updateDiagnostics(document)
+        );
+      }
+    })
+  );
 
   console.log(
     `[${timestamp}] ✨ Playbook UI extension fully activated with snippets, autocomplete, hover, validation, and definition support!`

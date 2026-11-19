@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { PlaybookDefinitionProvider } from "../../definitionProvider";
 import { loadMetadata } from "../../metadata";
+import { createTestDocument } from "./testHelpers";
 
 suite("Definition Provider Test Suite", () => {
   let provider: PlaybookDefinitionProvider;
@@ -139,7 +140,7 @@ suite("Definition Provider Test Suite", () => {
         const position = new vscode.Position(0, char);
         const definitions = await provider.provideDefinition(document, position);
 
-        assert.ok(true, `Should work at character ${char}`);
+        assert.ok(definitions, `Should resolve a definition at character ${char}`);
       }
     });
   });
@@ -182,15 +183,3 @@ suite("Definition Provider Test Suite", () => {
     });
   });
 });
-
-async function createTestDocument(
-  languageId: string,
-  content: string
-): Promise<vscode.TextDocument> {
-  const uri = vscode.Uri.parse(`untitled:test-${Date.now()}.${languageId}`);
-  const document = await vscode.workspace.openTextDocument(uri);
-  const edit = new vscode.WorkspaceEdit();
-  edit.insert(uri, new vscode.Position(0, 0), content);
-  await vscode.workspace.applyEdit(edit);
-  return document;
-}

@@ -5,6 +5,111 @@ All notable changes to the Playbook UI VS Code extension will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [2.2.1] - 2026-11-18
+
+### Added
+
+- **Every feature can be turned off** 🎚️
+  - A master switch, `playbook.enabled`, turns everything off at once; hover, completion, diagnostics, quick fixes, the flex axis help, go to definition, the status bar and the Explorer view each have their own, and so do the finer parts (hover notes, the global props list, value previews, presets, icon completions, the core validation checks and the alphabetical prop order warning). All default to on. See *Turning features off* in the README
+- **Icon intelligence** 🖼️
+  - Completions for icon props (`icon`, `iconRight`, `iconLeft`) from `@powerhome/playbook-icons`, each with a preview when you highlight it, a hover with the preview, category and alias note, and a "did you mean" fix for typos. The preview is shown only in hovers and completion documentation, never inline in the code, where an image can't follow the line height and throws the lines off
+  - **The icons are private (branding, vendor, window and door icons), so nothing from that package is bundled with the extension.** They are read from the workspace's installed `@powerhome/playbook-icons` (including `components/*`), or from the folder named by `playbook.icons.path`, e.g. a checkout of the repo
+  - Careful by design: the Icon kit falls back to Font Awesome for names that aren't in the set, so a name is only flagged when it is missing **and** has a close match (a likely typo). The preview is drawn in your theme's color (light gray on dark themes, dark gray on light ones), recoloring every fill in the SVG, since most of Playbook's icons are a dark navy that disappears on a dark theme. Override it with `playbook.icons.previewColor`. Settings: `playbook.icons.path`, `playbook.icons.previewColor`, `playbook.diagnostics.unknownIcons`
+- **Color token swatches** 🎨
+  - Color values complete with their color in the list, including props with no enum in the schema (Icon and Legend `color`, Card header `header_color`); `playbook.colorSwatches` off keeps the names and hides the colors
+  - An Icon or Legend color, or a Card header `header_color` (`card/card_header`, `Card.Header`), that Playbook doesn't define is flagged with a "did you mean" fix, since no color is applied
+  - Hovering a global prop (`padding`, `margin`, …) on a subcomponent (`card/card_body`, `Card.Body`) shows its docs through the parent kit
+  - Swatches also show the kit's own colors for Body, Caption, Title, Detail, Link and Overlay `color`, Card `background` and `header_color` (`Card.Header` / `card/card_header`), read from each kit's stylesheet by `npm run sync:data` so `Body color="default"` is the text color rather than the `default` token
+  - A small square (sized in `em`, so it follows the font and can't push lines apart) next to Playbook color tokens (`background="bg_light"`), with a hover showing the token and its value. Tokens (204) are read from the installed `playbook-ui` when present, else a bundled copy (`data/ai/color-tokens.json`, written by `npm run sync:data`)
+  - Typed color props (those with an enum of token names) need a name that says color or background and values that are mostly token names. **Icon `color` and Legend `color` have no enum in Playbook's schema**, so their allowed names are read from the kit's stylesheet (`data/ai/kit-colors.json`: Icon's 136 colors, Legend's `data_1`…`data_8` or a hex string). Icon and Legend colors Playbook doesn't define (Icon `color="secondary"`, `"default"`, `"gray"`) are flagged, since the matching class doesn't exist and no color is applied; a close match is offered as a fix. Setting: `playbook.diagnostics.unknownColors`. A semantic value like `Body color="default"` (the default *text* color) is not the unrelated token `$default`, and `Pill variant="primary"` is a style, not a color. Setting: `playbook.colorSwatches`
+- **Combine paired spacing props** 🧩
+  - `paddingTop="sm" paddingBottom="sm"` → `paddingY="sm"` (and left/right → `paddingX`, and the margin versions) as a hint with a quick fix, plus *Combine all N in this file*. Only for equal string values, never when props are spread in or the axis prop is already set. Opt in to run it on save with `"editor.codeActionsOnSave": { "source.fixAll.playbook": "explicit" }`. Setting: `playbook.diagnostics.combineSpacing`
+- **Required indicator** ✱
+  - A label ending in a hand-written asterisk on a Playbook input (`label: "Name *"`) gets a quick fix that removes it and adds `required_indicator: true` (`requiredIndicator` in React, inserted in alphabetical order so the prop-order warning isn't triggered). Covers every kit with a required indicator, plus form builder fields and Checkbox's `text`
+  - Narrow on purpose: only kits whose schema has the prop, only a literal label that *ends* in the asterisk after real text, never when props are spread in or `required_indicator` comes from a variable, and not an app's own wrapper components. A label that has both an asterisk and the indicator is flagged as a warning (it shows twice). A standalone `Caption` ending in `*` gets a soft hint, with no fix, only when it sits right before a Playbook input that has no label of its own. Setting: `playbook.diagnostics.requiredIndicator`
+- **Find Bootstrap Markup** 🔎
+  - Scans for Bootstrap classes (`btn btn-primary`, `panel`, `col-md-6`, `d-flex`, `form-control`, …) and names the Playbook kit or prop that replaces each, grouped by kind. Opens a Markdown summary report (counts by kind, folder and file) for planning a migration. Optional in-editor hints behind `playbook.diagnostics.bootstrap` (off by default)
+- **Scoped sweeps** 📁
+  - *Find Deprecated Usages* and *Find Bootstrap Markup* no longer scan the whole workspace unless you ask. Right-click a file or folder in the Explorer, or pick *This file's folder / This file / Choose a folder… / The whole workspace*, or pass one directly: `{ "command": "playbook.findBootstrap", "args": ["components/accounting"] }` (a path, a Uri, or `{ "path": "…" }`; `{ "scope": "workspace" }` for everything)
+- **Global props hover, redesigned** 📋
+  - The kit hover's global props section was one long run-on list in registry order with enum values cut off after five. It is now grouped by purpose (Spacing, Flexbox, Grid, Sizing, Position, Border and effects, Display and overflow, Text), alphabetized, with every name in the editor's own spelling (`margin_bottom` in Rails, `marginBottom` in React) and the spacing scale in pixels
+  - **Playbook: Show Global Props** opens the complete reference as tables: props that share a value list are one row, and **no value list is ever shortened**. A kit's own props are alphabetized too
+- **Flex axis awareness** ↔↕
+  - Flex's `justify` and `align` point different ways depending on `orientation` (default `row`): `justify` is the *main* axis (horizontal in a row, vertical in a column) and `align` the *cross* axis. Verified against Playbook's Rails, React and SCSS source. The same applies to the global `justifyContent`/`alignItems` with `flexDirection`
+  - **Inline hints:** `justify="center"` shows `↔ center` in a row and `↕ middle` in a column; `align="start"` shows `↕ top` / `↔ left`. Skipped when the orientation can't be known from the code (a variable, a spread). Setting: `playbook.axisHints`
+  - **Hover:** on `justify`, `align`, `justifyContent`, `alignItems`, `orientation` and `flexDirection`, explains the axis using *that usage's* actual orientation ("`orientation` isn't set, so it is `row` (the default), so it positions items horizontally")
+  - **Value completions** say where each value puts items (`start — ↔ left`), or show both orientations when it is unknown
+  - **Migration for deprecated `horizontal` / `vertical` / `spacing`** (Rails): the warning names the right replacement and a quick fix rewrites the prop and value (`horizontal: "right"` → `justify: "end"` in a row, `align: "end"` in a column; `spacing: "between"` → `justify: "between"`). No fix is offered where Playbook generates no CSS for the old value (`horizontal: "stretch"` in a row), where the orientation is dynamic, or where the replacement is already set
+
+- **Quick fixes: "Did you mean…?"** 💡
+  - Unknown props (`margin_botom` → `margin_bottom`, `marginBotom` → `marginBottom`), invalid enum values (`"primry"` → `"primary"`), unknown kit names (`pb_rails("buton")` → `button`) and deprecated props with a known replacement each get a lightbulb fix. Matching ignores case and underscores and handles reordered words (`bottom_margin`); props that exist only on the other platform are never suggested
+- **Pixel hints for spacing tokens** 📏
+  - `padding="md"` shows `24px` after the token, including every token inside responsive objects (`{{ default: "sm", md: "lg" }}`). Setting: `playbook.spacingHints`
+- **Deprecation support** ⚠️
+  - Deprecated props (`Flex horizontal/vertical/spacing`, `Body status`, `Caption`/`Title variant`, `Button type`, `Tooltip trigger_element_id`, …) are shown struck through with the replacement in the message, and are flagged in hover and completions. Playbook's schema doesn't carry this, so it is read from Playbook's source into `data/deprecations.json`
+  - **Playbook: Find Deprecated Usages** scans the workspace and lists every deprecated kit/prop, grouped and most-used first, jump-to-location
+- **Kit browser** 🗂️
+  - **Playbook: Browse Kits** and a *Playbook Kits* Explorer view list every kit by category. Search matches names, descriptions and what a kit looks like ("sidebar", "progress"). For each kit: insert Playbook's example or any preset into the file you're editing (React or Rails to match), copy it, or open its docs
+- **Preset completions** ⚡
+  - Every Playbook playground preset is offered as a completion — `<Dr` → `Dropdown: Create tags`, `pb_rails("` → `dropdown: Create tags` — written with the right props for the platform (snake_case top-level keys for Rails, shorthand booleans for JSX)
+- **Richer hover docs** 📖
+  - Kit hover now shows Playbook's gotchas ("Requires columnDefinitions + tableData"), what the kit is often confused with, presets, FAQs and deprecated props. Prop hover shows what it is used together with and the playground hints that apply (e.g. `link` → "renders as an <a> tag")
+- **Form builder support from Playbook's contract** 📝
+  - Hover `f.check_box` for its signature, example and notes; `f.` completes the builder's real method names; props complete inside `props: { }` for the field under the cursor
+- **Prop dependency check** 🔗
+  - `showPillIndex` without `multiSelect`, `link` `target` without `href`, `loadOptions` without `async`, … are flagged as having no effect. Limited to rules verified in Playbook's source (see KNOWN_LIMITATIONS #4). Setting: `playbook.diagnostics.propDependencies`
+- **Missing host package check** 📦
+  - `pb_bar_graph`/`PbBarGraph` and other kits that wrap Highcharts or maplibre-gl warn when the package isn't in the nearest `package.json` or `node_modules`. Setting: `playbook.diagnostics.externalDependencies`
+- **Version-matched data** 🔄
+  - The extension now reads the newest `playbook-ui` installed in the workspace — including monorepo `components/*`, `packages/*` and `apps/*` — and the new status bar item shows which version (or "bundled") is in use. It reloads when a lockfile changes; **Playbook: Reload Metadata** forces it
+- `npm run sync:data` copies Playbook's `dist/ai` into `data/ai/` and regenerates `data/deprecations.json`
+
+### Changed
+
+- Bundled data moved from `data/all-schemas.json` to `data/ai/` (the same layout as `playbook-ui/dist/ai`) and now includes playgrounds, the visual index and the form contract
+- Props that differ between React and Rails (Playbook's `{ react, rails }` split of `type`, `values` and `default`) are now validated, completed and documented per platform instead of using one platform's values for both
+- The test document helper now creates documents with the right language id
+
+### Fixed
+
+- **Workspace `playbook-ui` was silently ignored.** The loader threw on Playbook's platform-split schema fields and fell back to the bundled copy, so docs and validation could be out of date without any sign
+- **Form builder validation never ran on real code.** It only matched calls written with parentheses (`f.text_field(`), but ERB almost always omits them (`f.text_field :name, props: {`). It also took the next `props: {` within ten lines, so a field with no props could be blamed for a neighbouring `pb_rails` call's props. Validation now reads each call's own props
+- **Wrong form builder method names.** The extension's list was built from Ruby file names (`checkbox_field`, `select_field`, `date_picker_field`, `typeahead_field`), so `f.check_box`, `f.select`, `f.date_picker` and `f.typeahead` were never validated. Names now come from Playbook's `forms.json`
+- **No hover on the first prop of a single-line `props: { … }`.** `props: {` was being read as the prop, hiding `variant` in `props: { variant: "x" }`
+- **React props spelled in snake_case are now flagged.** `<Flex margin_bottom="xs" />` passed silently because the validator normalised every prop to snake_case before the lookup. It now warns (`should be written "marginBottom" in React`) with a quick fix to rename it. No React prop name in the schema contains an underscore, so there are no false positives from this
+- **Global props the schema lists as React-only were flagged in Rails.** `Card` lists its own `padding` for React only, so `pb_rails("card", props: { padding: "md" })` warned that padding "is not available in Rails" even though the global `padding` works on every kit. The global prop is now used when the kit's own doesn't fit the platform
+- **No value suggestions while typing inside quotes.** VS Code doesn't ask for suggestions inside a string as you type (only on `"` and `=`), so `background="wi|"` offered nothing, and React didn't recognise a partly typed value at all. Letters now trigger the provider, which answers only inside a prop value or a `pb_rails("…")` name (presets replace the text already typed)
+- **`className` flagged as unknown.** Every kit accepts `className` (React) and `classname`, `id`, `data`, `aria` and `html_options` (Rails), but the schema lists them per kit nowhere, so `<Detail className="x" />` warned. They are now accepted everywhere
+- Rails `tooltip position: "top"` was reported as invalid (the schema publishes React's CSS values for both platforms) — corrected in `SCHEMA_CORRECTIONS`
+- `.erb` / `.html.erb` documents are recognised in test environments without a Ruby/ERB extension (the `erb` and `html.erb` language ids are now registered, with no file-extension mapping so existing associations are untouched)
+
+### Tests
+
+- 246 → 490+ tests. Replaced ~65 `assert.ok(true)` tests that could not fail with real assertions; fixed test documents that silently ran as `plaintext`; added suites for the scanner, rules, quick fixes, presets, spacing hints, form builders, catalog/sweep, data loading (including loading from a workspace install and falling back on a broken one)
+
+- **Container kit** 📦
+  - New `Container` kit added upstream ([PLAY-3163](https://github.com/powerhome/playbook/pull/6546)) — a single `tag` enum prop (`div`, `span`, `section`, etc., default `div`), global props enabled. Now included in `data/ai/all-schemas.json` and available as a snippet (`pbContainer` / `pb_container`)
+- New props picked up from upstream Playbook changes since the last sync (2026-07-31):
+  - `Table`: `colSpan` (React) and `contrastBorder` (React + Rails)
+  - `FileUpload`: `customMessage` extended from React-only to React + Rails
+  - `Link`: `rel` string prop
+  - `MultiLevelSelect`: `formatSelectedDisplay` function prop (React)
+  - `Pill`: `notification` boolean prop
+  - `RichTextEditor`: `markdownSupport` boolean prop
+  - `Card`: `product_12_background` / `product_12_highlight` color values
+
+### Removed
+
+- **IconButton kit** 🗑️
+  - Playbook fully removed the standalone `IconButton` kit upstream ([PLAY-3096](https://github.com/powerhome/playbook/pull/6466)) in favor of `Button`/`CircleIconButton`. Removed from `data/ai/all-schemas.json` and both snippet files so the extension no longer suggests a component that doesn't exist
+
+### Fixed
+
+- **AdvancedTable React import path**
+  - Upstream moved `AdvancedTable` to its own entrypoint to enable tree-shaking ([PLAY-3129](https://github.com/powerhome/playbook/pull/6478)); hover docs and completions now show `import { AdvancedTable } from 'playbook-ui/advanced-table'` instead of the old `'playbook-ui'` path
+
 ## [2.1.1] - 2026-07-31
 
 ### Added

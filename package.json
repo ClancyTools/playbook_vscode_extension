@@ -2,7 +2,7 @@
   "name": "playbook-vscode",
   "displayName": "Playbook UI Helper",
   "description": "Developer experience enhancements for Playbook UI design system - snippets, autocomplete, and hover documentation for Rails and React",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "publisher": "ClancyTools",
   "icon": "enhanced_logo.png",
   "engines": {
@@ -37,7 +37,14 @@
     "onLanguage:javascript",
     "onLanguage:javascriptreact",
     "onLanguage:typescript",
-    "onLanguage:typescriptreact"
+    "onLanguage:typescriptreact",
+    "onView:playbookKits",
+    "onCommand:playbook.browseKits",
+    "onCommand:playbook.findDeprecated",
+    "onCommand:playbook.reloadMetadata",
+    "onCommand:playbook.showInfo",
+    "onCommand:playbook.findBootstrap",
+    "onCommand:playbook.showGlobalProps"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -66,7 +73,259 @@
         "language": "typescriptreact",
         "path": "./snippets/react.json"
       }
-    ]
+    ],
+    "languages": [
+      {
+        "id": "erb"
+      },
+      {
+        "id": "html.erb"
+      }
+    ],
+    "configuration": {
+      "title": "Playbook UI Helper",
+      "properties": {
+        "playbook.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Master switch. Turn off to disable every Playbook feature at once (hover, completion, diagnostics, quick fixes, inline hints, go to definition, status bar, kit browser). Snippets are contributed by VS Code and stay available. Individual features have their own switches below."
+        },
+        "playbook.hover.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hover documentation for Playbook kits, props, values and form builder methods."
+        },
+        "playbook.hover.kitGuidance": {
+          "type": "boolean",
+          "default": true,
+          "description": "In hovers, show Playbook's notes: gotchas, what a kit is often confused with, presets, FAQs, deprecated props, what a prop is used with, and playground hints."
+        },
+        "playbook.hover.globalProps": {
+          "type": "boolean",
+          "default": true,
+          "description": "In a kit hover, include the grouped list of global props."
+        },
+        "playbook.hover.valuePreviews": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hovering a color token, an Icon/Legend color or an icon name shows the color or the icon."
+        },
+        "playbook.completion.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Completion for Playbook kit names, props, values and form builder methods."
+        },
+        "playbook.completion.presets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer Playbook's named presets as completions (for example Dropdown: Create tags)."
+        },
+        "playbook.completion.icons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer icon names from playbook-icons as completions on icon props."
+        },
+        "playbook.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "All Playbook diagnostics (warnings, information and hints). Turn off to see none of them; the individual diagnostics below only apply while this is on."
+        },
+        "playbook.diagnostics.validation": {
+          "type": "boolean",
+          "default": true,
+          "description": "The core checks: unknown kits and props, invalid values, props that aren't available on the platform, React props written in snake_case, and form builder props."
+        },
+        "playbook.diagnostics.propOrder": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when React props are not in alphabetical order."
+        },
+        "playbook.quickFixes.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Quick fixes for Playbook diagnostics (did you mean, combine spacing, required indicator, flex migration, and more)."
+        },
+        "playbook.flexAxis.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flex axis help: which way justify/align point (inline hints, hover, completion detail) and the justify/align replacement for the deprecated horizontal, vertical and spacing props."
+        },
+        "playbook.definition.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Go to definition on Playbook kits (opens the kit's documentation)."
+        },
+        "playbook.statusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Playbook version in the status bar."
+        },
+        "playbook.kitBrowser.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Playbook Kits view in the Explorer. The Browse Kits command is always available."
+        },
+        "playbook.diagnostics.deprecations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag deprecated Playbook props (shown struck through)."
+        },
+        "playbook.diagnostics.propDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag props that have no effect without another prop (for example formPillProps without multiSelect)."
+        },
+        "playbook.diagnostics.externalDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag kits whose required host packages (Highcharts, maplibre-gl, ...) are not installed."
+        },
+        "playbook.spacingHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the pixel value after spacing tokens, for example padding=\"md\" → 24px."
+        },
+        "playbook.axisHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show which way a flex value points after justify/align (and justifyContent/alignItems), for example \"↔ center\" in a row or \"↕ middle\" in a column."
+        },
+        "playbook.colorSwatches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a small square with the real color after Playbook color values: color tokens (backgroundColor=\"bg_light\"), Icon color and Legend color. Turn this off to hide them."
+        },
+        "playbook.icons.path": {
+          "type": "string",
+          "default": "",
+          "description": "Folder containing the playbook-icons icons/ directory and aliases.json (for example a checkout of the playbook-icons repo, ~/Documents/Playbook/playbook-icons). Leave empty to use the package installed in the workspace. Used for icon name completions and the preview in hovers. The icons are private and are never bundled with this extension."
+        },
+        "playbook.diagnostics.unknownIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag icon names that look like a typo of a playbook-icons icon. Names with no close match are never flagged, since they may be Font Awesome icons."
+        },
+        "playbook.diagnostics.combineSpacing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hint when two side props have the same value and can be one axis prop (paddingTop + paddingBottom → paddingY)."
+        },
+        "playbook.diagnostics.bootstrap": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hint on Bootstrap classes (btn btn-primary, panel, col-md-6, …) with the Playbook equivalent. Off by default: an app mid-migration has a lot of them. Use Playbook: Find Bootstrap Markup to scan a folder instead."
+        },
+        "playbook.diagnostics.requiredIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Suggest required_indicator when a label on a Playbook input ends in a hand-written \"*\"."
+        },
+        "playbook.icons.previewColor": {
+          "type": "string",
+          "default": "",
+          "description": "Color of the icon previews in hovers and completions, e.g. #4fc3f7 or white. Leave empty to match the theme (light gray on dark themes, dark gray on light ones)."
+        },
+        "playbook.diagnostics.unknownColors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag a color name that Icon or Legend doesn't define (for example Icon color=\"secondary\"), which means no color is applied."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "playbook.browseKits",
+        "title": "Browse Kits",
+        "category": "Playbook",
+        "icon": "$(symbol-class)"
+      },
+      {
+        "command": "playbook.findDeprecated",
+        "title": "Find Deprecated Usages",
+        "category": "Playbook",
+        "icon": "$(warning)"
+      },
+      {
+        "command": "playbook.reloadMetadata",
+        "title": "Reload Metadata",
+        "category": "Playbook",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "playbook.showInfo",
+        "title": "Show Playbook Info",
+        "category": "Playbook"
+      },
+      {
+        "command": "playbook.kitActions",
+        "title": "Kit Actions",
+        "category": "Playbook"
+      },
+      {
+        "command": "playbook.findBootstrap",
+        "title": "Find Bootstrap Markup",
+        "category": "Playbook",
+        "icon": "$(search)"
+      },
+      {
+        "command": "playbook.showGlobalProps",
+        "title": "Show Global Props",
+        "category": "Playbook",
+        "icon": "$(symbol-property)"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "playbookKits",
+          "name": "Playbook Kits",
+          "icon": "$(symbol-class)",
+          "when": "playbook.kitBrowserEnabled"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "playbook.browseKits",
+          "when": "view == playbookKits",
+          "group": "navigation@1"
+        },
+        {
+          "command": "playbook.findDeprecated",
+          "when": "view == playbookKits",
+          "group": "navigation@2"
+        },
+        {
+          "command": "playbook.reloadMetadata",
+          "when": "view == playbookKits",
+          "group": "navigation@3"
+        },
+        {
+          "command": "playbook.findBootstrap",
+          "when": "view == playbookKits",
+          "group": "navigation@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "playbook.kitActions",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "playbook.findDeprecated",
+          "when": "explorerResourceIsFolder || resourceExtname =~ /\\.(erb|rb|tsx|jsx|ts|js)$/",
+          "group": "playbook@1"
+        },
+        {
+          "command": "playbook.findBootstrap",
+          "when": "explorerResourceIsFolder || resourceExtname =~ /\\.(erb|html|tsx|jsx)$/",
+          "group": "playbook@2"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -74,7 +333,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "sync:data": "ts-node scripts/sync-playbook-data.ts"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

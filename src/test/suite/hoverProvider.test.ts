@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { PlaybookHoverProvider } from "../../hoverProvider";
 import { loadMetadata } from "../../metadata";
+import { createTestDocument } from "./testHelpers";
 
 suite("Hover Provider Test Suite", () => {
   let provider: PlaybookHoverProvider;
@@ -105,12 +106,10 @@ suite("Hover Provider Test Suite", () => {
 
       const hover = await provider.provideHover(document, position);
 
-      if (hover && hover.contents.length > 0) {
-        const content = (hover.contents[0] as vscode.MarkdownString).value;
-        if (content.includes("Values:")) {
-          assert.ok(true, "Shows valid values for enum");
-        }
-      }
+      assert.ok(hover, "Should provide hover for the variant prop");
+      const content = (hover.contents[0] as vscode.MarkdownString).value;
+      assert.ok(content.includes("Values:"), "Shows valid values for enum");
+      assert.ok(content.includes("primary"), "Lists primary as a valid variant");
     });
 
     test("Should show default value if available", async () => {
@@ -151,7 +150,7 @@ suite("Hover Provider Test Suite", () => {
 
       const hover = await provider.provideHover(document, position);
 
-      assert.ok(true, "Should handle camelCase props");
+      assert.ok(!hover || hover.contents.length === 0, "Unknown component props should not produce hover");
     });
   });
 
@@ -168,16 +167,28 @@ suite("Hover Provider Test Suite", () => {
       }
     });
   });
-});
 
-async function createTestDocument(
-  languageId: string,
-  content: string
-): Promise<vscode.TextDocument> {
-  const uri = vscode.Uri.parse(`untitled:test.${languageId}`);
-  const document = await vscode.workspace.openTextDocument(uri);
-  const edit = new vscode.WorkspaceEdit();
-  edit.insert(uri, new vscode.Position(0, 0), content);
-  await vscode.workspace.applyEdit(edit);
-  return document;
-}
+  suite("Global props on subcomponents", () => {
+    async function hoverText(languageId: string, content: string, marker: string): Promise<string | undefined> {
+      const document = await createTestDocument(languageId, content);
+      const hover = (await provider.provideHover(document, document.positionAt(content.indexOf(marker) + 1))) as vscode.Hover | null;
+      return hover ? (hover.contents[0] as vscode.MarkdownString).value : undefined;
+    }
+
+    test("documents a global prop on a Rails subcomponent", async () => {
+      const text = await hoverText("erb", '<%= pb_rails("card/card_body", props: { padding: "sm" }) %>', "padding");
+      assert.ok(text?.includes("padding") && text.includes("Global prop"), text);
+      assert.ok(text?.includes("card/card_body"), text);
+    });
+
+    test("documents a global prop on a React subcomponent", async () => {
+      const text = await hoverText("typescriptreact", '<Card.Body paddingBottom="none" />', "paddingBottom");
+      assert.ok(text?.includes("paddingBottom") && text.includes("Global prop"), text);
+    });
+
+    test("says nothing for a prop that isn't global, or under an unknown parent", async () => {
+      assert.strictEqual(await hoverText("erb", '<%= pb_rails("card/card_body", props: { nonsense: "x" }) %>', "nonsense"), undefined);
+      assert.strictEqual(await hoverText("erb", '<%= pb_rails("nope/card_body", props: { padding: "sm" }) %>', "padding"), undefined);
+    });
+  });
+});
